@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react'
 import {
   Container,
   Header,
@@ -11,23 +11,22 @@ import {
   Body,
   Right,
   List,
-  ListItem
-} from "native-base";
+  ListItem,
+} from 'native-base'
 
-import {NavigationScreenProp} from 'react-navigation';
+import { NavigationScreenProp } from 'react-navigation'
 
 export interface Props {
-  navigation: NavigationScreenProp<any>;
-  list: any;
+  navigation: NavigationScreenProp<any>
+  list: any
 }
 export interface State {}
 class Splash extends React.Component<Props, State> {
-
-    componentWillMount(){
-        setTimeout(() => {
-            this.props.navigation.navigate('Login');
-        }, 3000);
-    }
+  componentDidMount() {
+    setTimeout(() => {
+      this.props.navigation.navigate('Login')
+    }, 3000)
+  }
 
   render() {
     return (
@@ -47,8 +46,8 @@ class Splash extends React.Component<Props, State> {
           <Text>Splash Content</Text>
         </Content>
       </Container>
-    );
+    )
   }
 }
 
-export default Splash;
+export default Splash

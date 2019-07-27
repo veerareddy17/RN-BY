@@ -1,5 +1,5 @@
 {
-  "name": "Byjus Mobile",
+  "name": "Byjus",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -10,6 +10,7 @@
     "ios": "react-native run-ios"
   },
   "dependencies": {
+    "@react-native-community/netinfo": "^4.1.3",
     "axios": "^0.19.0",
     "native-base": "^2.12.2",
     "react": "16.8.6",
