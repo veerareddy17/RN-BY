@@ -17,6 +17,8 @@ import {
 import { NavigationScreenProp } from 'react-navigation'
 import { NetworkContext } from '../../provider/network-provider'
 
+import store from '../../redux/store'
+import { fetchAllLeads } from '../../services/lead-service'
 export interface Props {
   navigation: NavigationScreenProp<any>
   list: any
@@ -24,6 +26,11 @@ export interface Props {
 export interface State {}
 class Login extends React.Component<Props, State> {
   static contextType = NetworkContext
+
+  getLeads = () => {
+    store.dispatch(fetchAllLeads())
+    this.props.navigation.navigate('LeadList')
+  }
 
   render() {
     return (
@@ -39,6 +46,9 @@ class Login extends React.Component<Props, State> {
             <Text>
               You are now {this.context.isConnected ? 'online' : 'offline'}
             </Text>
+            <Button onPress={this.getLeads}>
+              <Text>Get leads</Text>
+            </Button>
           </Body>
           <Right />
         </Header>

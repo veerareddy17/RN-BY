@@ -9,3 +9,7 @@ export const RESET = 'RESET'
 export const LOAD_SETTINGS_START = 'LOAD_SETTINGS_START'
 export const LOAD_SETTINGS_SUCCESS = 'LOAD_SETTINGS_START'
 export const LOAD_SETTINGS_FAIL = 'LOAD_SETTINGS_START'
+
+export const ADD_LEAD = 'ADD_LEAD'
+export const FETCH_LEAD = 'FETCH_LEAD'
+export const DELETE_LEAD = 'DELETE_LEAD'

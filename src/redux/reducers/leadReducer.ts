@@ -1,0 +1,15 @@
+import { ADD_LEAD, FETCH_LEAD, DELETE_LEAD } from '../actions/action-types'
+
+export default function leadReducer(state = [], action) {
+  console.log('Action----', action)
+  switch (action.type) {
+    case ADD_LEAD:
+      return [...state, action.payload]
+    case DELETE_LEAD:
+      return state.filter(lead => lead.id !== action.payload.id)
+    case FETCH_LEAD:
+      return action.leads
+    default:
+      return state
+  }
+}
