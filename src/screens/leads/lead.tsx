@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { View, Text } from 'native-base'
 
-export default ({ lead: { id, name, username } }) => {
+export default ({ lead }) => {
   return (
     <View>
-      <Text>{id}</Text>
-      <Text>{name}</Text>
-      <Text>{username}</Text>
+      <Text>{lead.id}</Text>
+      <Text>{lead.name}</Text>
+      <Text>{lead.username}</Text>
     </View>
   )
 }

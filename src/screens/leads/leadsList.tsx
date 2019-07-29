@@ -1,17 +1,26 @@
 import * as React from 'react'
 import { Component } from 'react'
 import { connect } from 'react-redux'
-import { Text, Button, View } from 'native-base'
+import { Text, View } from 'native-base'
 import Lead from './lead'
-
+import store from '../../redux/store'
+import { fetchAllLeads, createLead } from '../../services/lead-service'
 export interface LeadListProps {
   leads: []
+  fetchLeads(): any
 }
 
 export interface LeadListState {}
 
 class LeadList extends Component<LeadListProps, LeadListState> {
+  componentDidMount() {
+    this.props.fetchLeads()
+  }
+
   render() {
+    if (!this.props.leads.length) {
+      return <Text>No Leads</Text>
+    }
     return (
       <View>
         {this.props.leads.map(lead => {
@@ -28,4 +37,15 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(LeadList)
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchLeads: () => {
+      dispatch(fetchAllLeads())
+    },
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(LeadList)

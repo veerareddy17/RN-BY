@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react'
 import {
   Container,
   Header,
@@ -11,15 +11,24 @@ import {
   Body,
   Right,
   List,
-  ListItem
-} from "native-base";
+  ListItem,
+} from 'native-base'
+import { NavigationScreenProp } from 'react-navigation'
 
 export interface Props {
-  navigation: any;
-  list: any;
+  navigation: NavigationScreenProp<any>
+  list: any
 }
 export interface State {}
 class Dashboard extends React.Component<Props, State> {
+  getLeads = () => {
+    this.props.navigation.navigate('LeadList')
+  }
+
+  createLead = () => {
+    this.props.navigation.navigate('CreateLead')
+  }
+
   render() {
     return (
       <Container>
@@ -29,17 +38,21 @@ class Dashboard extends React.Component<Props, State> {
               <Text>Header</Text>
             </Button>
           </Left>
-          <Body>
-            <Title>Home</Title>
-          </Body>
+          <Body></Body>
           <Right />
         </Header>
         <Content>
           <Text>Dashboard Content</Text>
+          <Button onPress={this.getLeads}>
+            <Text>Get leads</Text>
+          </Button>
+          <Button onPress={this.createLead}>
+            <Text>Create lead</Text>
+          </Button>
         </Content>
       </Container>
-    );
+    )
   }
 }
 
-export default Dashboard;
+export default Dashboard

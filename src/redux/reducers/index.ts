@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
-import leads from './leadReducer'
+import leadReducer from './leadReducer'
 
 export default combineReducers({
-  leads: leads,
+  leads: leadReducer,
 })

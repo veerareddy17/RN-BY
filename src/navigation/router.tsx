@@ -4,6 +4,7 @@ import Dashboard from '../screens/dashboard/dashboard-screen'
 import Login from '../screens/login/login-screen'
 import Splash from '../screens/splash/splash-screen'
 import LeadList from '../screens/leads/leadsList'
+import CreateLead from '../screens/leads/createLead'
 
 const homeStackNavigator = createStackNavigator(
   {
@@ -21,6 +22,9 @@ const homeStackNavigator = createStackNavigator(
     },
     LeadList: {
       screen: LeadList,
+    },
+    CreateLead: {
+      screen: CreateLead,
     },
   },
   {
