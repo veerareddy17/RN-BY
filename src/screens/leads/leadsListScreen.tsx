@@ -3,13 +3,11 @@ import { Component } from 'react'
 import { connect } from 'react-redux'
 import { Text, View } from 'native-base'
 import Lead from './lead'
-import store from '../../redux/store'
-import { fetchAllLeads, createLead } from '../../services/lead-service'
+import { fetchAllLeads } from '../../services/leadService'
 export interface LeadListProps {
   leads: []
   fetchLeads(): any
 }
-
 export interface LeadListState {}
 
 class LeadList extends Component<LeadListProps, LeadListState> {

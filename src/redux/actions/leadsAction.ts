@@ -1,4 +1,4 @@
-import { ADD_LEAD, FETCH_LEAD } from './action-types'
+import { ADD_LEAD, FETCH_LEAD, FETCH_CAMPAIGN } from './actionTypes'
 // The action creators
 export const createLeadAction = lead => {
   return {
@@ -11,5 +11,12 @@ export const fetchLeadsAction = leads => {
   return {
     type: FETCH_LEAD,
     payload: leads,
+  }
+}
+
+export const fetchCampaignsAction = campaigns => {
+  return {
+    type: FETCH_CAMPAIGN,
+    payload: campaigns,
   }
 }
