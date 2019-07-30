@@ -17,6 +17,8 @@ import {
 
 import { NavigationScreenProp } from 'react-navigation'
 import { connect } from 'react-redux'
+import  AsyncStorage from '@react-native-community/async-storage'
+
 import { NetworkContext } from '../../provider/network-provider'
 import { login, logout } from '../../services/userService'
 export interface Props {
@@ -33,24 +35,10 @@ export interface State {
 class Login extends React.Component<Props, State> {
   static contextType = NetworkContext
 
-  // handleSubmit = () => {
-  //   const { username, password } = this.state.user
-
-  //   if (username && password) {
-  //     this.props.login(username, password)
-  //   }
-  // }
-
-  // handleOnChange = e => {
-  //   const { user } = { ...this.state }
-  //   const currentState = user
-  //   const { name, value } = e.target
-  //   currentState[name] = value
-
-  //   this.setState({ user: currentState })
-  // }
-
-  handleSubmit = () => {
+  handleSubmit = async () => {
+      let loginResponse = await login('dev.test@example.com', 'password123');
+      console.log(loginResponse)
+    
     this.props.navigation.navigate('Dashboard')
   }
 
