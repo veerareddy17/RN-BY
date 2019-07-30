@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react'
 import {
   Container,
   Content,
@@ -9,8 +9,8 @@ import { NavigationScreenProp } from 'react-navigation';
 import images from "../../assets";
 
 export interface Props {
-  navigation: NavigationScreenProp<any>;
-  list: any;
+  navigation: NavigationScreenProp<any>
+  list: any
 }
 export interface State { }
 class Splash extends React.Component<Props, State> {
@@ -31,8 +31,8 @@ class Splash extends React.Component<Props, State> {
           </Content>
         </ImageBackground>
       </Container>
-    );
+    )
   }
 }
 
-export default Splash;
+export default Splash

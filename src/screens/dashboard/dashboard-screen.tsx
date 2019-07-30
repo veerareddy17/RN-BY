@@ -20,6 +20,12 @@ export interface Props {
 }
 export interface State {}
 class Dashboard extends React.Component<Props, State> {
+
+  getLeads = () => {
+    store.dispatch(fetchAllLeads())
+    this.props.navigation.navigate('LeadList')
+  }
+
   render() {
     return (
       <Container>
@@ -35,7 +41,9 @@ class Dashboard extends React.Component<Props, State> {
           <Right />
         </Header>
         <Content>
-          <Text>Dashboard Content</Text>
+           <Button onPress={this.getLeads}>
+              <Text>Get leads</Text>
+            </Button>
         </Content>
       </Container>
     );
