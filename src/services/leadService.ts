@@ -6,7 +6,12 @@ import {
 } from '../redux/actions/leadsAction'
 
 const apiUrl = 'https://jsonplaceholder.typicode.com'
-
+const options = {
+  headers: {
+    'Authorization': 'Basic Y2xpZW50OnNlY3JldA==',
+    'Content-Type': 'application/x-www-form-urlencoded'
+  }
+}
 // GET method to fetch all captured leads
 export const fetchAllLeads = () => {
   return dispatch => {

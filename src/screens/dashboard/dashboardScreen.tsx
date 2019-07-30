@@ -14,6 +14,8 @@ import {
   ListItem,
 } from 'native-base'
 import { NavigationScreenProp } from 'react-navigation'
+import  AsyncStorage from '@react-native-community/async-storage'
+
 
 export interface Props {
   navigation: NavigationScreenProp<any>
@@ -21,10 +23,18 @@ export interface Props {
 }
 export interface State {}
 class Dashboard extends React.Component<Props, State> {
+
+  async componentDidMount() {
+    try {
+    let userData = await AsyncStorage.getItem('user')
+      console.log(userData);
+    } catch (error) {
+      console.log("Something went wrong", error);
+    }
+  }
   getLeads = () => {
     this.props.navigation.navigate('LeadList')
   }
-
   createLead = () => {
     this.props.navigation.navigate('CreateLead')
   }

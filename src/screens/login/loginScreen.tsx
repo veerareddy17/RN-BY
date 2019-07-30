@@ -20,6 +20,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import images from "../../assets";
 import { NavigationScreenProp } from 'react-navigation'
 import { connect } from 'react-redux'
+import  AsyncStorage from '@react-native-community/async-storage'
+
 import { NetworkContext } from '../../provider/network-provider'
 import { login, logout } from '../../services/userService'
 export interface Props {
@@ -38,10 +40,16 @@ class Login extends React.Component<Props, State> {
 
   handlePress() { }
   
-  handleSubmit = () => {
-    // this.props.navigation.navigate('Dashboard')
-    // console.log('submit method',this.state.username);
-    this.props.login(this.state.username,this.state.password);
+  // handleSubmit = () => {
+  //   // this.props.navigation.navigate('Dashboard')
+  //   // console.log('submit method',this.state.username);
+  //   this.props.login(this.state.username,this.state.password);
+  
+  handleSubmit = async () => {
+      let loginResponse = await login('dev.test@example.com', 'password123');
+      console.log(loginResponse)
+    
+    this.props.navigation.navigate('Dashboard')
   }
 
   render() {
