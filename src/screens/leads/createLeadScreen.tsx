@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Component } from 'react'
-import { Text, Button, View, Picker } from 'native-base'
+import { Text, Button, View, Picker, Container, Header, Left, Body, Title, Right, Content, Form, Card, CardItem, Item, Label, Input } from 'native-base'
 import { connect } from 'react-redux'
 import { createLead } from '../../services/leadService'
 import { Dispatch } from 'redux'
@@ -16,7 +16,7 @@ export interface CreateLeadState {
   selectedCampaign: ''
 }
 
-const Item = Picker.Item
+//const Item = Picker.Item
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
   componentDidMount() {
     this.props.fetchCampaigns()
@@ -43,20 +43,56 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     })
 
     return (
-      <View>
-        <View>
-          <Text>Select Campaign</Text>
-          <Picker
-          // selectedValue={this.state.selectedCampaign}
-          // onValueChange={camp => this.setState({ selectedCampaign: camp })}
-          >
-            {campaignItems}
-          </Picker>
-        </View>
-        <Button onPress={this.handleSubmit}>
-          <Text>Create Lead</Text>
-        </Button>
-      </View>
+      <Container>
+        <Header>
+          <Left>
+            <Button transparent>
+              <Text>Customer Registration</Text>
+            </Button>
+          </Left>
+          <Body>
+            <Title>Customer Registration</Title>
+          </Body>
+          <Right />
+        </Header>
+        <Content>
+          <View style={{ backgroundColor: 'lightgrey', flexDirection: 'row' }}>
+            <Text>Your Campaign:</Text>
+            <Button small bordered style={{ borderColor: 'purple', marginLeft: 'auto' }}>
+              <Text style={{ color: 'purple' }}>Change</Text>
+            </Button>
+          </View>
+          <View>
+            <Form>
+              <Card>
+                <CardItem header>
+                  <Text style={{ fontWeight: 'bold' }}>Student Details</Text>
+                </CardItem>
+                <CardItem>
+                  <Body>
+                    <Item floatingLabel={true}>
+                      <Label>Student Name</Label>
+                      <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                    </Item>
+                    <View style={{flexDirection:'row'}}>
+                    <Item floatingLabel={true}>
+                      <Label>Student Name</Label>
+                      <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0,width:50 }} />
+                    </Item>
+                    <Item floatingLabel={true}>
+                      <Label>Student Name</Label>
+                      <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0,width:50 }} />
+                    </Item>
+                    </View>
+                  </Body>
+                </CardItem>
+
+              </Card>
+            </Form>
+          </View>
+
+        </Content>
+      </Container>
     )
   }
 }
