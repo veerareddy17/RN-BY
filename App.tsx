@@ -15,8 +15,6 @@ import AppContainer from './src/navigation/router'
 import { NetworkProvider } from './src/provider/network-provider'
 import store from './src/redux/store'
 
-// store.dispatch(fetchAllLeads())
-
 const App = () => {
   return (
     <Provider store={store}>
