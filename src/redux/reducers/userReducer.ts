@@ -6,7 +6,7 @@ import {
 } from '../actions/actionTypes'
 
 export default function userReducer(state = {}, action) {
-  console.log('Action-------',action)
+  console.log('Action-------',action.type)
   switch (action.type) {
     case LOGIN_REQUEST:
       return {

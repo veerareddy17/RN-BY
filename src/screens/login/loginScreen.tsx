@@ -37,7 +37,7 @@ class Login extends React.Component<Props, State> {
 
   handleSubmit = async () => {
       let loginResponse = await login('dev.test@example.com', 'password123');
-      console.log(loginResponse)
+      // console.log(loginResponse)
     
     this.props.navigation.navigate('Dashboard')
   }
@@ -77,11 +77,11 @@ class Login extends React.Component<Props, State> {
   }
 }
 
-// const mapStateToProps = state => {
-//   console.log(state)
-//   const { user } = state
-//   return { user }
-// }
+const mapStateToProps = state => {
+  console.log(state)
+  const { user } = state
+  return { user }
+}
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -91,4 +91,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(mapDispatchToProps)(Login)
+export default connect(mapStateToProps, mapDispatchToProps)(Login)

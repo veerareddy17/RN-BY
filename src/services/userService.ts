@@ -54,7 +54,6 @@ export const logout = () => {
   }
 }
 
-
 export const login = async (username: string, password: string) => {
   console.log('login service', username)
   const options = {
@@ -67,21 +66,24 @@ export const login = async (username: string, password: string) => {
       email: username, 
       password: password, 
   })
+  return async (dispatch) => {
   try {
     let response = await axios.post(`${apiUrl}/login`, body, options)
     console.log(response.status);
-  if(response.status == 200){
-    console.log(response.data)
-    try{
-      await AsyncStorage.setItem('user', JSON.stringify(response.data))
+    if(response.status == 200){
+      console.log(response.data)
+      dispatch(successAction(response.data))
+      try{
+        await AsyncStorage.setItem('user', JSON.stringify(response.data.data))
+      }
+      catch(error) {
+        console.log('Error in storing asyncstorage', error)
+      }
     }
-    catch(error) {
-      console.log('Error in storing asyncstorage', error)
-    }
-  }
   }
   catch(error) {
     console.log(error)
     return error;
   }
+};
 }

@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Text, View } from 'native-base'
 import Lead from './lead'
 import { fetchAllLeads } from '../../services/leadService'
+import { getCampaigns } from '../../services/campaignService'
 export interface LeadListProps {
   leads: []
   fetchLeads(): any
@@ -11,8 +12,9 @@ export interface LeadListProps {
 export interface LeadListState {}
 
 class LeadList extends Component<LeadListProps, LeadListState> {
-  componentDidMount() {
-    this.props.fetchLeads()
+  async componentDidMount() {
+    // this.props.fetchLeads()
+    await getCampaigns()
   }
 
   render() {
