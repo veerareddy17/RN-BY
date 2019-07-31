@@ -44,10 +44,12 @@ class Login extends React.Component<Props, State> {
   //   // this.props.navigation.navigate('Dashboard')
   //   // console.log('submit method',this.state.username);
   //   this.props.login(this.state.username,this.state.password);
-  
+
   handleSubmit = async () => {
-      let loginResponse = await login('dev.test@example.com', 'password123');
-      console.log(loginResponse)
+      // let loginResponse = await login('dev.test@example.com', 'password123');
+      
+      let loginResponse = await login(this.state.username,this.state.password);
+       console.log(loginResponse)
     
     this.props.navigation.navigate('Dashboard')
   }

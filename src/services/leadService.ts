@@ -1,3 +1,4 @@
+import { LeadModel } from './../models/leadModel';
 import axios from 'axios'
 import {
   createLeadAction,
@@ -29,7 +30,8 @@ export const fetchAllLeads = () => {
 }
 
 // POST method to create Lead
-export const createLead = lead => {
+export const createLead = (lead:LeadModel) => {
+  console.log('lead service:: create method :: lead studentName=',lead.studentName);
   return dispatch => {
     return axios
       .post(`${apiUrl}/posts/`, lead)
