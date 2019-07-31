@@ -9,8 +9,8 @@ import { NavigationScreenProp } from 'react-navigation';
 import images from "../../assets";
 
 export interface Props {
-  navigation: NavigationScreenProp<any>
-  list: any
+    navigation: NavigationScreenProp<any>;
+    list: any;
 }
 export interface State { }
 class Splash extends React.Component<Props, State> {
@@ -35,4 +35,4 @@ class Splash extends React.Component<Props, State> {
   }
 }
 
-export default Splash
+export default Splash;

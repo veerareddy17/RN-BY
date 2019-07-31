@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import {
   Container,
   Header,
@@ -22,12 +22,12 @@ import { NavigationScreenProp } from 'react-navigation'
 import { connect } from 'react-redux'
 import  AsyncStorage from '@react-native-community/async-storage'
 
-import { NetworkContext } from '../../provider/network-provider'
-import { login, logout } from '../../services/userService'
+import { NetworkContext } from '../../provider/network-provider';
+import { login, logout } from '../../services/userService';
 export interface Props {
-  navigation: NavigationScreenProp<any>
-  list: any
-  login(username: string, password: string): void
+    navigation: NavigationScreenProp<any>;
+    list: any;
+    login(username: string, password: string): void;
 }
 export interface State {
   
@@ -36,7 +36,7 @@ export interface State {
   
 }
 class Login extends React.Component<Props, State> {
-  static contextType = NetworkContext
+    static contextType = NetworkContext;
 
   handlePress() { }
   

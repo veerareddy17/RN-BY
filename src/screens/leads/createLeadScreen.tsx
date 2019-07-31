@@ -1,70 +1,59 @@
-import * as React from 'react'
-import { Component } from 'react'
-import { Text, Button, View, Picker, Container, Header, Left, Body, Title, Right, Content, Form, Card, CardItem, Item, Label, Input, DatePicker, Icon, Textarea } from 'native-base'
-import { connect } from 'react-redux'
-import { createLead } from '../../services/leadService'
-import { Dispatch } from 'redux'
-import { fetchCampaignList } from '../../services/leadService'
-import { LeadModel } from '../../models/leadModel';
-export interface CreateLeadProps {
-  createItem(lead: any): void
-  campaigns: []
-  fetchCampaigns(): any
-}
+import * as React from 'react';
+import { Component } from 'react';
+import { Text, Button, View, Picker, Container, Header, Body, Title, Right, Content, Card, CardItem, Label, Input, DatePicker, Icon, Textarea, Item } from 'native-base';
+import { connect } from 'react-redux';
+import { createLead } from '../../services/leadService';
+import { Dispatch } from 'redux';
+import { createLeadAction, fetchCampaignsAction } from '../../redux/actions/leadsAction';
 
-export interface CreateLeadState {
-  lead: object
-  selectedCampaign: object
-  leadModel: LeadModel;
-}
+export interface CreateLeadProps { 
+  createItem(lead: any): void; 
+  campaigns: []; 
+  fetchCampaigns(): any; 
+} 
 
-//const Item = Picker.Item
-class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
+export interface CreateLeadState { 
+  lead: {}; 
+  selectedCampaign: ''; 
+} 
 
-  constructor(props: CreateLeadProps) {
-    super(props);
-    this.state = {
-      lead: {},
-      selectedCampaign: {},
-      leadModel:  new LeadModel,
-    }
-  }
-  componentDidMount() {
-    this.props.fetchCampaigns()
-  }
+//const Item = Picker.Item; 
+class CreateLead extends Component<CreateLeadProps, CreateLeadState> { 
+  componentDidMount() { 
+      // let camps = await getCampaigns() 
+      // console.log(camps) 
+      // this.props.fetchCampaigns() 
+  } 
 
-  handleChangeFor = (propertyName: string) => (event:any)=>{
-     const { leadModel  } = this.state;
-    // const lead = { ...leadModel, [propertyName]: event.target.value };
-    // this.setState({ leadModel: lead });
-    // console.log(this.state.leadModel)
-    console.log('handle for change');
-    console.log('event',event);
-    const lead = this.state.leadModel;
-    leadModel[propertyName] = event.nativeEvent.text;
-    this.setState({ leadModel: lead });
-    console.log(this.state.leadModel)
-    } 
+    handleSubmit = async () => {
+        const newLead = {
+            name: 'Appusdhj',
+            parent_name: 'sdasdasd',
+            email: 'sadsd@example.com',
+            phone: 9995255234999,
+            class_name: '9',
+            school_board: 'HBSC',
+            school_name: 'KHS High',
+            address: 'KAR',
+            comments: 'Put ur text here',
+            user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
+            campaign_id: 'ccd15ed8-af0f-476a-b74b-0d28f7644412',
+            country_id: 1,
+            state_id: 1,
+            city: 'banglore',
+        };
+        try {
+            let lead = await createLead(newLead);
+            this.props.createItem(lead);
+        } catch (error) {
+            console.log('Error in createlead api call');
+        }
+    };
 
-  handleSubmit = () => {
-    // const newLead = {
-    //   id: 200,
-    //   name: 'sappa',
-    //   username: 'Ums',
-    // }
-    this.props.createItem(newLead)
-  }
-
-  //   onValueChange = (value: string) => {
-  //     this.setState({
-  //       selectedCampaign: value,
-  //     })
-  //   }
-
-  render() {
-    let campaignItems = this.props.campaigns.map(camp => {
-      return <Picker.Item key={camp.id} value={camp.title} label={camp.title} />
-    })
+    render() {
+        let campaignItems = this.props.campaigns.map(camp => {
+            return <Picker.Item key={camp.id} value={camp.title} label={camp.title} />;
+        });
 
     return (
       <Container >
@@ -95,7 +84,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 <Body>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label>Student Name</Label>
-                    <Input onChange={this.handleChangeFor.bind(this, 'studentName')} value={this.state.leadModel.studentName} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                    <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
                   </Item>
                   <View style={{ flexDirection: 'row' }}>
                     <Item style={{ width: 150 }}>
@@ -109,7 +98,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         androidMode={"default"}
                         // textStyle={{ color: "green" }}
                         // placeHolderTextStyle={{ color: "#d3d3d3" }}
-                        onDateChange={this.handleChangeFor('dob')}
+                        // onDateChange={this.handleChangeFor('dob')}
                         disabled={false}
                       />
                     </Item>
@@ -123,8 +112,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         placeholderStyle={{ color: "#bfc6ea" }}
                         placeholderIconColor="#007aff"
                         style={{ width: undefined }}
-                        selectedValue={this.state.leadModel.gender}
-                        onValueChange={this.handleChangeFor('gender')}
+                        // selectedValue={this.state.leadModel.gender}
+                        // onValueChange={this.handleChangeFor('gender')}
                       >
                         <Picker.Item label="M" value="key0" />
                         <Picker.Item label="F" value="key1" />
@@ -139,8 +128,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                       placeholder="Select your Board"
                       placeholderStyle={{ color: "#bfc6ea" }}
                       placeholderIconColor="#007aff"
-                      selectedValue={this.state.leadModel.schoolBoard}
-                      onValueChange={this.handleChangeFor('schoolBoard')}
+                      // selectedValue={this.state.leadModel.schoolBoard}
+                      // onValueChange={this.handleChangeFor('schoolBoard')}
                     >
                       <Picker.Item label="Karnataka Board" value="key0" />
                       <Picker.Item label="Madya Pradesh Board" value="key1" />
@@ -242,24 +231,24 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    campaigns: state.campaigns,
-  }
-}
+const mapStateToProps = state => { 
+  return { 
+      campaigns: state.campaigns, 
+  }; 
+}; 
 
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return {
-    createItem: lead => {
-      dispatch(createLead(lead))
-    },
-    fetchCampaigns: () => {
-      dispatch(fetchCampaignList())
-    },
-  }
-}
+const mapDispatchToProps = (dispatch: Dispatch) => { 
+  return { 
+      createItem: lead => { 
+          dispatch(createLeadAction(lead)); 
+      }, 
+      fetchCampaigns: () => { 
+          dispatch(fetchCampaignsAction(campaigns)); 
+      }, 
+  }; 
+}; 
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CreateLead)
+export default connect( 
+  mapStateToProps, 
+  mapDispatchToProps, 
+)(CreateLead); 
