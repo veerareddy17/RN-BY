@@ -3,8 +3,10 @@ import leadReducer from './leadReducer';
 import userReducer from './userReducer';
 import campaignReducer from './campaignReducer';
 
-export default combineReducers({
+const rootReducer = combineReducers({
     leads: leadReducer,
     user: userReducer,
     campaigns: campaignReducer,
 });
+
+export type AppState = ReturnType<typeof rootReducer>;
