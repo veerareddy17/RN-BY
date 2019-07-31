@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Component } from 'react';
 import { Text, Button, View, Picker, Container, Header, Body, Title, Right, Content, Card, CardItem, Label, Input, DatePicker, Icon, Textarea, Item } from 'native-base';
 import { connect } from 'react-redux';
-import { createLead } from '../../services/leadService';
 import { Dispatch } from 'redux';
 import { createLeadAction, fetchCampaignsAction } from '../../redux/actions/leadsAction';
+import { createLead } from '../../services/leadService';
 
 export interface CreateLeadProps { 
   createItem(lead: any): void; 
@@ -13,12 +13,47 @@ export interface CreateLeadProps {
 } 
 
 export interface CreateLeadState { 
-  lead: {}; 
-  selectedCampaign: ''; 
+  // lead: {}; 
+  // selectedCampaign: ''; 
+            name: string,
+            parent_name: string,
+            email: string,
+            phone: number,
+            class_name: string,
+            school_board: string,
+            school_name: string,
+            address: string,
+            comments: string,
+            user_id: string,
+            campaign_id: string,
+            country_id: number,
+            state_id: number,
+            city: string,
 } 
 
 //const Item = Picker.Item; 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> { 
+
+  constructor(props: CreateLeadProps) {
+    super(props);
+    this.state = {
+      name: '',
+      parent_name: '',
+      email: '',
+      phone: 0,
+      class_name: '',
+      school_board: '',
+      school_name: '',
+      address: '',
+      comments: '',
+      //user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
+      user_id: '84d6410a-fb4e-4dd9-8fdb-0e439eebd5d4',
+      campaign_id: 'ccd15ed8-af0f-476a-b74b-0d28f7644412',
+      country_id: 0,
+      state_id: 0,
+      city: '',
+    }
+  }
   componentDidMount() { 
       // let camps = await getCampaigns() 
       // console.log(camps) 
@@ -26,29 +61,50 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
   } 
 
     handleSubmit = async () => {
-        const newLead = {
-            name: 'Appusdhj',
-            parent_name: 'sdasdasd',
-            email: 'sadsd@example.com',
-            phone: 9995255234999,
-            class_name: '9',
-            school_board: 'HBSC',
-            school_name: 'KHS High',
-            address: 'KAR',
-            comments: 'Put ur text here',
-            user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
-            campaign_id: 'ccd15ed8-af0f-476a-b74b-0d28f7644412',
-            country_id: 1,
-            state_id: 1,
-            city: 'banglore',
-        };
+        // const newLead = {
+        //     name: 'Appusdhj',
+        //     parent_name: 'sdasdasd',
+        //     email: 'sadsd@example.com',
+        //     phone: 9995255234999,
+        //     class_name: '9',
+        //     school_board: 'HBSC',
+        //     school_name: 'KHS High',
+        //     address: 'KAR',
+        //     comments: 'Put ur text here',
+        //     user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
+        //     campaign_id: 'ccd15ed8-af0f-476a-b74b-0d28f7644412',
+        //     country_id: 1,
+        //     state_id: 1,
+        //     city: 'banglore',
+        // };
+        console.log('state',this.state);
+        const newLead = this.state;
+        console.log('new Const',newLead);
+        // uncomment below and pass state
         try {
             let lead = await createLead(newLead);
             this.props.createItem(lead);
         } catch (error) {
             console.log('Error in createlead api call');
         }
+        
     };
+
+    onBoardChange(value: string) {
+      this.setState({
+        school_board: value
+      });
+    }
+    onCountryChange(value: string) {
+      this.setState({
+        country_id: parseInt(value)
+      });
+    }
+    onStateChange(value: string) {
+      this.setState({
+        state_id: parseInt(value)
+      });
+    }
 
     render() {
         let campaignItems = this.props.campaigns.map(camp => {
@@ -84,42 +140,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 <Body>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label>Student Name</Label>
-                    <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                    <Input onChangeText={(text) => this.setState({name: text})} value={this.state.name} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
                   </Item>
-                  <View style={{ flexDirection: 'row' }}>
-                    <Item style={{ width: 150 }}>
-                      <Label>DOB</Label>
-                      <DatePicker ref='datePicker'
-                        defaultDate={new Date()}
-                        locale={"en"}
-                        timeZoneOffsetInMinutes={undefined}
-                        modalTransparent={false}
-                        animationType={"fade"}
-                        androidMode={"default"}
-                        // textStyle={{ color: "green" }}
-                        // placeHolderTextStyle={{ color: "#d3d3d3" }}
-                        // onDateChange={this.handleChangeFor('dob')}
-                        disabled={false}
-                      />
-                    </Item>
-                    <Item style={{ width: 150, marginLeft: 15 }}>
-                      <Label>Gender</Label>
-                      {/* <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} /> */}
-                      <Picker
-                        mode="dropdown"
-                        iosIcon={<Icon name="arrow-down" />}
-                        placeholder="Gender"
-                        placeholderStyle={{ color: "#bfc6ea" }}
-                        placeholderIconColor="#007aff"
-                        style={{ width: undefined }}
-                        // selectedValue={this.state.leadModel.gender}
-                        // onValueChange={this.handleChangeFor('gender')}
-                      >
-                        <Picker.Item label="M" value="key0" />
-                        <Picker.Item label="F" value="key1" />
-                      </Picker>
-                    </Item>
-                  </View>
                   <Item picker>
                     <Picker
                       mode="dropdown"
@@ -128,12 +150,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                       placeholder="Select your Board"
                       placeholderStyle={{ color: "#bfc6ea" }}
                       placeholderIconColor="#007aff"
-                      // selectedValue={this.state.leadModel.schoolBoard}
-                      // onValueChange={this.handleChangeFor('schoolBoard')}
+                      selectedValue={this.state.school_board}
+                      onValueChange={this.onBoardChange.bind(this)}
                     >
-                      <Picker.Item label="Karnataka Board" value="key0" />
-                      <Picker.Item label="Madya Pradesh Board" value="key1" />
-                      <Picker.Item label="Delhi Board" value="key2" />
+                      <Picker.Item label="Karnataka Board" value="Karnataka Board" />
+                      <Picker.Item label="Madya Pradesh Board" value="Madya Pradesh Board" />
+                      <Picker.Item label="Delhi Board" value="Delhi Board" />
                     </Picker>
                   </Item>
                 </Body>
@@ -149,11 +171,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 <Body>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label>Parent Name</Label>
-                    <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                    <Input onChangeText={(text) => this.setState({parent_name: text})} value={this.state.parent_name} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label>Contact Number</Label>
-                    <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                    <Input onChangeText={(text) => this.setState({phone: parseInt(text)})} value={String(this.state.phone)} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label>Alternate Mobile Number</Label>
@@ -161,16 +183,16 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label>Email</Label>
-                    <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                    <Input onChangeText={(text) => this.setState({email: text})} value={this.state.email} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label>Address</Label>
-                    <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                    <Input onChangeText={(text) => this.setState({address: text})} value={this.state.address} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
                   </Item>
                   <View style={{ flexDirection: 'row' }}>
                     <Item style={{ width: 150, marginLeft: 15 }}>
                       <Label>Country</Label>
-                      {/* <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} /> */}
+                      
                       <Picker
                         mode="dropdown"
                         iosIcon={<Icon name="arrow-down" />}
@@ -178,11 +200,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         placeholderStyle={{ color: "#bfc6ea" }}
                         placeholderIconColor="#007aff"
                         style={{ width: undefined }}
-                      // selectedValue={this.state.selected}
-                      // onValueChange={this.onValueChange.bind(this)}
+                        selectedValue={this.state.country_id}
+                       onValueChange={this.onCountryChange.bind(this)}
                       >
-                        <Picker.Item label="India" value="key0" />
-                        <Picker.Item label="Sri Lanka" value="key1" />
+                        <Picker.Item label="India" value="1" />
+                        <Picker.Item label="Sri Lanka" value="2" />
                       </Picker>
                     </Item>
                     <Item style={{ width: 150, marginLeft: 15 }}>
@@ -195,18 +217,18 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         placeholderStyle={{ color: "#bfc6ea" }}
                         placeholderIconColor="#007aff"
                         style={{ width: undefined }}
-                      // selectedValue={this.state.selected}
-                      // onValueChange={this.onValueChange.bind(this)}
+                        selectedValue={this.state.state_id}
+                        onValueChange={this.onStateChange.bind(this)}
                       >
-                        <Picker.Item label="Karnataka" value="key0" />
-                        <Picker.Item label="Madya Pradesh" value="key1" />
+                        <Picker.Item label="Karnataka" value="1" />
+                        <Picker.Item label="Madya Pradesh" value="2" />
                       </Picker>
                     </Item>
                   </View>
                   <View style={{ flexDirection: 'row' }}>
                   <Item floatingLabel={true} style={{ width: 150 }}>
                       <Label>City</Label>
-                      <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                      <Input onChangeText={(text) => this.setState({city: text})} value={this.state.city} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
                     </Item>
                     <Item floatingLabel={true} style={{ width: 150 }}>
                       <Label>Pin code</Label>
@@ -214,7 +236,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                     </Item>
                   </View>
                   <View padder>
-                    <Textarea rowSpan={5} bordered placeholder="Comments" />
+                    <Textarea onChangeText={(text) => this.setState({comments: text})} value={this.state.comments} rowSpan={5} bordered placeholder="Comments" />
                   </View>
                 </Body>
               </CardItem>

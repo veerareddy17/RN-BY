@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Text, View } from 'native-base';
+import { Text, View, Container, Header, Body, Title, Right, Content } from 'native-base';
 import Lead from './lead';
 import { fetchAllLeads } from '../../services/leadService';
 import { fetchLeadsAction } from '../../redux/actions/leadsAction';
@@ -25,11 +25,26 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             return <Text>No Leads</Text>;
         }
         return (
+            <Container >
+        <Header>
+          {/* <Left>
+            <Button transparent>
+              <Text></Text>
+            </Button>
+          </Left> */}
+          <Body>
+            <Title>Lead</Title>
+          </Body>
+          <Right />
+        </Header>
+        <Content>
             <View>
                 {this.props.leads.map(lead => {
                     return <Lead lead={lead} key={lead.id} />;
                 })}
             </View>
+        </Content>
+        </Container>
         );
     }
 }
