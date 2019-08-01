@@ -16,7 +16,9 @@ import { NetworkProvider } from './src/provider/network-provider'
 import store from './src/redux/store'
 
 const App = () => {
+  console.disableYellowBox = true;
   return (
+    
     <Provider store={store}>
       <NetworkProvider>
         <AppContainer />

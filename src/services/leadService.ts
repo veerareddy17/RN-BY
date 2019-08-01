@@ -43,7 +43,7 @@ export const fetchAllLeads = async () => {
         headers: { ...header, 'Content-Type': 'application/json' },
     };
     try {
-        let response = await axios.get(`${config.api.baseURL}/lead/all`, options);
+        let response = await axios.get(`${config.api.url}/lead/all`, options);
         if (response.status == 200) {
             console.log(response.data.data);
             try {
@@ -67,7 +67,7 @@ export const createLead = async newLead => {
     };
     const body = JSON.stringify(newLead);
     try {
-        let response = await axios.post(`${config.api.baseURL}/lead`, body, options);
+        let response = await axios.post(`${config.api.url}/lead`, body, options);
         if (response.status == 200) {
             console.log(response.data.data);
             try {

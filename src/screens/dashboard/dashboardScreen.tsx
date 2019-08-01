@@ -33,11 +33,10 @@ class Dashboard extends React.Component<Props, State> {
                             <Text>Header</Text>
                         </Button>
                     </Left>
-                    <Body></Body>
+                    <Body><Title>Dashboard</Title></Body>
                     <Right />
                 </Header>
                 <Content>
-                    <Text>Dashboard Content</Text>
                     <Button onPress={this.getLeads}>
                         <Text>Get leads</Text>
                     </Button>

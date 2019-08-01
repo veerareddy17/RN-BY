@@ -60,7 +60,7 @@ export const login = async (username: string, password: string) => {
         password: password,
     });
     try {
-        let response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
+        let response = await axios.post(`${config.api.url}/user/login`, body, options);
         if (response.status == 200) {
             console.log(response.data);
             try {

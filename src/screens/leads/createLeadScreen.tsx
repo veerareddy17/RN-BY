@@ -1,12 +1,14 @@
 import * as React from 'react';
 import { Component } from 'react';
-import { Text, Button, View, Picker, Container, Header, Body, Title, Right, Content, Card, CardItem, Label, Input, DatePicker, Icon, Textarea, Item } from 'native-base';
+import { Text, Button, View, Picker, Container, Header, Body, Title, Right, Content, Card, CardItem, Label, Input, DatePicker, Icon, Textarea, Item, Left } from 'native-base';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { createLeadAction, fetchCampaignsAction } from '../../redux/actions/leadsAction';
 import { createLead } from '../../services/leadService';
+import { NavigationScreenProp } from 'react-navigation';
 
 export interface CreateLeadProps { 
+  navigation: NavigationScreenProp<any>;
   createItem(lead: any): void; 
   campaigns: []; 
   fetchCampaigns(): any; 
@@ -84,6 +86,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         try {
             let lead = await createLead(newLead);
             this.props.createItem(lead);
+            this.props.navigation.navigate('Dashboard');
         } catch (error) {
             console.log('Error in createlead api call');
         }
@@ -105,7 +108,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         state_id: parseInt(value)
       });
     }
-
+    onClassChange(value: string) {
+      this.setState({
+        class_name: value
+      });
+    }
     render() {
         let campaignItems = this.props.campaigns.map(camp => {
             return <Picker.Item key={camp.id} value={camp.title} label={camp.title} />;
@@ -114,13 +121,13 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     return (
       <Container >
         <Header>
-          {/* <Left>
+          <Left>
             <Button transparent>
               <Text></Text>
             </Button>
-          </Left> */}
+          </Left> 
           <Body>
-            <Title>Customer Registration</Title>
+            <Title>Lead Capture</Title>
           </Body>
           <Right />
         </Header>
@@ -158,6 +165,29 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                       <Picker.Item label="Delhi Board" value="Delhi Board" />
                     </Picker>
                   </Item>
+                  <View style={{flexDirection:'row'}}>
+                  <Item floatingLabel={true} style={{ marginBottom: 15,width:170 }}>
+                    <Label>School</Label>
+                    <Input onChangeText={(text) => this.setState({school_name: text})} value={this.state.school_name} style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} />
+                  </Item>
+                  <Item style={{ width: 150, marginLeft: 15 }}>
+                      <Picker
+                        mode="dropdown"
+                        iosIcon={<Icon name="arrow-down" />}
+                        placeholder="Gender"
+                        placeholderStyle={{ color: "#bfc6ea" }}
+                        placeholderIconColor="#007aff"
+                        style={{ width: undefined }}
+                        selectedValue={this.state.country_id}
+                       onValueChange={this.onClassChange.bind(this)}
+                      >
+                        <Picker.Item label="Class 1" value="Class 1" />
+                        <Picker.Item label="Class 2" value="Class 2" />
+                        <Picker.Item label="Class 3" value="Class 3" />
+                        <Picker.Item label="Class 4" value="Class 4" />
+                      </Picker>
+                    </Item>
+                  </View>
                 </Body>
               </CardItem>
 
@@ -191,8 +221,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                   </Item>
                   <View style={{ flexDirection: 'row' }}>
                     <Item style={{ width: 150, marginLeft: 15 }}>
-                      <Label>Country</Label>
-                      
                       <Picker
                         mode="dropdown"
                         iosIcon={<Icon name="arrow-down" />}
@@ -208,7 +236,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                       </Picker>
                     </Item>
                     <Item style={{ width: 150, marginLeft: 15 }}>
-                      <Label>State</Label>
                       {/* <Input style={{ borderColor: 'lightgrey', borderWidth: 1, borderRadius: 3, top: 0 }} /> */}
                       <Picker
                         mode="dropdown"

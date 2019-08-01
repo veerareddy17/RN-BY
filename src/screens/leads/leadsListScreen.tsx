@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Text, View, Container, Header, Body, Title, Right, Content } from 'native-base';
+import { Text, View, Container, Header, Body, Title, Right, Content, Left, Button } from 'native-base';
 import Lead from './lead';
 import { fetchAllLeads } from '../../services/leadService';
 import { fetchLeadsAction } from '../../redux/actions/leadsAction';
@@ -27,13 +27,13 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         return (
             <Container >
         <Header>
-          {/* <Left>
+          <Left>
             <Button transparent>
               <Text></Text>
             </Button>
-          </Left> */}
+          </Left>
           <Body>
-            <Title>Lead</Title>
+            <Title>Lead List</Title>
           </Body>
           <Right />
         </Header>
