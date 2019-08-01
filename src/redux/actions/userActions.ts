@@ -46,17 +46,16 @@ export const loginApi = (username: string, password: string) => async (dispatch:
     });
     try {
         const response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
-        if (response.status == 200) {
-            console.log(response.data);
-            dispatch(successAction(response.data.data));
+        console.log(response.data);
+        if (response.data.data !== null) {
+            dispatch(successAction(response.data));
             try {
                 await AsyncStorage.setItem('userToken', JSON.stringify(response.data.data.token));
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
         } else {
-            dispatch(failureAction(response.data));
-            console.log(response.status);
+            dispatch(failureAction(response.data.errors));
         }
     } catch (error) {
         console.log(error);

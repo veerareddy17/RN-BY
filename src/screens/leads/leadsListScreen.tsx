@@ -1,22 +1,27 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Text, View } from 'native-base';
+import { Dispatch, bindActionCreators, AnyAction } from 'redux';
+import { AppState } from 'react-native';
 import Lead from './lead';
-import { fetchAllLeads } from '../../services/leadService';
-import { fetchLeadsAction } from '../../redux/actions/leadsAction';
+import { fetchAllLeadsApi } from '../../redux/actions/leadsAction';
+import { NetworkContext } from '../../provider/network-provider';
+
 export interface LeadListProps {
     leads: [];
-    fetchLeads(leads): any;
+    fetchLeads(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 export interface LeadListState {}
 
 class LeadList extends Component<LeadListProps, LeadListState> {
+    static contextType = NetworkContext;
+
     async componentDidMount() {
-        try {
-            let leadList = await fetchAllLeads();
-            this.props.fetchLeads(leadList);
-        } catch (error) {
-            console.log(error);
+        if (this.context.isConnected) {
+            await this.props.fetchLeads();
+            console.log('Leads screen----', this.props.leads);
+        } else {
+            console.log('Show Offline pop-up');
         }
     }
 
@@ -34,19 +39,13 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     }
 }
 
-const mapStateToProps = state => {
-    return {
-        leads: state.leads,
-    };
-};
+const mapStateToProps = (state: AppState) => ({
+    leads: state.lead,
+});
 
-const mapDispatchToProps = dispatch => {
-    return {
-        fetchLeads: leads => {
-            dispatch(fetchLeadsAction(leads));
-        },
-    };
-};
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    fetchLeads: bindActionCreators(fetchAllLeadsApi, dispatch),
+});
 
 export default connect(
     mapStateToProps,

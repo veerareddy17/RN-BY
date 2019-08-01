@@ -36,30 +36,30 @@ import config from '../helpers/config';
 // }
 
 // GET method to fetch all captured leads
-export const fetchAllLeads = async () => {
-    let header = await authHeader();
-    const options = {
-        params: {},
-        headers: { ...header, 'Content-Type': 'application/json' },
-    };
-    try {
-        let response = await axios.get(`${config.api.baseURL}/lead/all`, options);
-        if (response.status == 200) {
-            console.log(response.data.data);
-            try {
-                await AsyncStorage.setItem('leads', JSON.stringify(response.data.data));
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
-            return response.data.data;
-        }
-    } catch (error) {
-        // Error 😨
-        console.log(error);
-    }
-};
+// export const fetchAllLeads = async () => {
+//     let header = await authHeader();
+//     const options = {
+//         params: {},
+//         headers: { ...header, 'Content-Type': 'application/json' },
+//     };
+//     try {
+//         let response = await axios.get(`${config.api.baseURL}/lead/all`, options);
+//         if (response.status == 200) {
+//             console.log(response.data.data);
+//             try {
+//                 await AsyncStorage.setItem('leads', JSON.stringify(response.data.data));
+//             } catch (error) {
+//                 console.log('Error in storing asyncstorage', error);
+//             }
+//             return response.data.data;
+//         }
+//     } catch (error) {
+//         // Error 😨
+//         console.log(error);
+//     }
+// };
 
-// POST method to create Lead
+// // POST method to create Lead
 export const createLead = async newLead => {
     let header = await authHeader();
     const options = {
