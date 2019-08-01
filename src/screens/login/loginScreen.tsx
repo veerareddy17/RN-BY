@@ -36,11 +36,12 @@ class Login extends React.Component<Props, State> {
     static contextType = NetworkContext;
 
     handleSubmit = async () => {
-        await this.props.requestLoginApi('tet@example.com', 'password');
+        await this.props.requestLoginApi('test@example.com', 'password');
         // let userData = JSON.parse(this.props.user);
         console.log('Props User token:-----', this.props.user);
 
         const userToken = await AsyncStorage.getItem('userToken');
+        console.log('TOKEN:', userToken);
         this.props.navigation.navigate(userToken ? 'Dashboard' : 'Login');
     };
 

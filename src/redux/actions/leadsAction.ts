@@ -54,7 +54,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
 };
 
 // POST method to create Lead
-export const createLead = (newLead: any) => async (dispatch: Dispatch) => {
+export const createLeadApi = (newLead: any) => async (dispatch: Dispatch) => {
     let header = await authHeader();
     const options = {
         headers: { ...header, 'Content-Type': 'application/json' },
@@ -73,6 +73,31 @@ export const createLead = (newLead: any) => async (dispatch: Dispatch) => {
             }
         } else {
             dispatch(createLeadAction(response.data.erros));
+        }
+    } catch (error) {
+        // Error
+        console.log(error);
+    }
+};
+
+export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) => {
+    let header = await authHeader();
+    const options = {
+        params: {},
+        headers: { ...header, 'Content-Type': 'application/json' },
+    };
+    try {
+        let response = await axios.get(`${config.api.baseURL}/campaign/all`, options);
+        console.log(response.data.data);
+        if (response.data.data !== null) {
+            dispatch(fetchCampaignsAction(response.data.data));
+            try {
+                await AsyncStorage.setItem('campaigns', JSON.stringify(response.data.data));
+            } catch (error) {
+                console.log('Error in storing asyncstorage', error);
+            }
+        } else {
+            dispatch(fetchCampaignsAction(response.data.errors));
         }
     } catch (error) {
         // Error

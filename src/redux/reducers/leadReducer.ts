@@ -1,4 +1,4 @@
-import { ADD_LEAD, FETCH_LEAD, DELETE_LEAD } from '../actions/actionTypes';
+import { ADD_LEAD, FETCH_LEAD } from '../actions/actionTypes';
 
 export default function leadReducer(state = [], action) {
     switch (action.type) {

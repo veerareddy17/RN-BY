@@ -48,9 +48,9 @@ export const loginApi = (username: string, password: string) => async (dispatch:
         const response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
         console.log(response.data);
         if (response.data.data !== null) {
-            dispatch(successAction(response.data));
+            dispatch(successAction(response.data.data));
             try {
-                await AsyncStorage.setItem('userToken', JSON.stringify(response.data.data.token));
+                await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -59,6 +59,7 @@ export const loginApi = (username: string, password: string) => async (dispatch:
         }
     } catch (error) {
         console.log(error);
+        dispatch(failureAction(error));
         return error;
     }
 };
