@@ -46,7 +46,7 @@ export const loginApi = (username: string, password: string) => async (dispatch:
     });
     try {
         const response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
-        console.log(response.data);
+        // console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(successAction(response.data.data));
             try {

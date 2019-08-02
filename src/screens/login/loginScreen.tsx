@@ -1,19 +1,5 @@
 import * as React from 'react';
-import {
-    Container,
-    Header,
-    Title,
-    Content,
-    Text,
-    Button,
-    Left,
-    Body,
-    Right,
-    Form,
-    Item,
-    Input,
-    Label,
-} from 'native-base';
+import { Container, Header, Title, Content, Text, Button, Left, Body, Right, Form, Item, Input } from 'native-base';
 
 import { NavigationScreenProp } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -21,13 +7,14 @@ import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import { NetworkContext } from '../../provider/network-provider';
-import { loginApi } from '../../redux/actions/userActions';
-import { AppState } from '../../redux/reducers/index';
+import { loginApi } from '../../redux/actions/userLoginActions';
+import { AppState } from '../../redux/store';
+import store from '../../redux/store';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
     list: any;
-    user: any;
+    userState: any;
     error: any;
     requestLoginApi(username: string, password: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
@@ -37,11 +24,9 @@ class Login extends React.Component<Props, State> {
 
     handleSubmit = async () => {
         await this.props.requestLoginApi('test@example.com', 'password');
-        // let userData = JSON.parse(this.props.user);
-        console.log('Props User token:-----', this.props.user);
+        console.log('after login --state', store.getState());
 
         const userToken = await AsyncStorage.getItem('userToken');
-        console.log('TOKEN:', userToken);
         this.props.navigation.navigate(userToken ? 'Dashboard' : 'Login');
     };
 
@@ -79,7 +64,7 @@ class Login extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-    user: state.user,
+    userState: state.userReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

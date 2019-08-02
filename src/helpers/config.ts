@@ -1,6 +1,6 @@
 export default {
     api: {
-        // baseURL: 'http://192.168.1.137:3200/api',
-        baseURL: 'https://521aa5d1.ngrok.io/api',
+        // baseURL: 'http://192.168.1.141:3200/api',
+        baseURL: 'https://43f90076.ngrok.io/api',
     },
 };

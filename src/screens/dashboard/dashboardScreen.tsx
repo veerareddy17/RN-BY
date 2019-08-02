@@ -12,7 +12,6 @@ class Dashboard extends React.Component<Props, State> {
     async componentDidMount() {
         try {
             let userData = await AsyncStorage.getItem('userToken');
-            console.log(userData);
         } catch (error) {
             console.log('Something went wrong', error);
         }

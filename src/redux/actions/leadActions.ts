@@ -20,13 +20,6 @@ export const fetchLeadsAction = leads => {
     };
 };
 
-export const fetchCampaignsAction = campaigns => {
-    return {
-        type: FETCH_CAMPAIGN,
-        payload: campaigns,
-    };
-};
-
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     let header = await authHeader();
@@ -36,7 +29,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     };
     try {
         let response = await axios.get(`${config.api.baseURL}/lead/all`, options);
-        console.log(response.data.data);
+        // console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(fetchLeadsAction(response.data.data));
             try {
@@ -67,37 +60,12 @@ export const createLeadApi = (newLead: any) => async (dispatch: Dispatch) => {
             dispatch(createLeadAction(response.data.data));
             try {
                 //Fetch exisiting leads and append new lead to the list
-                await AsyncStorage.setItem('leads', response.data.data);
+                // await AsyncStorage.setItem('leads', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
         } else {
             dispatch(createLeadAction(response.data.erros));
-        }
-    } catch (error) {
-        // Error
-        console.log(error);
-    }
-};
-
-export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) => {
-    let header = await authHeader();
-    const options = {
-        params: {},
-        headers: { ...header, 'Content-Type': 'application/json' },
-    };
-    try {
-        let response = await axios.get(`${config.api.baseURL}/campaign/all`, options);
-        console.log(response.data.data);
-        if (response.data.data !== null) {
-            dispatch(fetchCampaignsAction(response.data.data));
-            try {
-                await AsyncStorage.setItem('campaigns', JSON.stringify(response.data.data));
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
-        } else {
-            dispatch(fetchCampaignsAction(response.data.errors));
         }
     } catch (error) {
         // Error

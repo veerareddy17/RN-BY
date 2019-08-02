@@ -1,4 +1,4 @@
-export interface ResponseModel {
-    data: any
-    errors: any
+export interface ApiResponse<T> {
+    data: T;
+    errors: [];
 }

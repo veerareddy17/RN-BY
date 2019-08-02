@@ -1,28 +1,35 @@
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from '../actions/actionTypes';
+import { initialState } from '../../models/userInitialState';
 
-export default function userReducer(state = {}, action) {
-    console.log('Action user-----', action);
+export default function userReducer(state = initialState, action) {
     switch (action.type) {
         case LOGIN_REQUEST:
             return {
                 ...state,
-                loggingIn: true,
+                isLoading: true,
+                isLoggedIn: false,
                 user: action.payload,
             };
         case LOGIN_SUCCESS:
             return {
                 ...state,
-                loggedIn: true,
+                isLoggedIn: true,
                 user: action.payload,
             };
         case LOGIN_FAILURE:
             return {
                 ...state,
-                loggedIn: false,
+                isLoggedIn: false,
+                user: '',
                 error: action.payload,
             };
         case LOGOUT:
-            return {};
+            return {
+                ...state,
+                isLoggedIn: false,
+                user: '',
+                error: '',
+            };
         default:
             return state;
     }
