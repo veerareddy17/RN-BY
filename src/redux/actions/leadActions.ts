@@ -3,7 +3,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import authHeader from '../../helpers/authHeader';
 import config from '../../helpers/config';
-import { ADD_LEAD, FETCH_LEAD, FETCH_CAMPAIGN } from './actionTypes';
+import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL } from './actionTypes';
 
 // The action creators
 export const createLeadAction = lead => {
@@ -20,6 +20,25 @@ export const fetchLeadsAction = leads => {
     };
 };
 
+export const leadStartAction = () => {
+    return {
+        type: LOAD_LEAD_START,
+    };
+};
+
+export const leadSuccessAction = () => {
+    return {
+        type: LOAD_LEAD_SUCCESS,
+    };
+};
+
+export const leadFailureAction = error => {
+    return {
+        type: LOAD_LEAD_FAIL,
+        payload: error,
+    };
+};
+
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     let header = await authHeader();
@@ -28,6 +47,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
         headers: { ...header, 'Content-Type': 'application/json' },
     };
     try {
+        dispatch(leadStartAction());
         let response = await axios.get(`${config.api.baseURL}/lead/all`, options);
         // console.log(response.data.data);
         if (response.data.data !== null) {
@@ -38,7 +58,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
                 console.log('Error in storing asyncstorage', error);
             }
         } else {
-            dispatch(fetchLeadsAction(response.data.errors));
+            dispatch(leadFailureAction(response.data.errors));
         }
     } catch (error) {
         // Error 😨
@@ -54,6 +74,7 @@ export const createLeadApi = (newLead: any) => async (dispatch: Dispatch) => {
     };
     const body = JSON.stringify(newLead);
     try {
+        dispatch(leadStartAction());
         let response = await axios.post(`${config.api.baseURL}/lead`, body, options);
         console.log(response.data.data);
         if (response.data.data !== null) {
@@ -65,7 +86,7 @@ export const createLeadApi = (newLead: any) => async (dispatch: Dispatch) => {
                 console.log('Error in storing asyncstorage', error);
             }
         } else {
-            dispatch(createLeadAction(response.data.erros));
+            dispatch(leadFailureAction(response.data.erros));
         }
     } catch (error) {
         // Error

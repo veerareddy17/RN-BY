@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Text, View } from 'native-base';
+import { Text, View, Spinner, Content, Header, Container, Left, Button, Title, Right, Body } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/reducers';
 import Lead from './lead';
@@ -28,15 +28,34 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     }
 
     render() {
-        if (this.props.leadState.leadList.length == 0) {
-            return <Text>No Leads</Text>;
-        }
         return (
-            <View>
-                {this.props.leadState.leadList.map(lead => {
-                    return <Lead lead={lead} key={lead.id} />;
-                })}
-            </View>
+            <Container>
+                <Header>
+                    <Left>
+                        <Button>
+                            <Text>Back</Text>
+                        </Button>
+                    </Left>
+                    <Body>
+                        <Title>Leads</Title>
+                    </Body>
+                    <Right />
+                </Header>
+                <Content>
+                    {this.props.leadState.isLoading ? (
+                        <View>
+                            <Spinner />
+                            <Text>Fetching Leads...</Text>
+                        </View>
+                    ) : (
+                        <View>
+                            {this.props.leadState.leadList.map(lead => {
+                                return <Lead lead={lead} key={lead.id} />;
+                            })}
+                        </View>
+                    )}
+                </Content>
+            </Container>
         );
     }
 }

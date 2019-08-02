@@ -1,5 +1,19 @@
 import * as React from 'react';
-import { Container, Header, Title, Content, Text, Button, Left, Body, Right, Form, Item, Input } from 'native-base';
+import {
+    Container,
+    Header,
+    Title,
+    Content,
+    Text,
+    Button,
+    Left,
+    Body,
+    Right,
+    Form,
+    Item,
+    Input,
+    Spinner,
+} from 'native-base';
 
 import { NavigationScreenProp } from 'react-navigation';
 import { connect } from 'react-redux';
@@ -10,6 +24,7 @@ import { NetworkContext } from '../../provider/network-provider';
 import { loginApi } from '../../redux/actions/userLoginActions';
 import { AppState } from '../../redux/store';
 import store from '../../redux/store';
+import { View } from 'react-native';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -57,6 +72,14 @@ class Login extends React.Component<Props, State> {
                     <Button onPress={this.handleSubmit}>
                         <Text>Login</Text>
                     </Button>
+                    {this.props.userState.isLoading ? (
+                        <View>
+                            <Spinner />
+                            <Text>Logging In...</Text>
+                        </View>
+                    ) : (
+                        <View />
+                    )}
                 </Content>
             </Container>
         );

@@ -5,10 +5,9 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './actionTyp
 import config from '../../helpers/config';
 
 // The action creators
-export const requestAction = user => {
+export const requestAction = () => {
     return {
         type: LOGIN_REQUEST,
-        payload: user,
     };
 };
 
@@ -45,6 +44,7 @@ export const loginApi = (username: string, password: string) => async (dispatch:
         password: password,
     });
     try {
+        dispatch(requestAction());
         const response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
         // console.log(response.data.data);
         if (response.data.data !== null) {
