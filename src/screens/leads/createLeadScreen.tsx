@@ -35,6 +35,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         }
     };
 
+    verifyOTP = () => {
+        this.props.navigation.navigate('OTP');
+    };
+
     handleSubmit = async () => {
         const newLead = {
             name: 'JySoBhSu',
@@ -77,7 +81,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         {campaignItems}
                     </Picker>
                 </View>
-                <Button onPress={this.handleSubmit}>
+                <Button onPress={this.verifyOTP}>
                     <Text>Create Lead</Text>
                 </Button>
             </View>

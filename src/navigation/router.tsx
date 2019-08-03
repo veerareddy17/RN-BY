@@ -1,37 +1,41 @@
-import { createStackNavigator, createAppContainer } from 'react-navigation'
-import Settings from '../screens/settings/settingsScreen'
-import Dashboard from '../screens/dashboard/dashboardScreen'
-import Login from '../screens/login/loginScreen'
-import Splash from '../screens/splash/splashScreen'
-import LeadList from '../screens/leads/leadsListScreen'
-import CreateLead from '../screens/leads/createLeadScreen'
+import { createStackNavigator, createAppContainer } from 'react-navigation';
+import Settings from '../screens/settings/settingsScreen';
+import Dashboard from '../screens/dashboard/dashboardScreen';
+import Login from '../screens/login/loginScreen';
+import Splash from '../screens/splash/splashScreen';
+import LeadList from '../screens/leads/leadsListScreen';
+import CreateLead from '../screens/leads/createLeadScreen';
+import OTPScreen from '../screens/leads/OTPScreen';
 
 const homeStackNavigator = createStackNavigator(
-  {
-    Dashboard: {
-      screen: Dashboard,
+    {
+        Dashboard: {
+            screen: Dashboard,
+        },
+        Login: {
+            screen: Login,
+        },
+        Settings: {
+            screen: Settings,
+        },
+        Splash: {
+            screen: Splash,
+        },
+        LeadList: {
+            screen: LeadList,
+        },
+        CreateLead: {
+            screen: CreateLead,
+        },
+        OTP: {
+            screen: OTPScreen,
+        },
     },
-    Login: {
-      screen: Login,
+    {
+        initialRouteName: 'Splash',
+        headerMode: 'none',
     },
-    Settings: {
-      screen: Settings,
-    },
-    Splash: {
-      screen: Splash,
-    },
-    LeadList: {
-      screen: LeadList,
-    },
-    CreateLead: {
-      screen: CreateLead,
-    },
-  },
-  {
-    initialRouteName: 'Splash',
-    headerMode: 'none',
-  }
-)
-const AppContainer = createAppContainer(homeStackNavigator)
+);
+const AppContainer = createAppContainer(homeStackNavigator);
 
-export default AppContainer
+export default AppContainer;

@@ -29,8 +29,11 @@ export default class storage {
     public static getUserToken = async () => {
         try {
             const user = await storage.getDataByKey('user');
-            const userObj = JSON.parse(user);
-            return userObj.token;
+            if (user) {
+                const userObj = JSON.parse(user);
+                return userObj.token;
+            }
+            return null;
         } catch (error) {
             console.log('Get User Token error', error);
         }
