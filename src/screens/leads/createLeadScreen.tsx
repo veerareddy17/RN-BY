@@ -2,16 +2,18 @@ import * as React from 'react';
 import { Component } from 'react';
 import { Text, Button, View, Picker, Container, Header, Body, Title, Right, Content, Card, CardItem, Label, Input, Icon, Textarea, Item, Left, Footer, FooterTab } from 'native-base';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { createLeadAction, fetchCampaignsAction } from '../../redux/actions/leadsAction';
-import { createLead } from '../../services/leadService';
+import { Dispatch, bindActionCreators, AnyAction } from 'redux';
+import { fetchCampaignsApi } from '../../redux/actions/campaignActions';
+import { createLeadApi } from '../../redux/actions/leadActions';
+import { NetworkContext } from '../../provider/network-provider';
+import store, { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
-import styles from './leadStyle';
+
 export interface CreateLeadProps {
   navigation: NavigationScreenProp<any>;
-  createItem(lead: any): void;
-  campaigns: [];
-  fetchCampaigns(): any;
+  campaignState: any;
+  fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+  createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface CreateLeadState {
@@ -35,6 +37,18 @@ export interface CreateLeadState {
 
 //const Item = Picker.Item; 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
+  static contextType = NetworkContext;
+
+  componentDidMount = async () => {
+    if (this.context.isConnected) {
+      console.log('before fetch campaing---state', store.getState());
+      await this.props.fetchCampaigns();
+      console.log('After fetchCampaigns---state', store.getState());
+    } else {
+      console.log('Show Offline pop-up');
+    }
+  };
+
 
   constructor(props: CreateLeadProps) {
     super(props);
@@ -55,11 +69,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
       state_id: 0,
       city: '',
     }
-  }
-  componentDidMount() {
-    // let camps = await getCampaigns() 
-    // console.log(camps) 
-    // this.props.fetchCampaigns() 
   }
 
   handleSubmit = async () => {
@@ -304,22 +313,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
   }
 }
 
-const mapStateToProps = state => {
-  return {
-    campaigns: state.campaigns,
-  };
-};
+const mapStateToProps = (state: AppState) => ({
+  campaignState: state.campaignReducer,
+});
 
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return {
-    createItem: lead => {
-      dispatch(createLeadAction(lead));
-    },
-    fetchCampaigns: () => {
-      dispatch(fetchCampaignsAction(campaigns));
-    },
-  };
-};
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  createLead: bindActionCreators(createLeadApi, dispatch),
+  fetchCampaigns: bindActionCreators(fetchCampaignsApi, dispatch),
+});
 
 export default connect(
   mapStateToProps,

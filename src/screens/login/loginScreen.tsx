@@ -13,7 +13,8 @@ import {
   Item,
   Input,
   Label,
-  Icon
+  Icon,
+  Spinner,
 } from 'native-base'
 import { StatusBar, ImageBackground, Dimensions, Image, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -27,6 +28,10 @@ import { loginApi } from '../../redux/actions/userActions';
 import { AppState } from '../../redux/reducers/index';
 import styles from './loginStyle';
 import AsyncStorage from '@react-native-community/async-storage';
+import { loginApi } from '../../redux/actions/userLoginActions';
+import { AppState } from '../../redux/store';
+import store from '../../redux/store';
+import { View } from 'react-native';
 
 export interface Props {
   navigation: NavigationScreenProp<any>;
@@ -35,6 +40,9 @@ export interface Props {
   token: string;
   login(username: string, password: string): void;
   requestLoginApi(username: string, password: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+  userState: any;
+  error: any;
+
 }
 export interface State {
   showPassword: boolean,
@@ -42,6 +50,7 @@ export interface State {
   password: string
 
 }
+
 class Login extends React.Component<Props, State> {
   static contextType = NetworkContext;
   constructor(props: Props) {
@@ -57,11 +66,8 @@ class Login extends React.Component<Props, State> {
 
   handleSubmit = async () => {
     console.log(' User', this.state.username, this.state.password);
-
     await this.props.requestLoginApi(this.state.username, this.state.password);
-    // comented let userData = JSON.parse(this.props.user);
-    console.log('Props User token:-----', this.props.user.user.token);
-
+    console.log('after login --state', store.getState());
     const userToken = await AsyncStorage.getItem('userToken');
     console.log('storage user :====', userToken);
     this.props.navigation.navigate(userToken ? 'Dashboard' : 'Login');
@@ -94,6 +100,14 @@ class Login extends React.Component<Props, State> {
                   <Button block={true} onPress={this.handleSubmit} style={styles.submitButton}>
                     <Text>Sign In</Text>
                   </Button>
+                  {this.props.userState.isLoading ? (
+                    <View>
+                      <Spinner />
+                      <Text>Logging In...</Text>
+                    </View>
+                  ) : (
+                      <View />
+                    )}
                   <View style={{ alignItems: 'center', flexDirection: 'column' }}>
                     <Text onPress={this.handlePress()} style={{ color: 'white' }}>Forgot Password?</Text>
                   </View>
@@ -106,9 +120,8 @@ class Login extends React.Component<Props, State> {
     );
   }
 }
-
 const mapStateToProps = (state: AppState) => ({
-  user: state.user,
+  userState: state.userReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

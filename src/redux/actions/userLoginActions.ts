@@ -5,10 +5,9 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './actionTyp
 import config from '../../helpers/config';
 
 // The action creators
-export const requestAction = user => {
+export const requestAction = () => {
     return {
         type: LOGIN_REQUEST,
-        payload: user,
     };
 };
 
@@ -45,21 +44,22 @@ export const loginApi = (username: string, password: string) => async (dispatch:
         password: password,
     });
     try {
-        const response = await axios.post(`${config.api.url}/user/login`, body, options);
-        if (response.status == 200) {
-            console.log(response.data);
+        dispatch(requestAction());
+        const response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
+        // console.log(response.data.data);
+        if (response.data.data !== null) {
             dispatch(successAction(response.data.data));
             try {
-                await AsyncStorage.setItem('userToken', JSON.stringify(response.data.data.token));
+                await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
         } else {
-            dispatch(failureAction(response.data));
-            console.log(response.status);
+            dispatch(failureAction(response.data.errors));
         }
     } catch (error) {
         console.log(error);
+        dispatch(failureAction(error));
         return error;
     }
 };
