@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Container, Header, Title, Content, Text, Button, Icon, Left, Body, Right, List, ListItem } from 'native-base';
 import { NavigationScreenProp } from 'react-navigation';
-import AsyncStorage from '@react-native-community/async-storage';
+import storage from '../../database/storage';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -11,7 +11,7 @@ export interface State {}
 class Dashboard extends React.Component<Props, State> {
     async componentDidMount() {
         try {
-            let userData = await AsyncStorage.getItem('userToken');
+            let userData = await storage.getDataByKey('user');
         } catch (error) {
             console.log('Something went wrong', error);
         }

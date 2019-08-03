@@ -1,9 +1,9 @@
 import { Dispatch } from 'redux';
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
 import authHeader from '../../helpers/authHeader';
 import config from '../../helpers/config';
 import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL } from './actionTypes';
+import storage from '../../database/storage';
 
 // The action creators
 export const createLeadAction = lead => {
@@ -53,7 +53,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
         if (response.data.data !== null) {
             dispatch(fetchLeadsAction(response.data.data));
             try {
-                await AsyncStorage.setItem('leads', JSON.stringify(response.data.data));
+                await storage.storeData('leads', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -81,7 +81,7 @@ export const createLeadApi = (newLead: any) => async (dispatch: Dispatch) => {
             dispatch(createLeadAction(response.data.data));
             try {
                 //Fetch exisiting leads and append new lead to the list
-                // await AsyncStorage.setItem('leads', response.data.data);
+                await storage.storeData('leads', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

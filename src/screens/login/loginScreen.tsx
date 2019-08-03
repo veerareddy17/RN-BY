@@ -18,13 +18,13 @@ import {
 import { NavigationScreenProp } from 'react-navigation';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import { NetworkContext } from '../../provider/network-provider';
 import { loginApi } from '../../redux/actions/userLoginActions';
 import { AppState } from '../../redux/store';
 import store from '../../redux/store';
 import { View } from 'react-native';
+import storage from '../../database/storage';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -41,7 +41,7 @@ class Login extends React.Component<Props, State> {
         await this.props.requestLoginApi('test@example.com', 'password');
         console.log('after login --state', store.getState());
 
-        const userToken = await AsyncStorage.getItem('userToken');
+        const userToken = await storage.getUserToken();
         this.props.navigation.navigate(userToken ? 'Dashboard' : 'Login');
     };
 

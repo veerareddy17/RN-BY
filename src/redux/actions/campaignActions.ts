@@ -1,9 +1,9 @@
 import { Dispatch } from 'redux';
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
 import authHeader from '../../helpers/authHeader';
 import config from '../../helpers/config';
 import { FETCH_CAMPAIGN } from './actionTypes';
+import storage from '../../database/storage';
 
 export const fetchCampaignsAction = campaigns => {
     return {
@@ -20,11 +20,10 @@ export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) =>
     };
     try {
         let response = await axios.get(`${config.api.baseURL}/campaign/all`, options);
-        // console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(fetchCampaignsAction(response.data.data));
             try {
-                await AsyncStorage.setItem('campaigns', JSON.stringify(response.data.data));
+                await storage.storeData('campaigns', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

@@ -1,12 +1,11 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import storage from '../database/storage';
 
 export default async function authHeader() {
     // return authorization header with jwt token
     try {
-        let userData = await AsyncStorage.getItem('user');
-        let user = JSON.parse(userData);
-        if (user && user.token) {
-            return { Authorization: 'jwt ' + user.token };
+        let userToken = await storage.getUserToken();
+        if (userToken) {
+            return { Authorization: 'jwt ' + userToken };
         } else {
             return {};
         }

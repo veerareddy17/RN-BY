@@ -1,8 +1,8 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 import { Dispatch } from 'redux';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './actionTypes';
 import config from '../../helpers/config';
+import storage from '../../database/storage';
 
 // The action creators
 export const requestAction = () => {
@@ -32,7 +32,6 @@ export const logoutAction = () => {
 };
 
 export const loginApi = (username: string, password: string) => async (dispatch: Dispatch) => {
-    console.log('login service', username);
     const options = {
         headers: {
             Accept: 'application/json',
@@ -46,11 +45,10 @@ export const loginApi = (username: string, password: string) => async (dispatch:
     try {
         dispatch(requestAction());
         const response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
-        // console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(successAction(response.data.data));
             try {
-                await AsyncStorage.setItem('user', JSON.stringify(response.data.data));
+                await storage.storeData('user', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -60,6 +58,15 @@ export const loginApi = (username: string, password: string) => async (dispatch:
     } catch (error) {
         console.log(error);
         dispatch(failureAction(error));
-        return error;
+    }
+};
+
+export const logout = () => async (dispatch: Dispatch) => {
+    console.log('Logging out..');
+    try {
+        await storage.removeItemByKey('user');
+    } catch (error) {
+        console.log('Logout action', error);
+        dispatch(failureAction(error));
     }
 };
