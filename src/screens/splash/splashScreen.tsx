@@ -12,7 +12,6 @@ export interface Props {
 export interface State {}
 class Splash extends React.Component<Props, State> {
     async componentDidMount() {
-        await AsyncStorage.removeItem('user');
         const user = await AsyncStorage.getItem('user');
         if (user) {
             var userObj = JSON.parse(user);
