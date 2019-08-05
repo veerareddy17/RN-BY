@@ -4,7 +4,7 @@ import { Text, Button, View, Picker } from 'native-base';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { fetchCampaignsApi } from '../../redux/actions/campaignActions';
-import { createLeadApi } from '../../redux/actions/leadActions';
+import { createLeadApi, verifyOTPApi } from '../../redux/actions/leadActions';
 import { NetworkContext } from '../../provider/network-provider';
 import store, { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
@@ -14,6 +14,7 @@ export interface CreateLeadProps {
     campaignState: any;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    generateAndVerifyOTP(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface CreateLeadState {
@@ -35,8 +36,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         }
     };
 
-    verifyOTP = () => {
-        this.props.navigation.navigate('OTP');
+    verifyOTP = async () => {
+        // this.props.navigation.navigate('OTP');
+        await this.props.generateAndVerifyOTP();
     };
 
     handleSubmit = async () => {
@@ -57,6 +59,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             city: 'banglore',
         };
         try {
+            this.verifyOTP();
             await this.props.createLead(newLead);
             console.log('After createLead---state', store.getState());
             this.props.navigation.navigate('LeadList');
@@ -81,7 +84,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         {campaignItems}
                     </Picker>
                 </View>
-                <Button onPress={this.verifyOTP}>
+                <Button onPress={this.handleSubmit}>
                     <Text>Create Lead</Text>
                 </Button>
             </View>
@@ -96,6 +99,7 @@ const mapStateToProps = (state: AppState) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     createLead: bindActionCreators(createLeadApi, dispatch),
     fetchCampaigns: bindActionCreators(fetchCampaignsApi, dispatch),
+    generateAndVerifyOTP: bindActionCreators(verifyOTPApi, dispatch),
 });
 
 export default connect(
