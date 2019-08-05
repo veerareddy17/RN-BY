@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Container, Header, Title, Content, Text, Button, Icon, Left, Body, Right, List, ListItem, Footer, FooterTab } from 'native-base';
 import { NavigationScreenProp } from 'react-navigation';
-import AsyncStorage from '@react-native-community/async-storage';
+import storage from '../../database/storage';
 import images from '../../assets';
 import { Image, View } from 'react-native';
 
@@ -23,9 +23,15 @@ class Dashboard extends React.Component<Props, State> {
             campaignName: '',
         }
     }
-    async componentDidMount() {
 
+    async componentDidMount() {
+        try {
+            let userData = await storage.getDataByKey('user');
+        } catch (error) {
+            console.log('Something went wrong', error);
+        }
     }
+
     getLeads = () => {
         this.props.navigation.navigate('LeadList');
     };
