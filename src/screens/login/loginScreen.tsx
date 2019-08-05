@@ -24,14 +24,11 @@ import { connect } from 'react-redux'
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 
 import { NetworkContext } from '../../provider/network-provider';
-import { loginApi } from '../../redux/actions/userActions';
-import { AppState } from '../../redux/reducers/index';
 import styles from './loginStyle';
 import AsyncStorage from '@react-native-community/async-storage';
 import { loginApi } from '../../redux/actions/userLoginActions';
 import { AppState } from '../../redux/store';
 import store from '../../redux/store';
-import { View } from 'react-native';
 
 export interface Props {
   navigation: NavigationScreenProp<any>;
@@ -68,10 +65,11 @@ class Login extends React.Component<Props, State> {
     console.log(' User', this.state.username, this.state.password);
     await this.props.requestLoginApi(this.state.username, this.state.password);
     console.log('after login --state', store.getState());
-    const userToken = await AsyncStorage.getItem('userToken');
-    console.log('storage user :====', userToken);
-    this.props.navigation.navigate(userToken ? 'Dashboard' : 'Login');
-    // this.props.navigation.navigate('Dashboard');
+    // let user = await AsyncStorage.getItem('user');
+    // let userObj = JSON.parse(user);
+    // console.log('storage user :====', userObj.token);
+    // this.props.navigation.navigate(userObj.token ? 'Dashboard' : 'Login');
+    this.props.navigation.navigate('CampaignList');
   };
 
   render() {

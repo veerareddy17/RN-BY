@@ -8,22 +8,22 @@ const styles = StyleSheet.create({
     },
     buttonChangeCampaingStyle: {
         borderColor: 'purple',
-         marginLeft: 'auto' 
+        marginLeft: 'auto'
     },
-    borderStyle:{
+    borderStyle: {
         borderColor: 'lightgrey',
         borderWidth: 1,
         borderRadius: 3,
         top: 0
     },
-    borderTextareaStyle:{
-        width:320,
+    borderTextareaStyle: {
+        width: 320,
         borderColor: 'lightgrey',
         borderWidth: 1,
         borderRadius: 3,
         top: 0
     }
-    
+
 })
 
 export default styles;

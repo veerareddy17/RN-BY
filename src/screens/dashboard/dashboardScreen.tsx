@@ -9,14 +9,22 @@ export interface Props {
     navigation: NavigationScreenProp<any>;
     list: any;
 }
-export interface State { }
+export interface State {
+    campaignId: any
+    campaignName: any
+
+}
 class Dashboard extends React.Component<Props, State> {
-    async componentDidMount() {
-        try {
-            let userData = await AsyncStorage.getItem('userToken');
-        } catch (error) {
-            console.log('Something went wrong', error);
+
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            campaignId: '',
+            campaignName: '',
         }
+    }
+    async componentDidMount() {
+
     }
     getLeads = () => {
         this.props.navigation.navigate('LeadList');
@@ -45,6 +53,7 @@ class Dashboard extends React.Component<Props, State> {
                     <Button onPress={this.createLead}>
                         <Text>Create lead</Text>
                     </Button> */}
+
                     <View style={{ alignItems: 'center', flexDirection: 'column', padding: 10 }}>
                         <Image source={images.workProgress} />
                     </View>

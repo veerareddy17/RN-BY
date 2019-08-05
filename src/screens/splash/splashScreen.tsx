@@ -18,9 +18,17 @@ class Splash extends React.Component<Props, State> {
 
   async componentDidMount() {
 
-    const userToken = await AsyncStorage.getItem('userToken');
-    console.log('storage user :====', userToken);
-    this.props.navigation.navigate(userToken ? 'Dashboard' : 'Login');
+    const user = await AsyncStorage.getItem('user');
+    if (user) {
+      var userObj = JSON.parse(user);
+      console.log('storage user :====', userObj.token);
+      this.props.navigation.navigate(userObj.token ? 'Dashboard' : 'Login');
+    } else {
+      this.props.navigation.navigate('Login');
+    }
+
+
+
     // setTimeout(() => {
     //   this.props.navigation.navigate('Login');
     // }, 5000);

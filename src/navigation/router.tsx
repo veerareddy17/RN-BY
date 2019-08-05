@@ -5,6 +5,7 @@ import Login from '../screens/login/loginScreen'
 import Splash from '../screens/splash/splashScreen'
 import LeadList from '../screens/leads/leadsListScreen'
 import CreateLead from '../screens/leads/createLeadScreen'
+import CampaignList from '../screens/campaignList/campaignListSelection';
 
 const homeStackNavigator = createStackNavigator(
   {
@@ -26,6 +27,9 @@ const homeStackNavigator = createStackNavigator(
     CreateLead: {
       screen: CreateLead,
     },
+    CampaignList: {
+      screen: CampaignList,
+    }
   },
   {
     initialRouteName: 'Splash',

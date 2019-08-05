@@ -9,6 +9,9 @@ import { NetworkContext } from '../../provider/network-provider';
 import store, { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
 
+import styles from './leadStyle';
+import AsyncStorage from '@react-native-community/async-storage';
+
 export interface CreateLeadProps {
   navigation: NavigationScreenProp<any>;
   campaignState: any;
@@ -19,6 +22,7 @@ export interface CreateLeadProps {
 export interface CreateLeadState {
   // lead: {}; 
   // selectedCampaign: ''; 
+  campaignName: string,
   name: string,
   parent_name: string,
   email: string,
@@ -30,8 +34,8 @@ export interface CreateLeadState {
   comments: string,
   user_id: string,
   campaign_id: string,
-  country_id: number,
-  state_id: number,
+  country_id?: number,
+  state_id?: number,
   city: string,
 }
 
@@ -40,6 +44,20 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
   static contextType = NetworkContext;
 
   componentDidMount = async () => {
+
+    try {
+      const campaignStoredVal = await AsyncStorage.getItem('campaignSelectedId');
+      console.log('campaign id storage', campaignStoredVal);
+      const campaign = JSON.parse(campaignStoredVal);
+      console.log('before setting state', this.state);
+
+      this.setState({ campaign_id: campaign.id });
+      this.setState({ campaignName: campaign.name });
+      console.log('after setting state', this.state);
+    } catch (error) {
+      console.log('Something went wrong', error);
+    }
+
     if (this.context.isConnected) {
       console.log('before fetch campaing---state', store.getState());
       await this.props.fetchCampaigns();
@@ -53,6 +71,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
   constructor(props: CreateLeadProps) {
     super(props);
     this.state = {
+      campaignName: '',
       name: '',
       parent_name: '',
       email: '',
@@ -64,9 +83,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
       comments: '',
       //user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
       user_id: '84d6410a-fb4e-4dd9-8fdb-0e439eebd5d4',
-      campaign_id: 'ccd15ed8-af0f-476a-b74b-0d28f7644412',
-      country_id: 0,
-      state_id: 0,
+      campaign_id: '',
       city: '',
     }
   }
@@ -93,9 +110,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     console.log('new Const', newLead);
     // uncomment below and pass state
     try {
-      let lead = await createLead(newLead);
-      this.props.createItem(lead);
-      this.props.navigation.navigate('Dashboard');
+      await this.props.createLead(newLead);
+      // this.props.createItem(lead);
+      this.props.navigation.navigate('LeadList');
     } catch (error) {
       console.log('Error in createlead api call');
     }
@@ -127,9 +144,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     });
   }
   render() {
-    let campaignItems = this.props.campaigns.map(camp => {
-      return <Picker.Item key={camp.id} value={camp.title} label={camp.title} />;
-    });
+    // let campaignItems = this.props.campaigns.map(camp => {
+    //   return <Picker.Item key={camp.id} value={camp.title} label={camp.title} />;
+    // });
 
     return (
       <Container >
@@ -146,7 +163,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         </Header>
         <Content>
           <View style={styles.campaingStyle}>
-            <Text>Your Campaign:</Text>
+            <Text>Your Campaign:{this.state.campaignName}</Text>
             <Button small bordered style={styles.buttonChangeCampaingStyle}>
               <Text style={{ color: 'purple' }}>Change</Text>
             </Button>
@@ -207,7 +224,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         placeholderStyle={{ color: "#bfc6ea" }}
                         placeholderIconColor="#007aff"
                         style={{ width: undefined }}
-                        selectedValue={this.state.country_id}
+                        selectedValue={this.state.class_name}
                         onValueChange={this.onClassChange.bind(this)}
                       >
                         <Picker.Item label="Class 1" value="Class 1" />
@@ -234,15 +251,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label style={{ marginLeft: 10 }}>Mobile Number</Label>
-                    <Input keyboardType='phone-pad' onChangeText={(text) => this.setState({ phone: text })} value={String(this.state.phone)} style={styles.borderStyle} />
+                    <Input keyboardType='phone-pad' maxLength={10} onChangeText={(text) => this.setState({ phone: text })} value={String(this.state.phone)} style={styles.borderStyle} />
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label style={{ marginLeft: 10 }}>Alternate Mobile Number</Label>
-                    <Input keyboardType='phone-pad' style={styles.borderStyle} />
+                    <Input keyboardType='phone-pad' maxLength={10} style={styles.borderStyle} />
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label style={{ marginLeft: 10 }}>Email</Label>
-                    <Input onChangeText={(text) => this.setState({ email: text })} value={this.state.email} style={styles.borderStyle} />
+                    <Input autoCompleteType='email' onChangeText={(text) => this.setState({ email: text })} value={this.state.email} style={styles.borderStyle} />
                   </Item>
                   <Item floatingLabel={true} style={{ marginBottom: 15 }}>
                     <Label style={{ marginLeft: 10 }}>Address</Label>

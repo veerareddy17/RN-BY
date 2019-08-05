@@ -41,6 +41,9 @@ export const leadFailureAction = error => {
 
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
+    const user = await AsyncStorage.getItem('user');
+    var userObj = JSON.parse(user);
+
     let header = await authHeader();
     const options = {
         params: {},
@@ -48,7 +51,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     };
     try {
         dispatch(leadStartAction());
-        let response = await axios.get(`${config.api.baseURL}/lead/all`, options);
+        let response = await axios.get(`${config.api.baseURL}/user/${userObj.id}/leads`, options);
         // console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(fetchLeadsAction(response.data.data));
