@@ -36,6 +36,8 @@ export interface CreateLeadState {
   campaign_id: string,
   country_id?: number,
   state_id?: number,
+  country: string,
+  state: string,
   city: string,
 }
 
@@ -84,27 +86,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
       //user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
       user_id: '84d6410a-fb4e-4dd9-8fdb-0e439eebd5d4',
       campaign_id: '',
+      country: '',
+      state: '',
       city: '',
     }
   }
 
   handleSubmit = async () => {
-    // const newLead = {
-    //     name: 'Appusdhj',
-    //     parent_name: 'sdasdasd',
-    //     email: 'sadsd@example.com',
-    //     phone: 9995255234999,
-    //     class_name: '9',
-    //     school_board: 'HBSC',
-    //     school_name: 'KHS High',
-    //     address: 'KAR',
-    //     comments: 'Put ur text here',
-    //     user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
-    //     campaign_id: 'ccd15ed8-af0f-476a-b74b-0d28f7644412',
-    //     country_id: 1,
-    //     state_id: 1,
-    //     city: 'banglore',
-    // };
+
     console.log('state', this.state);
     const newLead = this.state;
     console.log('new Const', newLead);
@@ -129,14 +118,22 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     });
   }
   onCountryChange(value: string) {
+    console.log('onset country id', this.state, value, parseInt(value));
+    const id = parseInt(value)
     this.setState({
-      country_id: parseInt(value)
+      country_id: id,
+      country: value
     });
+    console.log('onset country id', this.state, value, parseInt(value));
   }
+
   onStateChange(value: string) {
+    console.log('onset state id', parseInt(value));
     this.setState({
-      state_id: parseInt(value)
+      state_id: parseInt(value),
+      state: value,
     });
+    console.log('after state id', this.state, value, parseInt(value));
   }
   onClassChange(value: string) {
     this.setState({
@@ -270,11 +267,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                       <Picker
                         mode="dropdown"
                         iosIcon={<Icon name="arrow-down" />}
-                        placeholder="Gender"
+                        placeholder="Country"
                         placeholderStyle={{ color: "#bfc6ea" }}
                         placeholderIconColor="#007aff"
                         style={{ width: undefined }}
-                        selectedValue={this.state.country_id}
+                        selectedValue={this.state.country}
                         onValueChange={this.onCountryChange.bind(this)}
                       >
                         <Picker.Item label="India" value="1" />
@@ -289,7 +286,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         placeholderStyle={{ color: "#bfc6ea" }}
                         placeholderIconColor="#007aff"
                         style={{ width: undefined }}
-                        selectedValue={this.state.state_id}
+                        selectedValue={this.state.state}
                         onValueChange={this.onStateChange.bind(this)}
                       >
                         <Picker.Item label="Karnataka" value="1" />

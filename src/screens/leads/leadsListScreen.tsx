@@ -52,7 +52,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
           </Body>
           <Right />
         </Header>
-        <Content>
+        <Content padder>
           {this.props.leadState.isLoading ? (
             <View>
               <Spinner />

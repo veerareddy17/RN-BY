@@ -101,7 +101,7 @@ class Login extends React.Component<Props, State> {
                   {this.props.userState.isLoading ? (
                     <View>
                       <Spinner />
-                      <Text>Logging In...</Text>
+
                     </View>
                   ) : (
                       <View />

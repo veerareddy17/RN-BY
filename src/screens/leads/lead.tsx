@@ -34,8 +34,8 @@ export default ({ lead }) => {
               <Text>{lead.email}</Text></Row>
           </Grid> */}
           <Grid>
-            <Col style={{ flexDirection: 'row' }}><Icon name='calculator' style={{ fontSize: 20, }} /><Text>{lead.phone}</Text></Col>
-            <Col style={{ flexDirection: 'row' }}><Icon name='paper-plane' style={{ fontSize: 20 }} /><Text>{lead.email}</Text></Col>
+            <Col style={{ flexDirection: 'row' }}><Icon name='calculator' style={{ fontSize: 20, }} /><View style={{ flex: 1 }}><Text>{lead.phone}</Text></View></Col>
+            <Col style={{ flexDirection: 'row' }}><Icon name='paper-plane' style={{ fontSize: 20 }} /><View style={{ flex: 1 }}><Text>{lead.email}</Text></View></Col>
           </Grid>
 
         </CardItem>
