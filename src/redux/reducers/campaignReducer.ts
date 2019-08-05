@@ -1,4 +1,9 @@
-import { CAMPAIGN_SELECTED } from './../actions/actionTypes';
+import {
+    CAMPAIGN_SELECTED,
+    LOAD_CAMPAIGN_START,
+    LOAD_CAMPAIGN_SUCCESS,
+    LOAD_CAMPAIGN_FAIL,
+} from './../actions/actionTypes';
 import { FETCH_CAMPAIGN, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL } from '../actions/actionTypes';
 import { initialState } from '../../models/campaignInitialState';
 
@@ -8,21 +13,22 @@ export default function campaignReducer(state = initialState, action) {
             return {
                 ...state,
                 status: 'done',
+                isLoading: false,
                 campaignList: action.payload,
             };
-        case LOAD_LEAD_START:
+        case LOAD_CAMPAIGN_START:
             return {
                 ...state,
                 isLoading: true,
                 error: '',
             };
-        case LOAD_LEAD_SUCCESS:
+        case LOAD_CAMPAIGN_SUCCESS:
             return {
                 ...state,
                 status: 'done',
                 isLoading: false,
             };
-        case LOAD_LEAD_FAIL:
+        case LOAD_CAMPAIGN_FAIL:
             return {
                 ...state,
                 status: 'fail',

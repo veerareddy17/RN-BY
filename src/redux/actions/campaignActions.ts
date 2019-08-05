@@ -3,7 +3,13 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 import authHeader from '../../helpers/authHeader';
 import config from '../../helpers/config';
-import { FETCH_CAMPAIGN, LOAD_CAMPAIGN_START, LOAD_CAMPAIGN_SUCCESS, LOAD_CAMPAIGN_FAIL, CAMPAIGN_SELECTED } from './actionTypes';
+import {
+    FETCH_CAMPAIGN,
+    LOAD_CAMPAIGN_START,
+    LOAD_CAMPAIGN_SUCCESS,
+    LOAD_CAMPAIGN_FAIL,
+    CAMPAIGN_SELECTED,
+} from './actionTypes';
 
 export const fetchCampaignsAction = campaigns => {
     return {
@@ -44,6 +50,7 @@ export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) =>
         headers: { ...header, 'Content-Type': 'application/json' },
     };
     try {
+        dispatch(campaignStartAction());
         let response = await axios.get(`${config.api.baseURL}/campaign/all`, options);
         // console.log(response.data.data);
         if (response.data.data !== null) {
@@ -54,7 +61,7 @@ export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) =>
                 console.log('Error in storing asyncstorage', error);
             }
         } else {
-            dispatch(fetchCampaignsAction(response.data.errors));
+            dispatch(campaignFailureAction(response.data.errors));
         }
     } catch (error) {
         // Error
@@ -63,7 +70,7 @@ export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) =>
 };
 
 export const selectedCampaign = (campaignId: any) => async (dispatch: Dispatch) => {
-    console.log('inside campaign action', campaignId)
+    console.log('inside campaign action', campaignId);
     dispatch(campaignStartAction());
     try {
         await AsyncStorage.setItem('campaignSelectedId', JSON.stringify(campaignId));
@@ -71,7 +78,6 @@ export const selectedCampaign = (campaignId: any) => async (dispatch: Dispatch) 
         dispatch(campaignSuccessAction());
     } catch (error) {
         console.log(error);
-        dispatch(campaignFailureAction(error))
+        dispatch(campaignFailureAction(error));
     }
-
 };
