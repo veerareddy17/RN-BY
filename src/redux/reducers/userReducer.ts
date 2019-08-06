@@ -1,5 +1,5 @@
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from '../actions/actionTypes';
-import { initialState } from '../../models/userInitialState';
+import { initialState } from '../init/userInitialState';
 
 export default function userReducer(state = initialState, action) {
     switch (action.type) {

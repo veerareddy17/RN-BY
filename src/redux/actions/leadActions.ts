@@ -2,7 +2,7 @@ import { Dispatch } from 'redux';
 import axios from 'axios';
 import authHeader from '../../helpers/authHeader';
 import config from '../../helpers/config';
-import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL } from './actionTypes';
+import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL, OTP_SENT } from './actionTypes';
 import storage from '../../database/storage';
 import generateOTP from '../../helpers/OTPCreation';
 
@@ -40,6 +40,13 @@ export const leadFailureAction = error => {
     };
 };
 
+export const otpSuccessAction = (status: string) => {
+    return {
+        type: OTP_SENT,
+        payload: status,
+    };
+};
+
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     const user = await storage.getDataByKey('user');
@@ -53,7 +60,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     try {
         dispatch(leadStartAction());
         let response = await axios.get(`${config.api.baseURL}/user/${userObj.id}/leads`, options);
-        // console.log(response.data.data);
+        console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(fetchLeadsAction(response.data.data));
             try {
@@ -110,17 +117,14 @@ export const verifyOTPApi = () => async (dispatch: Dispatch) => {
         code: OTP,
     });
     try {
-        let otp = await storage.getDataByKey('OTP');
-        console.log('Before OTP verify ', otp);
         let response = await axios.post(`${config.api.baseURL}/meta/sms`, body, options);
         console.log(response.data.data);
         if (response.data.data !== null) {
-            // dispatch(createLeadAction(response.data.data));
+            dispatch(otpSuccessAction(response.data.data));
             try {
                 //Fetch exisiting leads and append new lead to the list
-                await storage.removeItemByKey('OTP');
+                // await storage.removeItemByKey('OTP');
                 let otp = await storage.getDataByKey('OTP');
-                console.log('After OTP verify success', OTP);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

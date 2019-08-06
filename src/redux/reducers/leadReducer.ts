@@ -1,5 +1,12 @@
-import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_FAIL, LOAD_LEAD_SUCCESS } from '../actions/actionTypes';
-import { initialState } from '../../models/leadInitialState';
+import {
+    ADD_LEAD,
+    FETCH_LEAD,
+    LOAD_LEAD_START,
+    LOAD_LEAD_FAIL,
+    LOAD_LEAD_SUCCESS,
+    OTP_SENT,
+} from '../actions/actionTypes';
+import { initialState } from '../init/leadInitialState';
 
 export default function leadReducer(state = initialState, action) {
     switch (action.type) {
@@ -36,6 +43,12 @@ export default function leadReducer(state = initialState, action) {
                 isLoading: false,
                 leadList: state.leadList,
                 error: action.payload,
+            };
+        case OTP_SENT:
+            return {
+                ...state,
+                isLoading: false,
+                otp: action.payload,
             };
         default:
             return state;
