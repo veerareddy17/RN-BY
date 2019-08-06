@@ -1,11 +1,30 @@
 import React, { Component } from 'react';
-import { Container, Header, Content, Button, Text, Left, Body, Right, Title } from 'native-base';
-import OTPInputView from '@twotalltotems/react-native-otp-input';
+import { NavigationScreenProp } from 'react-navigation';
+import { Container, Header, Content, Button, Text, Left, Body, Right, Title, Item, Input } from 'native-base';
+import styles from './OTPStyle';
 
-export default class OTPScreen extends Component {
-    getCode(code: string) {
-        console.log('code:', code);
+export interface Props {
+    navigation: NavigationScreenProp<any>;
+}
+export interface State {
+    otp: string;
+}
+
+class OTPScreen extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            otp: '',
+        };
     }
+
+    getCode = (code: string) => {
+        console.log('code:', code);
+    };
+
+    handleSubmit = () => {
+        console.log('OTP entered');
+    };
 
     render() {
         return (
@@ -18,21 +37,20 @@ export default class OTPScreen extends Component {
                     <Right />
                 </Header>
                 <Content>
-                    <OTPInputView
-                        style={{ width: '80%', height: 200 }}
-                        pinCount={4}
-                        code=""
-                        autoFocusOnLoad={true}
-                        // codeInputFieldStyle={styles.borderStyleBase}
-                        // // codeInputHighlightStyle={styles.borderStyleHighLighted}
-                        // codeInputFieldStyle={styles.underlineStyleBase}
-                        // codeInputHighlightStyle={styles.underlineStyleHighLighted}
-                        onCodeFilled={code => {
-                            console.log(`Code is ${code}, you are good to go!`);
-                        }}
-                    />
+                    <Item regular>
+                        <Input
+                            style={styles.otp}
+                            placeholder="OTP"
+                            onChangeText={text => this.setState({ otp: text })}
+                        />
+                    </Item>
+                    <Button block={true} onPress={this.handleSubmit} style={styles.submitButton}>
+                        <Text>Sign In</Text>
+                    </Button>
                 </Content>
             </Container>
         );
     }
 }
+
+export default OTPScreen;

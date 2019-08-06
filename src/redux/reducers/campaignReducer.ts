@@ -3,8 +3,8 @@ import {
     LOAD_CAMPAIGN_START,
     LOAD_CAMPAIGN_SUCCESS,
     LOAD_CAMPAIGN_FAIL,
+    FETCH_CAMPAIGN,
 } from './../actions/actionTypes';
-import { FETCH_CAMPAIGN, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL } from '../actions/actionTypes';
 import { initialState } from '../../models/campaignInitialState';
 
 export default function campaignReducer(state = initialState, action) {

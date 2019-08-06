@@ -101,14 +101,18 @@ export const createLeadApi = (newLead: any) => async (dispatch: Dispatch) => {
 export const verifyOTPApi = () => async (dispatch: Dispatch) => {
     let header = await authHeader();
     let OTP = await generateOTP();
+
     const options = {
         headers: { ...header, 'Content-Type': 'application/json' },
     };
-    const body = JSON.stringify(OTP);
+    const body = JSON.stringify({
+        phone: '7019432993',
+        code: OTP,
+    });
     try {
         let otp = await storage.getDataByKey('OTP');
-        console.log('Before OTP verify ', OTP);
-        let response = await axios.post(`${config.api.baseURL}/lead`, body, options);
+        console.log('Before OTP verify ', otp);
+        let response = await axios.post(`${config.api.baseURL}/meta/sms`, body, options);
         console.log(response.data.data);
         if (response.data.data !== null) {
             // dispatch(createLeadAction(response.data.data));

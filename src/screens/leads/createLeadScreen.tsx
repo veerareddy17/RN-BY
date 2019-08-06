@@ -17,7 +17,7 @@ export interface CreateLeadProps {
   campaignState: any;
   fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
   createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    generateAndVerifyOTP(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+  generateAndVerifyOTP(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface CreateLeadState {
@@ -105,7 +105,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     console.log('new Const', newLead);
     // uncomment below and pass state
     try {
-            this.verifyOTP();
+      this.verifyOTP();
       await this.props.createLead(newLead);
       // this.props.createItem(lead);
       this.props.navigation.navigate('LeadList');
@@ -148,10 +148,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     });
   }
   render() {
-    // let campaignItems = this.props.campaigns.map(camp => {
-    //   return <Picker.Item key={camp.id} value={camp.title} label={camp.title} />;
-    // });
-
     return (
       <Container >
         <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#74137d">
@@ -183,22 +179,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                     <Label style={{ marginLeft: 10 }}>Student Name</Label>
                     <Input onChangeText={(text) => this.setState({ name: text })} value={this.state.name} style={styles.borderStyle} />
                   </Item>
-                  {/* <Item picker>
-                    <Picker
-                      mode="dropdown"
-                      iosIcon={<Icon name="arrow-down" />}
-                      style={{ width: undefined }}
-                      placeholder="Select your Board"
-                      placeholderStyle={{ color: "#bfc6ea" }}
-                      placeholderIconColor="#007aff"
-                      selectedValue={this.state.school_board}
-                      onValueChange={this.onBoardChange.bind(this)}
-                    >
-                      <Picker.Item label="Karnataka Board" value="Karnataka Board" />
-                      <Picker.Item label="Madya Pradesh Board" value="Madya Pradesh Board" />
-                      <Picker.Item label="Delhi Board" value="Delhi Board" />
-                    </Picker>
-                  </Item> */}
                   <Button style={{ backgroundColor: '#fdfdfd', marginBottom: 10 }}>
                     <Picker
                       mode="dropdown"
