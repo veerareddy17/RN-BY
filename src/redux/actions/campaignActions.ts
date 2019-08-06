@@ -44,6 +44,9 @@ export const selectedCampaignActions = campaignSelectedId => {
 };
 
 export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) => {
+    const user = await AsyncStorage.getItem('user');
+    var userObj = JSON.parse(user);
+
     let header = await authHeader();
     const options = {
         params: {},
@@ -51,7 +54,7 @@ export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) =>
     };
     try {
         dispatch(campaignStartAction());
-        let response = await axios.get(`${config.api.baseURL}/campaign/all`, options);
+        let response = await axios.get(`${config.api.baseURL}/user/${userObj.id}/campaigns`, options);
         // console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(fetchCampaignsAction(response.data.data));
