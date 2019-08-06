@@ -4,7 +4,7 @@ import { Text, Button, View, Picker, Container, Header, Body, Title, Right, Cont
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { fetchCampaignsApi } from '../../redux/actions/campaignActions';
-import { createLeadApi } from '../../redux/actions/leadActions';
+import { createLeadApi, verifyOTPApi } from '../../redux/actions/leadActions';
 import { NetworkContext } from '../../provider/network-provider';
 import store, { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
@@ -17,6 +17,7 @@ export interface CreateLeadProps {
   campaignState: any;
   fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
   createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    generateAndVerifyOTP(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface CreateLeadState {
@@ -69,6 +70,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     }
   };
 
+    verifyOTP = async () => {
+        // this.props.navigation.navigate('OTP');
+        await this.props.generateAndVerifyOTP();
+    };
+
 
   constructor(props: CreateLeadProps) {
     super(props);
@@ -99,6 +105,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     console.log('new Const', newLead);
     // uncomment below and pass state
     try {
+            this.verifyOTP();
       await this.props.createLead(newLead);
       // this.props.createItem(lead);
       this.props.navigation.navigate('LeadList');
@@ -334,6 +341,7 @@ const mapStateToProps = (state: AppState) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   createLead: bindActionCreators(createLeadApi, dispatch),
   fetchCampaigns: bindActionCreators(fetchCampaignsApi, dispatch),
+    generateAndVerifyOTP: bindActionCreators(verifyOTPApi, dispatch),
 });
 
 export default connect(

@@ -1,9 +1,10 @@
 import { Dispatch } from 'redux';
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
 import authHeader from '../../helpers/authHeader';
 import config from '../../helpers/config';
 import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL } from './actionTypes';
+import storage from '../../database/storage';
+import generateOTP from '../../helpers/OTPCreation';
 
 // The action creators
 export const createLeadAction = lead => {
@@ -41,7 +42,7 @@ export const leadFailureAction = error => {
 
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
-    const user = await AsyncStorage.getItem('user');
+    const user = await storage.getDataByKey('user');
     var userObj = JSON.parse(user);
 
     let header = await authHeader();
@@ -56,7 +57,7 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
         if (response.data.data !== null) {
             dispatch(fetchLeadsAction(response.data.data));
             try {
-                await AsyncStorage.setItem('leads', JSON.stringify(response.data.data));
+                await storage.storeData('leads', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -64,7 +65,6 @@ export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
             dispatch(leadFailureAction(response.data.errors));
         }
     } catch (error) {
-        // Error 😨
         console.log(error);
     }
 };
@@ -84,7 +84,39 @@ export const createLeadApi = (newLead: any) => async (dispatch: Dispatch) => {
             dispatch(createLeadAction(response.data.data));
             try {
                 //Fetch exisiting leads and append new lead to the list
-                // await AsyncStorage.setItem('leads', response.data.data);
+                await storage.storeData('leads', response.data.data);
+            } catch (error) {
+                console.log('Error in storing asyncstorage', error);
+            }
+        } else {
+            dispatch(leadFailureAction(response.data.erros));
+        }
+    } catch (error) {
+        // Error
+        console.log(error);
+    }
+};
+
+// POST method to generate and verify OTP
+export const verifyOTPApi = () => async (dispatch: Dispatch) => {
+    let header = await authHeader();
+    let OTP = await generateOTP();
+    const options = {
+        headers: { ...header, 'Content-Type': 'application/json' },
+    };
+    const body = JSON.stringify(OTP);
+    try {
+        let otp = await storage.getDataByKey('OTP');
+        console.log('Before OTP verify ', OTP);
+        let response = await axios.post(`${config.api.baseURL}/lead`, body, options);
+        console.log(response.data.data);
+        if (response.data.data !== null) {
+            // dispatch(createLeadAction(response.data.data));
+            try {
+                //Fetch exisiting leads and append new lead to the list
+                await storage.removeItemByKey('OTP');
+                let otp = await storage.getDataByKey('OTP');
+                console.log('After OTP verify success', OTP);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

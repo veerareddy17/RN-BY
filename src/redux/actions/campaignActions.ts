@@ -1,8 +1,8 @@
 import { Dispatch } from 'redux';
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
 import authHeader from '../../helpers/authHeader';
 import config from '../../helpers/config';
+import storage from '../../database/storage';
 import {
     FETCH_CAMPAIGN,
     LOAD_CAMPAIGN_START,
@@ -44,7 +44,7 @@ export const selectedCampaignActions = campaignSelectedId => {
 };
 
 export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) => {
-    const user = await AsyncStorage.getItem('user');
+    const user = await storage.getDataByKey('user');
     var userObj = JSON.parse(user);
 
     let header = await authHeader();
@@ -55,11 +55,10 @@ export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) =>
     try {
         dispatch(campaignStartAction());
         let response = await axios.get(`${config.api.baseURL}/user/${userObj.id}/campaigns`, options);
-        // console.log(response.data.data);
         if (response.data.data !== null) {
             dispatch(fetchCampaignsAction(response.data.data));
             try {
-                await AsyncStorage.setItem('campaigns', JSON.stringify(response.data.data));
+                await storage.storeData('campaigns', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -76,7 +75,7 @@ export const selectedCampaign = (campaignId: any) => async (dispatch: Dispatch) 
     console.log('inside campaign action', campaignId);
     dispatch(campaignStartAction());
     try {
-        await AsyncStorage.setItem('campaignSelectedId', JSON.stringify(campaignId));
+        await storage.storeData('campaignSelectedId', JSON.stringify(campaignId));
         console.log('campaign successfully stored in async');
         dispatch(campaignSuccessAction());
     } catch (error) {

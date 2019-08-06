@@ -29,6 +29,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { loginApi } from '../../redux/actions/userLoginActions';
 import { AppState } from '../../redux/store';
 import store from '../../redux/store';
+import storage from '../../database/storage';
 
 export interface Props {
   navigation: NavigationScreenProp<any>;
@@ -66,7 +67,7 @@ class Login extends React.Component<Props, State> {
     await this.props.requestLoginApi(this.state.username, this.state.password);
     console.log('after login --state', store.getState());
     // let user = await AsyncStorage.getItem('user');
-    // let userObj = JSON.parse(user);
+    const userToken = await storage.getUserToken();
     // console.log('storage user :====', userObj.token);
     // this.props.navigation.navigate(userObj.token ? 'Dashboard' : 'Login');
     this.props.navigation.navigate('CampaignList');
