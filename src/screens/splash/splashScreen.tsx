@@ -6,47 +6,41 @@ import images from '../../assets';
 import AsyncStorage from '@react-native-community/async-storage';
 
 export interface Props {
-  navigation: NavigationScreenProp<any>;
-  list: any;
+    navigation: NavigationScreenProp<any>;
+    list: any;
 }
-export interface State { }
+export interface State {}
 class Splash extends React.Component<Props, State> {
-  async componentDidMount() {
+    async componentDidMount() {
+        // await AsyncStorage.removeItem('user');
+        const user = await AsyncStorage.getItem('user');
 
-    const user = await AsyncStorage.getItem('user');
-
-    if (user) {
-      var userObj = JSON.parse(user);
-      console.log('storage user :====', userObj.token);
-      setTimeout(() => {
-        this.props.navigation.navigate(userObj.token ? 'Dashboard' : 'Login');
-      }, 5000)
-
-    } else {
-      setTimeout(() => {
-        this.props.navigation.navigate('Login');
-      }, 5000)
-
+        if (user) {
+            var userObj = JSON.parse(user);
+            console.log('storage user :====', userObj.token);
+            setTimeout(() => {
+                this.props.navigation.replace(userObj.token ? 'Dashboard' : 'Login');
+            }, 5000);
+        } else {
+            setTimeout(() => {
+                this.props.navigation.replace('Login');
+            }, 5000);
+        }
     }
 
-    // setTimeout(() => {
-    //   this.props.navigation.navigate('Login');
-    // }, 5000);
-  }
-
-  render() {
-    const { width, height } = Dimensions.get('window');
-    return (
-      <Container>
-        <StatusBar backgroundColor="purple" barStyle="light-content" />
-        <ImageBackground source={images.background} style={{ width, height }}>
-          <Content contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <Image source={images.logo} />
-          </Content>
-        </ImageBackground>
-      </Container>
-    );
-  }
+    render() {
+        const { width, height } = Dimensions.get('window');
+        return (
+            <Container>
+                <StatusBar backgroundColor="purple" barStyle="light-content" />
+                <ImageBackground source={images.background} style={{ width, height }}>
+                    <Content contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                        <Image source={images.logo} />
+                    </Content>
+                </ImageBackground>
+            </Container>
+        );
+    }
 }
 
 export default Splash;

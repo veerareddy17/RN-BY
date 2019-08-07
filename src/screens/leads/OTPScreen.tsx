@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { NavigationScreenProp } from 'react-navigation';
-import { Container, Header, Content, Button, Text, Left, Body, Right, Title, Item, Input } from 'native-base';
+import { Container, Header, Content, Button, Text, Left, Body, Right, Title, Item, Input, Toast } from 'native-base';
 import styles from './OTPStyle';
+import storage from '../../database/storage';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -22,8 +23,19 @@ class OTPScreen extends Component<Props, State> {
         console.log('code:', code);
     };
 
-    handleSubmit = () => {
-        console.log('OTP entered');
+    handleSubmit = async () => {
+        console.log('OTP entered', this.state.otp);
+        const storedOTP = await storage.getDataByKey('OTP');
+        console.log('From storage->', storedOTP);
+        if (storedOTP === JSON.stringify(this.state.otp)) {
+            console.log('Lead created successfully...');
+            // Toast.show({
+            //     text: 'Lead created successfully...',
+            // });
+            this.props.navigation.navigate('Dashboard');
+        } else {
+            console.log('OTP mismatch...Click Re-send');
+        }
     };
 
     render() {
@@ -45,7 +57,7 @@ class OTPScreen extends Component<Props, State> {
                         />
                     </Item>
                     <Button block={true} onPress={this.handleSubmit} style={styles.submitButton}>
-                        <Text>Sign In</Text>
+                        <Text>Submit</Text>
                     </Button>
                 </Content>
             </Container>

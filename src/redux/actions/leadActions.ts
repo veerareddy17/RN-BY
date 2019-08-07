@@ -117,20 +117,18 @@ export const verifyOTPApi = () => async (dispatch: Dispatch) => {
         code: OTP,
     });
     try {
-        let response = await axios.post(`${config.api.baseURL}/meta/sms`, body, options);
-        console.log(response.data.data);
-        if (response.data.data !== null) {
-            dispatch(otpSuccessAction(response.data.data));
-            try {
-                //Fetch exisiting leads and append new lead to the list
-                // await storage.removeItemByKey('OTP');
-                let otp = await storage.getDataByKey('OTP');
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
-        } else {
-            dispatch(leadFailureAction(response.data.erros));
-        }
+        // let response = await axios.post(`${config.api.baseURL}/meta/sms`, body, options);
+        // console.log(response.data.data);
+        // if (response.data.data !== null) {
+        //     try {
+        //         dispatch(otpSuccessAction(response.data.data.status));
+        //         console.log('OTP sent to server--', OTP);
+        //     } catch (error) {
+        //         console.log('Error in storing asyncstorage', error);
+        //     }
+        // } else {
+        //     dispatch(leadFailureAction(response.data.erros));
+        // }
     } catch (error) {
         // Error
         console.log(error);

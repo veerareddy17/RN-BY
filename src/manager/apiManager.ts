@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 export class APIManager {
-    public static post = async (url: string, body: any) => {
+    public static post = async <T>(url: string, body: string, callback: (response: T) => void) => {
+        console.log('In API Manager..POST');
         const options = {
             headers: {
                 Accept: 'application/json',

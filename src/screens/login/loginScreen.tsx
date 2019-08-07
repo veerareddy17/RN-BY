@@ -53,7 +53,7 @@ class Login extends React.Component<Props, State> {
         this.state = {
             showPassword: true,
             username: '',
-            password: '',
+            password: 'admin',
         };
     }
 
@@ -61,10 +61,10 @@ class Login extends React.Component<Props, State> {
 
     handleSubmit = async () => {
         console.log(' User', this.state.username, this.state.password);
-        await this.props.requestLoginApi(this.state.username, this.state.password);
+        await this.props.requestLoginApi('bde@example.com', 'admin');
         console.log('after login --state', store.getState());
         const userToken = await storage.getUserToken();
-        this.props.navigation.navigate(userToken ? 'CampaignList' : 'Login');
+        this.props.navigation.replace(userToken ? 'CampaignList' : 'Login');
     };
 
     render() {

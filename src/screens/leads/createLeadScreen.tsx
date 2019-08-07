@@ -71,21 +71,16 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     componentDidMount = async () => {
         try {
             const campaignStoredVal = await AsyncStorage.getItem('campaignSelectedId');
-            console.log('campaign id storage', campaignStoredVal);
             const campaign = JSON.parse(campaignStoredVal);
-            console.log('before setting state', this.state);
 
             this.setState({ campaign_id: campaign.id });
             this.setState({ campaignName: campaign.name });
-            console.log('after setting state', this.state);
         } catch (error) {
             console.log('Something went wrong', error);
         }
 
         if (this.context.isConnected) {
-            console.log('before fetch campaing---state', store.getState());
             await this.props.fetchCampaigns();
-            console.log('After fetchCampaigns---state', store.getState());
         } else {
             console.log('Show Offline pop-up');
         }
@@ -95,6 +90,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         // this.props.navigation.navigate('OTP');
         await this.props.generateAndVerifyOTP();
         console.log('OTP sent --->', this.props.leadState.otp);
+        if (this.props.leadState.otp == 'ok') {
+            this.props.navigation.navigate('OTP');
+        }
     };
 
     constructor(props: CreateLeadProps) {
@@ -113,9 +111,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             //user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
             user_id: '84d6410a-fb4e-4dd9-8fdb-0e439eebd5d4',
             campaign_id: '',
-            country: '',
-            state: '',
-            city: '',
+            country: '1',
+            state: '1',
+            city: 'blore',
         };
     }
 
