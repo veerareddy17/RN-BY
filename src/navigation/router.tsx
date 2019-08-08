@@ -1,12 +1,11 @@
 import { createStackNavigator, createAppContainer } from 'react-navigation';
-import Settings from '../screens/settings/settingsScreen';
-import Dashboard from '../screens/dashboard/dashboardScreen';
-import Login from '../screens/login/loginScreen';
-import Splash from '../screens/splash/splashScreen';
-import LeadList from '../screens/leads/leadsListScreen';
-import CreateLead from '../screens/leads/createLeadScreen';
-import CampaignList from '../screens/campaignList/campaignListSelection';
-import OTPScreen from '../screens/leads/OTPScreen';
+import Dashboard from '../screens/dashboard/dashboard-screen';
+import Login from '../screens/login/login-screen';
+import Splash from '../screens/splash/splash-screen';
+import LeadList from '../screens/leads/leads-list-screen';
+import CreateLead from '../screens/leads/create-lead-screen';
+import CampaignList from '../screens/campaign/campaign-list-selection';
+import OTPScreen from '../screens/leads/otp-screen';
 
 const homeStackNavigator = createStackNavigator(
     {
@@ -15,9 +14,6 @@ const homeStackNavigator = createStackNavigator(
         },
         Login: {
             screen: Login,
-        },
-        Settings: {
-            screen: Settings,
         },
         Splash: {
             screen: Splash,
@@ -36,7 +32,7 @@ const homeStackNavigator = createStackNavigator(
         },
     },
     {
-        initialRouteName: 'Splash',
+        initialRouteName: 'Login',
         headerMode: 'none',
     },
 );

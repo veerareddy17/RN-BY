@@ -5,8 +5,8 @@ import {
     LOAD_LEAD_FAIL,
     LOAD_LEAD_SUCCESS,
     OTP_SENT,
-} from '../actions/actionTypes';
-import { initialState } from '../init/leadInitialState';
+} from '../actions/action-types';
+import { initialState } from '../init/lead-initial-state';
 
 export default function leadReducer(state = initialState, action) {
     switch (action.type) {

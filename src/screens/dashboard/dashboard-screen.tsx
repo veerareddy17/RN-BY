@@ -1,7 +1,19 @@
 import * as React from 'react';
-import { Container, Header, Title, Content, Text, Button, Icon, Left, Body, Right, List, ListItem, Footer, FooterTab } from 'native-base';
+import {
+    Container,
+    Header,
+    Title,
+    Content,
+    Text,
+    Button,
+    Icon,
+    Left,
+    Body,
+    Right,
+    Footer,
+    FooterTab,
+} from 'native-base';
 import { NavigationScreenProp } from 'react-navigation';
-import storage from '../../database/storage';
 import images from '../../assets';
 import { Image, View } from 'react-native';
 
@@ -10,23 +22,20 @@ export interface Props {
     list: any;
 }
 export interface State {
-    campaignId: any
-    campaignName: any
-
+    campaignId: any;
+    campaignName: any;
 }
 class Dashboard extends React.Component<Props, State> {
-
     constructor(props: Props) {
         super(props);
         this.state = {
             campaignId: '',
             campaignName: '',
-        }
+        };
     }
 
     async componentDidMount() {
         try {
-            let userData = await storage.getDataByKey('user');
         } catch (error) {
             console.log('Something went wrong', error);
         }
@@ -44,11 +53,11 @@ class Dashboard extends React.Component<Props, State> {
             <Container>
                 <Header style={{ backgroundColor: 'purple' }} androidStatusBarColor="purple">
                     <Left>
-                        <Button transparent>
-
-                        </Button>
+                        <Button transparent></Button>
                     </Left>
-                    <Body><Title>Dashboard</Title></Body>
+                    <Body>
+                        <Title>Dashboard</Title>
+                    </Body>
                     <Right />
                 </Header>
 
@@ -69,8 +78,8 @@ class Dashboard extends React.Component<Props, State> {
                     <FooterTab style={{ backgroundColor: 'purple' }}>
                         <Button
                             vertical
-                        //   active={props.navigationState.index === 0}
-                        // onPress={() => this.props.navigation.navigate('Dashboard')}
+                            //   active={props.navigationState.index === 0}
+                            // onPress={() => this.props.navigation.navigate('Dashboard')}
                         >
                             <Icon name="home" style={{ color: 'white' }} />
                             <Text style={{ color: 'white' }}>Dashboard</Text>
@@ -82,7 +91,6 @@ class Dashboard extends React.Component<Props, State> {
                         >
                             <Icon name="add" style={{ color: 'white' }} />
                             <Text style={{ color: 'white' }}>Lead Capture</Text>
-
                         </Button>
                         <Button
                             vertical

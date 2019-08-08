@@ -1,9 +1,10 @@
-import storage from '../database/storage';
+import storage from '../database/storage-service';
 
 export default async function authHeader() {
     // return authorization header with jwt token
     try {
         let userToken = await storage.getUserToken();
+        console.log('Auth-Header - token :', userToken);
         if (userToken) {
             return { Authorization: 'jwt ' + userToken };
         } else {

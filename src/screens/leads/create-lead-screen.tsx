@@ -24,14 +24,13 @@ import {
 } from 'native-base';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
-import { fetchCampaignsApi } from '../../redux/actions/campaignActions';
-import { createLeadApi, verifyOTPApi } from '../../redux/actions/leadActions';
+import { fetchCampaignsApi } from '../../redux/actions/campaign-actions';
+import { createLeadApi, verifyOTPApi } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
-import store, { AppState } from '../../redux/store';
+import { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
-
-import styles from './leadStyle';
-import AsyncStorage from '@react-native-community/async-storage';
+import styles from './lead-style';
+import storage from '../../database/storage-service';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -68,9 +67,9 @@ export interface CreateLeadState {
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
 
-    componentDidMount = async () => {
+    async componentDidMount() {
         try {
-            const campaignStoredVal = await AsyncStorage.getItem('campaignSelectedId');
+            const campaignStoredVal = await storage.get<string>('campaignSelectedId');
             const campaign = JSON.parse(campaignStoredVal);
 
             this.setState({ campaign_id: campaign.id });
@@ -84,10 +83,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         } else {
             console.log('Show Offline pop-up');
         }
-    };
+    }
 
     verifyOTP = async () => {
-        // this.props.navigation.navigate('OTP');
         await this.props.generateAndVerifyOTP();
         console.log('OTP sent --->', this.props.leadState.otp);
         if (this.props.leadState.otp == 'ok') {

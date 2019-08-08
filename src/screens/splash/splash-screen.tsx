@@ -3,7 +3,7 @@ import { Container, Content } from 'native-base';
 import { StatusBar, ImageBackground, Image, Dimensions } from 'react-native';
 import { NavigationScreenProp } from 'react-navigation';
 import images from '../../assets';
-import AsyncStorage from '@react-native-community/async-storage';
+import storage from '../../database/storage-service';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -12,19 +12,12 @@ export interface Props {
 export interface State {}
 class Splash extends React.Component<Props, State> {
     async componentDidMount() {
-        // await AsyncStorage.removeItem('user');
-        const user = await AsyncStorage.getItem('user');
-
+        const user = await storage.get<string>('user');
         if (user) {
             var userObj = JSON.parse(user);
-            console.log('storage user :====', userObj.token);
-            setTimeout(() => {
-                this.props.navigation.replace(userObj.token ? 'Dashboard' : 'Login');
-            }, 5000);
+            this.props.navigation.replace(userObj.token ? 'Dashboard' : 'Login');
         } else {
-            setTimeout(() => {
-                this.props.navigation.replace('Login');
-            }, 5000);
+            this.props.navigation.replace('Login');
         }
     }
 

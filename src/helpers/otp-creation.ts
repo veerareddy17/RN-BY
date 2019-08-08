@@ -1,4 +1,4 @@
-import storage from '../database/storage';
+import storage from '../database/storage-service';
 import config from './config';
 
 export default async function generateOTP() {
@@ -12,7 +12,7 @@ export default async function generateOTP() {
             otp = otp + digits[index];
         }
 
-        await storage.storeData('OTP', otp);
+        await storage.store('OTP', otp);
 
         return otp;
     } catch (error) {

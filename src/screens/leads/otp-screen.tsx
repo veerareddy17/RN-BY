@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { NavigationScreenProp } from 'react-navigation';
 import { Container, Header, Content, Button, Text, Left, Body, Right, Title, Item, Input, Toast } from 'native-base';
-import styles from './OTPStyle';
-import storage from '../../database/storage';
+import styles from './otp-style';
+import storage from '../../database/storage-service';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -25,7 +25,7 @@ class OTPScreen extends Component<Props, State> {
 
     handleSubmit = async () => {
         console.log('OTP entered', this.state.otp);
-        const storedOTP = await storage.getDataByKey('OTP');
+        const storedOTP = await storage.get<string>('OTP');
         console.log('From storage->', storedOTP);
         if (storedOTP === JSON.stringify(this.state.otp)) {
             console.log('Lead created successfully...');
@@ -53,6 +53,7 @@ class OTPScreen extends Component<Props, State> {
                         <Input
                             style={styles.otp}
                             placeholder="OTP"
+                            keyboardType="number-pad"
                             onChangeText={text => this.setState({ otp: text })}
                         />
                     </Item>

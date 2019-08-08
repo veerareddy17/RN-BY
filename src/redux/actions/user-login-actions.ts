@@ -1,10 +1,7 @@
 import { Dispatch } from 'redux';
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './actionTypes';
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-types';
 import config from '../../helpers/config';
-import storage from '../../database/storage';
-import { APIManager } from '../../manager/apiManager';
-import { ApiResponse } from '../../models/responseModel';
-import { UserLoginResponse } from '../../models/userLoginResponse';
+import storage from '../../database/storage-service';
 import axios from 'axios';
 
 // The action creators
@@ -47,11 +44,11 @@ export const loginApi = (username: string, password: string) => async (dispatch:
     });
     try {
         dispatch(requestAction());
-        const response = await axios.post(`${config.api.baseURL}/user/login`, body, options);
+        const response = await axios.post(`${config.api.baseURL}/authenticate`, body, options);
         if (response.data.data !== null) {
             dispatch(successAction(response.data.data));
             try {
-                await storage.storeData('user', response.data.data);
+                await storage.store('user', response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -67,7 +64,7 @@ export const loginApi = (username: string, password: string) => async (dispatch:
 export const logout = () => async (dispatch: Dispatch) => {
     console.log('Logging out..');
     try {
-        await storage.removeItemByKey('user');
+        await storage.removeKey('user');
     } catch (error) {
         console.log('Logout action', error);
         dispatch(failureAction(error));

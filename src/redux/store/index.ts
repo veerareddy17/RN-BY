@@ -2,9 +2,9 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { combineReducers } from 'redux';
-import leadReducer from '../reducers/leadReducer';
-import userReducer from '../reducers/userReducer';
-import campaignReducer from '../reducers/campaignReducer';
+import leadReducer from '../reducers/lead-reducer';
+import userReducer from '../reducers/user-reducer';
+import campaignReducer from '../reducers/campaign-reducer';
 
 const rootReducer = combineReducers({
     leadReducer: leadReducer,

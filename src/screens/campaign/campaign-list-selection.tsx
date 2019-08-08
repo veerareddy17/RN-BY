@@ -19,11 +19,11 @@ import {
     ListItem,
 } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
-import { AppState } from '../../redux/reducers';
+import { AppState } from '../../redux/store';
 import { NetworkContext } from '../../provider/network-provider';
 import store from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
-import { fetchCampaignsApi, selectedCampaign } from '../../redux/actions/campaignActions';
+import { fetchCampaignsApi, selectedCampaign } from '../../redux/actions/campaign-actions';
 
 export interface CampaignListProps {
     navigation: NavigationScreenProp<any>;

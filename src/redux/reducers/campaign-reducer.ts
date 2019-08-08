@@ -4,8 +4,8 @@ import {
     LOAD_CAMPAIGN_SUCCESS,
     LOAD_CAMPAIGN_FAIL,
     FETCH_CAMPAIGN,
-} from '../actions/actionTypes';
-import { initialState } from '../init/campaignInitialState';
+} from '../actions/action-types';
+import { initialState } from '../init/campaign-initial-state';
 
 export default function campaignReducer(state = initialState, action) {
     switch (action.type) {

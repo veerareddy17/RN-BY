@@ -1,21 +1,5 @@
 import * as React from 'react';
-import {
-    Container,
-    Header,
-    Title,
-    Content,
-    Text,
-    Button,
-    Left,
-    Body,
-    Right,
-    Form,
-    Item,
-    Input,
-    Label,
-    Icon,
-    Spinner,
-} from 'native-base';
+import { Container, Content, Text, Button, Form, Item, Input, Label, Icon, Spinner } from 'native-base';
 import { StatusBar, ImageBackground, Dimensions, Image, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import images from '../../assets';
@@ -24,11 +8,10 @@ import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 
 import { NetworkContext } from '../../provider/network-provider';
-import styles from './loginStyle';
-import { loginApi } from '../../redux/actions/userLoginActions';
+import styles from './login-style';
+import { loginApi } from '../../redux/actions/user-login-actions';
 import { AppState } from '../../redux/store';
-import store from '../../redux/store';
-import storage from '../../database/storage';
+import StorageService from '../../database/storage-service';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -62,9 +45,9 @@ class Login extends React.Component<Props, State> {
     handleSubmit = async () => {
         console.log(' User', this.state.username, this.state.password);
         await this.props.requestLoginApi('bde@example.com', 'admin');
-        console.log('after login --state', store.getState());
-        const userToken = await storage.getUserToken();
-        this.props.navigation.replace(userToken ? 'CampaignList' : 'Login');
+        console.log('after login --state', this.props.userState);
+        console.log('usertokdn storage:', StorageService.getUserToken);
+        // this.props.navigation.replace(userToken ? 'CampaignList' : 'Login');
     };
 
     render() {
@@ -112,7 +95,7 @@ class Login extends React.Component<Props, State> {
                                         <View />
                                     )}
                                     <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                        <Text onPress={this.handlePress()} style={{ color: 'white' }}>
+                                        <Text onPress={this.handlePress} style={{ color: 'white' }}>
                                             Forgot Password?
                                         </Text>
                                     </View>
