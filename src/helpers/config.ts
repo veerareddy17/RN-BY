@@ -1,6 +1,6 @@
 export default {
     api: {
-        baseURL: 'https://57e21c03.ngrok.io/api',
+        baseURL: 'https://ca750a7f.ngrok.io/api',
     },
     otp: {
         length: 4,

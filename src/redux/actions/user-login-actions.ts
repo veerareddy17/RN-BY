@@ -1,8 +1,8 @@
 import { Dispatch } from 'redux';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-types';
-import config from '../../helpers/config';
 import storage from '../../database/storage-service';
-import axios from 'axios';
+import { AuthenticationService } from '../../services/authentication-service';
+import { AuthenticationRequest } from '../../models/request/authentication-request';
 
 // The action creators
 export const requestAction = () => {
@@ -32,32 +32,20 @@ export const logoutAction = () => {
 };
 
 export const loginApi = (username: string, password: string) => async (dispatch: Dispatch) => {
-    const options = {
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-    };
-    const body = JSON.stringify({
-        email: username,
-        password: password,
-    });
     try {
-        dispatch(requestAction());
-        const response = await axios.post(`${config.api.baseURL}/authenticate`, body, options);
-        if (response.data.data !== null) {
-            dispatch(successAction(response.data.data));
-            try {
-                await storage.store('user', response.data.data);
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
+        // dispatch(requestAction());
+        // const response = await axios.post(`${config.api.baseURL}/authenticate`, body, options);
+        const authRequest = new AuthenticationRequest(username, password);
+        const response = AuthenticationService.loginApi(authRequest);
+        if (response !== null) {
+            // dispatch(successAction(response));
+            console.log('Action : ', response);
         } else {
-            dispatch(failureAction(response.data.errors));
+            // dispatch(failureAction(response));
         }
     } catch (error) {
         console.log(error);
-        dispatch(failureAction(error));
+        // dispatch(failureAction(error));
     }
 };
 
