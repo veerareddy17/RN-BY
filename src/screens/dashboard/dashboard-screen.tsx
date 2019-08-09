@@ -18,9 +18,9 @@ import images from '../../assets';
 import { Image, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
+import { logout } from '../../redux/actions/user-actions';
 export interface Props {
     navigation: NavigationScreenProp<any>;
-    list: any;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 export interface State {
@@ -36,21 +36,20 @@ class Dashboard extends React.Component<Props, State> {
         };
     }
 
-    async componentDidMount() {
-        try {
-        } catch (error) {
-            console.log('Something went wrong', error);
-        }
-    }
+    componentDidMount() {}
 
     getLeads = () => {
         this.props.navigation.navigate('LeadList');
     };
+
     createLead = () => {
         this.props.navigation.navigate('CreateLead');
     };
 
-    logout = () => {};
+    logout = async () => {
+        await this.props.logout();
+        this.props.navigation.popToTop();
+    };
 
     render() {
         return (
@@ -62,7 +61,11 @@ class Dashboard extends React.Component<Props, State> {
                     <Body>
                         <Title>Dashboard</Title>
                     </Body>
-                    <Right />
+                    <Right>
+                        <Button transparent onPress={this.logout}>
+                            <Icon name="ios-log-out" style={{ color: 'white' }} />
+                        </Button>
+                    </Right>
                 </Header>
 
                 <Content>
@@ -76,7 +79,7 @@ class Dashboard extends React.Component<Props, State> {
                         <Button
                             vertical
                             //   active={props.navigationState.index === 0}
-                            onPress={() => this.logout}
+                            // onPress={() => this.logout}
                         >
                             <Icon name="home" style={{ color: 'white' }} />
                             <Text style={{ color: 'white' }}>Dashboard</Text>

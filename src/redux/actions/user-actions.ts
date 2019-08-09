@@ -1,6 +1,5 @@
 import { Dispatch } from 'redux';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-types';
-import storage from '../../database/storage-service';
 import { AuthenticationService } from '../../services/authentication-service';
 import { AuthenticationRequest } from '../../models/request/authentication-request';
 import { AuthenticationResponse } from '../../models/response/authentication-response';
@@ -48,11 +47,14 @@ export const authenticate = (username: string, password: string): ((dispatch: Di
     };
 };
 
-export const logout = () => async (dispatch: Dispatch) => {
-    console.log('Logging out..');
-    try {
-        await storage.removeKey('user');
-    } catch (error) {
-        console.log('Logout action', error);
-    }
+export const logout = (): ((dispatch: Dispatch) => Promise<void>) => {
+    return async (dispatch: Dispatch) => {
+        console.log('Logging out..');
+        try {
+            dispatch(logoutAction());
+            await StorageService.removeKey(Constants.TOKEN_KEY);
+        } catch (error) {
+            console.log('Logout action', error);
+        }
+    };
 };

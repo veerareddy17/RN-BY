@@ -9,7 +9,7 @@ import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 
 import { NetworkContext } from '../../provider/network-provider';
 import styles from './login-style';
-import { authenticate } from '../../redux/actions/user-login-actions';
+import { authenticate } from '../../redux/actions/user-actions';
 import { AppState } from '../../redux/store';
 
 export interface Props {
@@ -44,7 +44,7 @@ class Login extends React.Component<Props, State> {
         console.log(' User', this.state.email, this.state.password);
         await this.props.requestLoginApi('bde@example.com', 'admin');
         console.log('after login --state', this.props.userState);
-        // this.props.navigation.replace(userToken ? 'CampaignList' : 'Login');
+        this.props.navigation.replace(this.props.userState.user.token ? 'CampaignList' : 'Login');
     };
 
     render() {
