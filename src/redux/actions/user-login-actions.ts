@@ -3,6 +3,9 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-ty
 import storage from '../../database/storage-service';
 import { AuthenticationService } from '../../services/authentication-service';
 import { AuthenticationRequest } from '../../models/request/authentication-request';
+import { AuthenticationResponse } from '../../models/response/authentication-response';
+import StorageService from '../../database/storage-service';
+import { Constants } from '../../helpers/constants';
 
 // The action creators
 export const requestAction = () => {
@@ -11,14 +14,14 @@ export const requestAction = () => {
     };
 };
 
-export const successAction = user => {
+export const successAction = (user: AuthenticationResponse) => {
     return {
         type: LOGIN_SUCCESS,
         payload: user,
     };
 };
 
-export const failureAction = error => {
+export const failureAction = (error: string[]) => {
     return {
         type: LOGIN_FAILURE,
         payload: error,
@@ -31,22 +34,18 @@ export const logoutAction = () => {
     };
 };
 
-export const loginApi = (username: string, password: string) => async (dispatch: Dispatch) => {
-    try {
-        // dispatch(requestAction());
-        // const response = await axios.post(`${config.api.baseURL}/authenticate`, body, options);
+export const authenticate = (username: string, password: string): ((dispatch: Dispatch) => Promise<void>) => {
+    return async (dispatch: Dispatch) => {
+        dispatch(requestAction());
         const authRequest = new AuthenticationRequest(username, password);
-        const response = AuthenticationService.loginApi(authRequest);
-        if (response !== null) {
-            // dispatch(successAction(response));
-            console.log('Action : ', response);
+        const response = await AuthenticationService.authenticate(authRequest);
+        if (response.data !== null) {
+            dispatch(successAction(response.data));
+            console.log('Success Auth token :', await StorageService.get<string>(Constants.TOKEN_KEY));
         } else {
-            // dispatch(failureAction(response));
+            dispatch(failureAction(response.errors));
         }
-    } catch (error) {
-        console.log(error);
-        // dispatch(failureAction(error));
-    }
+    };
 };
 
 export const logout = () => async (dispatch: Dispatch) => {
@@ -55,6 +54,5 @@ export const logout = () => async (dispatch: Dispatch) => {
         await storage.removeKey('user');
     } catch (error) {
         console.log('Logout action', error);
-        dispatch(failureAction(error));
     }
 };

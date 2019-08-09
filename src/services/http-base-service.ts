@@ -1,9 +1,8 @@
 import Config from '../helpers/config';
-import { TOKEN_KEY } from '../helpers/constants';
-import { ResponseViewModel } from '../models/response-view-model';
 import axios from 'axios';
 import StorageService from '../database/storage-service';
-
+import { ResponseViewModel } from '../models/response/response-view-model';
+import { Constants } from '../helpers/constants';
 interface AxiosErrorResponse {
     status: number;
 }
@@ -18,7 +17,7 @@ export class HttpBaseService {
         };
         axios.interceptors.request.use(
             config => {
-                const token = StorageService.get<string>(TOKEN_KEY);
+                const token = StorageService.get<string>(Constants.TOKEN_KEY);
                 if (token) {
                     config.headers = {
                         ...config.headers,
@@ -41,7 +40,7 @@ export class HttpBaseService {
                 if (error.response && error.response.status === 401) {
                     console.log('unauthorized');
                     if (unAuthorizedCallback) {
-                        // StorageService.removeKey(TOKEN_KEY);
+                        StorageService.removeKey(Constants.TOKEN_KEY);
                         unAuthorizedCallback();
                         Promise.reject(error);
                         return;
@@ -62,6 +61,7 @@ export class HttpBaseService {
     }
 
     public static async post<Req, Res>(url: string, body: Req) {
+        console.log('URL - ', url);
         let response = await axios.post<ResponseViewModel<Res>>(url, JSON.stringify(body));
         return response.data;
     }

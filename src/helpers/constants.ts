@@ -1,1 +1,3 @@
-export const TOKEN_KEY = 'USER_TOKEN';
+export const Constants = {
+    TOKEN_KEY: 'USER_TOKEN',
+};

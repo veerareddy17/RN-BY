@@ -32,7 +32,7 @@ const homeStackNavigator = createStackNavigator(
         },
     },
     {
-        initialRouteName: 'Login',
+        initialRouteName: 'Splash',
         headerMode: 'none',
     },
 );

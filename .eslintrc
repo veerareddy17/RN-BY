@@ -16,6 +16,7 @@
     "rules": {
         "semi": ["error", "always"],
         "@typescript-eslint/no-parameter-properties": "off",
+        "@typescript-eslint/camelcase": "off",
         "react-native/no-unused-styles": 2,
         "react-native/split-platform-components": 2,
         "react-native/no-inline-styles": 2,

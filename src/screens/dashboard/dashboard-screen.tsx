@@ -16,10 +16,12 @@ import {
 import { NavigationScreenProp } from 'react-navigation';
 import images from '../../assets';
 import { Image, View } from 'react-native';
-
+import { connect } from 'react-redux';
+import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 export interface Props {
     navigation: NavigationScreenProp<any>;
     list: any;
+    logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 export interface State {
     campaignId: any;
@@ -48,6 +50,8 @@ class Dashboard extends React.Component<Props, State> {
         this.props.navigation.navigate('CreateLead');
     };
 
+    logout = () => {};
+
     render() {
         return (
             <Container>
@@ -62,13 +66,6 @@ class Dashboard extends React.Component<Props, State> {
                 </Header>
 
                 <Content>
-                    {/* <Button onPress={this.getLeads}>
-                        <Text>Get leads</Text>
-                    </Button>
-                    <Button onPress={this.createLead}>
-                        <Text>Create lead</Text>
-                    </Button> */}
-
                     <View style={{ alignItems: 'center', flexDirection: 'column', padding: 10 }}>
                         <Image source={images.workProgress} />
                     </View>
@@ -79,7 +76,7 @@ class Dashboard extends React.Component<Props, State> {
                         <Button
                             vertical
                             //   active={props.navigationState.index === 0}
-                            // onPress={() => this.props.navigation.navigate('Dashboard')}
+                            onPress={() => this.logout}
                         >
                             <Icon name="home" style={{ color: 'white' }} />
                             <Text style={{ color: 'white' }}>Dashboard</Text>
@@ -107,4 +104,11 @@ class Dashboard extends React.Component<Props, State> {
     }
 }
 
-export default Dashboard;
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    logout: bindActionCreators(logout, dispatch),
+});
+
+export default connect(
+    null,
+    mapDispatchToProps,
+)(Dashboard);

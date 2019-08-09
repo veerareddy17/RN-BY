@@ -9,23 +9,21 @@ import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 
 import { NetworkContext } from '../../provider/network-provider';
 import styles from './login-style';
-import { loginApi } from '../../redux/actions/user-login-actions';
+import { authenticate } from '../../redux/actions/user-login-actions';
 import { AppState } from '../../redux/store';
-import StorageService from '../../database/storage-service';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
     list: any;
     user: any;
     token: string;
-    login(username: string, password: string): void;
-    requestLoginApi(username: string, password: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    requestLoginApi(email: string, password: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
     error: any;
 }
 export interface State {
     showPassword: boolean;
-    username: string;
+    email: string;
     password: string;
 }
 
@@ -35,7 +33,7 @@ class Login extends React.Component<Props, State> {
         super(props);
         this.state = {
             showPassword: true,
-            username: '',
+            email: '',
             password: 'admin',
         };
     }
@@ -43,10 +41,9 @@ class Login extends React.Component<Props, State> {
     handlePress() {}
 
     handleSubmit = async () => {
-        console.log(' User', this.state.username, this.state.password);
+        console.log(' User', this.state.email, this.state.password);
         await this.props.requestLoginApi('bde@example.com', 'admin');
         console.log('after login --state', this.props.userState);
-        console.log('usertokdn storage:', StorageService.getUserToken);
         // this.props.navigation.replace(userToken ? 'CampaignList' : 'Login');
     };
 
@@ -66,7 +63,7 @@ class Login extends React.Component<Props, State> {
                                     <Item floatingLabel={true} style={styles.userName}>
                                         <Label style={{ marginLeft: 10 }}>Email</Label>
                                         <Input
-                                            onChangeText={text => this.setState({ username: text })}
+                                            onChangeText={text => this.setState({ email: text })}
                                             style={{ marginLeft: 10 }}
                                         />
                                     </Item>
@@ -113,7 +110,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    requestLoginApi: bindActionCreators(loginApi, dispatch),
+    requestLoginApi: bindActionCreators(authenticate, dispatch),
 });
 
 export default connect(

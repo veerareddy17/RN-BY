@@ -1,7 +1,7 @@
-import { UserLoginResponse } from '../../models/user-login-response';
+import { AuthenticationResponse } from '../../models/response/authentication-response';
 
 export const initialState = {
-    user: new UserLoginResponse(),
+    user: new AuthenticationResponse(),
     isLoading: false,
     error: '',
 };
