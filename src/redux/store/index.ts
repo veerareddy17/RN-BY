@@ -11,6 +11,5 @@ const rootReducer = combineReducers({
     campaignReducer: campaignReducer,
 });
 const store = createStore(rootReducer, applyMiddleware(thunk));
-console.log('getstate', store.getState());
 export default store;
 export type AppState = ReturnType<typeof rootReducer>;

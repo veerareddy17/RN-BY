@@ -1,8 +1,4 @@
 import { Dispatch } from 'redux';
-import axios from 'axios';
-import authHeader from '../../helpers/auth-header';
-import config from '../../helpers/config';
-import storage from '../../database/storage-service';
 import {
     FETCH_CAMPAIGN,
     LOAD_CAMPAIGN_START,
@@ -10,6 +6,9 @@ import {
     LOAD_CAMPAIGN_FAIL,
     CAMPAIGN_SELECTED,
 } from './action-types';
+import StorageService from '../../database/storage-service';
+import { CampaignService } from '../../services/campaign-service';
+import { StorageConstants } from '../../helpers/storage-constants';
 
 export const fetchCampaignsAction = campaigns => {
     return {
@@ -43,39 +42,26 @@ export const selectedCampaignActions = campaignSelectedId => {
     };
 };
 
-export const fetchCampaignsApi = (newLead: any) => async (dispatch: Dispatch) => {
-    const user = await storage.get<string>('user');
-    var userObj = JSON.parse(user);
-
-    let header = await authHeader();
-    const options = {
-        params: {},
-        headers: { ...header, 'Content-Type': 'application/json' },
-    };
-    try {
+export const fetchCampaigns = (): ((dispatch: Dispatch) => Promise<void>) => {
+    return async (dispatch: Dispatch) => {
+        const user = await StorageService.get<string>(StorageConstants.USER);
+        console.log('Fetch camp action User ->', user);
         dispatch(campaignStartAction());
-        let response = await axios.get(`${config.api.baseURL}/user/${userObj.id}/campaigns`, options);
-        if (response.data.data !== null) {
+        const response = await CampaignService.fetchCampaigns(user.id, 1);
+        console.log('Fetch camp action resp: --', response);
+        if (response && response.data) {
             dispatch(fetchCampaignsAction(response.data.data));
-            try {
-                await storage.store('campaigns', response.data.data);
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
         } else {
-            dispatch(campaignFailureAction(response.data.errors));
+            dispatch(campaignFailureAction(response.errors));
         }
-    } catch (error) {
-        // Error
-        console.log(error);
-    }
+    };
 };
 
-export const selectedCampaign = (campaignId: any) => async (dispatch: Dispatch) => {
-    console.log('inside campaign action', campaignId);
+export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Dispatch) => {
+    console.log('inside campaign action', selectedCampaign);
     dispatch(campaignStartAction());
     try {
-        await storage.store('campaignSelectedId', JSON.stringify(campaignId));
+        await StorageService.store(StorageConstants.SELECTED_CAMPAIGN, selectedCampaign);
         console.log('campaign successfully stored in async');
         dispatch(campaignSuccessAction());
     } catch (error) {

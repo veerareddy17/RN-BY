@@ -24,14 +24,14 @@ import {
 } from 'native-base';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
-import { fetchCampaignsApi } from '../../redux/actions/campaign-actions';
+import { fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { createLeadApi, verifyOTPApi } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
 import styles from './lead-style';
-import storage from '../../database/storage-service';
-
+import { StorageConstants } from '../../helpers/storage-constants';
+import StorageService from '../../database/storage-service';
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
     campaignState: any;
@@ -69,11 +69,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
     async componentDidMount() {
         try {
-            const campaignStoredVal = await storage.get<string>('campaignSelectedId');
-            const campaign = JSON.parse(campaignStoredVal);
-
-            this.setState({ campaign_id: campaign.id });
-            this.setState({ campaignName: campaign.name });
+            const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+            this.setState({ campaign_id: selectedCampaign.id });
+            this.setState({ campaignName: selectedCampaign.name });
         } catch (error) {
             console.log('Something went wrong', error);
         }
@@ -391,7 +389,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     createLead: bindActionCreators(createLeadApi, dispatch),
-    fetchCampaigns: bindActionCreators(fetchCampaignsApi, dispatch),
+    fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
     generateAndVerifyOTP: bindActionCreators(verifyOTPApi, dispatch),
 });
 

@@ -3,20 +3,22 @@ import StorageService from '../database/storage-service';
 import { AuthenticationRequest } from '../models/request/authentication-request';
 import { AuthenticationResponse } from '../models/response/authentication-response';
 import { ResponseViewModel } from '../models/response/response-view-model';
-import { Constants } from '../helpers/constants';
+import { StorageConstants } from '../helpers/storage-constants';
+import { APIConstants } from '../helpers/api-constants';
 
 export class AuthenticationService {
     public static authenticate = async (
         authenticationRequest: AuthenticationRequest,
     ): Promise<ResponseViewModel<AuthenticationResponse>> => {
         const response = await HttpBaseService.post<AuthenticationRequest, AuthenticationResponse>(
-            `/authenticate`,
+            APIConstants.AUTHENTICATION_URL,
             authenticationRequest,
         );
         console.log('Auth Response : ', response);
         if (response && response.data) {
             try {
-                await StorageService.store(Constants.TOKEN_KEY, response.data.token);
+                await StorageService.store(StorageConstants.TOKEN_KEY, response.data.token);
+                await StorageService.store(StorageConstants.USER, response.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -28,7 +30,7 @@ export class AuthenticationService {
 
     public static authCheck = async (): Promise<boolean> => {
         try {
-            const token = await StorageService.get<string>(Constants.TOKEN_KEY);
+            const token = await StorageService.get<string>(StorageConstants.TOKEN_KEY);
             return token ? true : false;
         } catch (error) {
             Promise.reject(error);

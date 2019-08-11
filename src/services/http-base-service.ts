@@ -2,7 +2,8 @@ import Config from '../helpers/config';
 import axios from 'axios';
 import StorageService from '../database/storage-service';
 import { ResponseViewModel } from '../models/response/response-view-model';
-import { Constants } from '../helpers/constants';
+import { StorageConstants } from '../helpers/storage-constants';
+import { PaginatedResponseModel } from '../models/response/paginated-response-model';
 interface AxiosErrorResponse {
     status: number;
 }
@@ -16,15 +17,15 @@ export class HttpBaseService {
             'content-type': 'application/json',
         };
         axios.interceptors.request.use(
-            config => {
-                const token = StorageService.get<string>(Constants.TOKEN_KEY);
+            async config => {
+                const token = await StorageService.get<string>(StorageConstants.TOKEN_KEY);
                 if (token) {
                     config.headers = {
                         ...config.headers,
                         Authorization: `jwt ${token}`,
                     };
                 }
-                console.log('request headers', config.headers);
+                // console.log('request headers', config.headers);
                 return config;
             },
             (error: any) => {
@@ -35,12 +36,12 @@ export class HttpBaseService {
             response => {
                 return response;
             },
-            (error: AxiosError) => {
+            async (error: AxiosError) => {
                 console.log('error in getting response', error);
                 if (error.response && error.response.status === 401) {
                     console.log('unauthorized');
                     if (unAuthorizedCallback) {
-                        StorageService.removeKey(Constants.TOKEN_KEY);
+                        await StorageService.removeKey(StorageConstants.TOKEN_KEY);
                         unAuthorizedCallback();
                         Promise.reject(error);
                         return;
@@ -51,7 +52,18 @@ export class HttpBaseService {
         );
     }
 
-    public static async get<T>(url: string): Promise<ResponseViewModel<T>> {
+    // Paginated GET
+    public static async get<T>(url: string): Promise<ResponseViewModel<PaginatedResponseModel<T>>> {
+        try {
+            let response = await axios.get<ResponseViewModel<PaginatedResponseModel<T>>>(url);
+            return response.data;
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    // Non-Paginated GET
+    public static async _get<T>(url: string): Promise<ResponseViewModel<T>> {
         try {
             let response = await axios.get<ResponseViewModel<T>>(url);
             return response.data;
@@ -61,7 +73,6 @@ export class HttpBaseService {
     }
 
     public static async post<Req, Res>(url: string, body: Req) {
-        console.log('URL - ', url);
         let response = await axios.post<ResponseViewModel<Res>>(url, JSON.stringify(body));
         return response.data;
     }

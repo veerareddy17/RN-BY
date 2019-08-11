@@ -19,9 +19,11 @@ import { Image, View } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { logout } from '../../redux/actions/user-actions';
+import { AppState } from '../../redux/store';
 export interface Props {
     navigation: NavigationScreenProp<any>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    userState: any;
 }
 export interface State {
     campaignId: any;
@@ -48,7 +50,10 @@ class Dashboard extends React.Component<Props, State> {
 
     logout = async () => {
         await this.props.logout();
-        this.props.navigation.popToTop();
+        if (this.props.userState.user == '') {
+            // TODO: Need to pop all screens before navigating to login. Look for popToTop() method
+            this.props.navigation.navigate('Login');
+        }
     };
 
     render() {
@@ -107,11 +112,15 @@ class Dashboard extends React.Component<Props, State> {
     }
 }
 
+const mapStateToProps = (state: AppState) => ({
+    userState: state.userReducer,
+});
+
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: bindActionCreators(logout, dispatch),
 });
 
 export default connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps,
 )(Dashboard);

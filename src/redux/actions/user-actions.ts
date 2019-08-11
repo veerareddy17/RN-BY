@@ -4,7 +4,7 @@ import { AuthenticationService } from '../../services/authentication-service';
 import { AuthenticationRequest } from '../../models/request/authentication-request';
 import { AuthenticationResponse } from '../../models/response/authentication-response';
 import StorageService from '../../database/storage-service';
-import { Constants } from '../../helpers/constants';
+import { StorageConstants } from '../../helpers/storage-constants';
 
 // The action creators
 export const requestAction = () => {
@@ -40,7 +40,6 @@ export const authenticate = (username: string, password: string): ((dispatch: Di
         const response = await AuthenticationService.authenticate(authRequest);
         if (response.data !== null) {
             dispatch(successAction(response.data));
-            console.log('Success Auth token :', await StorageService.get<string>(Constants.TOKEN_KEY));
         } else {
             dispatch(failureAction(response.errors));
         }
@@ -49,10 +48,9 @@ export const authenticate = (username: string, password: string): ((dispatch: Di
 
 export const logout = (): ((dispatch: Dispatch) => Promise<void>) => {
     return async (dispatch: Dispatch) => {
-        console.log('Logging out..');
         try {
             dispatch(logoutAction());
-            await StorageService.removeKey(Constants.TOKEN_KEY);
+            await StorageService.removeKey(StorageConstants.TOKEN_KEY);
         } catch (error) {
             console.log('Logout action', error);
         }

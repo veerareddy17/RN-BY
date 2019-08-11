@@ -23,7 +23,7 @@ import { AppState } from '../../redux/store';
 import { NetworkContext } from '../../provider/network-provider';
 import store from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
-import { fetchCampaignsApi, selectedCampaign } from '../../redux/actions/campaign-actions';
+import { fetchCampaigns, selectedCampaign } from '../../redux/actions/campaign-actions';
 
 export interface CampaignListProps {
     navigation: NavigationScreenProp<any>;
@@ -99,7 +99,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    fetchCampaigns: bindActionCreators(fetchCampaignsApi, dispatch),
+    fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
 });
 
