@@ -25,7 +25,7 @@ import {
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { fetchCampaigns } from '../../redux/actions/campaign-actions';
-import { createLeadApi, verifyOTPApi } from '../../redux/actions/lead-actions';
+import { createLeadApi, verifyOTP } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
@@ -38,7 +38,7 @@ export interface CreateLeadProps {
     leadState: any;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    generateAndVerifyOTP(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    generateAndVerifyOTP(phone: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface CreateLeadState {
@@ -84,9 +84,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     }
 
     verifyOTP = async () => {
-        await this.props.generateAndVerifyOTP();
+        await this.props.generateAndVerifyOTP(this.state.phone);
         console.log('OTP sent --->', this.props.leadState.otp);
-        if (this.props.leadState.otp == 'ok') {
+        if (this.props.leadState.otp.status == 'ok') {
             this.props.navigation.navigate('OTP');
         }
     };
@@ -390,7 +390,7 @@ const mapStateToProps = (state: AppState) => ({
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     createLead: bindActionCreators(createLeadApi, dispatch),
     fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
-    generateAndVerifyOTP: bindActionCreators(verifyOTPApi, dispatch),
+    generateAndVerifyOTP: bindActionCreators(verifyOTP, dispatch),
 });
 
 export default connect(

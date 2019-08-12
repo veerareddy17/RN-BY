@@ -44,10 +44,10 @@ export const selectedCampaignActions = campaignSelectedId => {
 
 export const fetchCampaigns = (): ((dispatch: Dispatch) => Promise<void>) => {
     return async (dispatch: Dispatch) => {
-        const user = await StorageService.get<string>(StorageConstants.USER);
-        console.log('Fetch camp action User ->', user);
+        // const user = await StorageService.get<string>(StorageConstants.USER);
+        // console.log('Fetch camp action User ->', user);
         dispatch(campaignStartAction());
-        const response = await CampaignService.fetchCampaigns(user.id, 1);
+        const response = await CampaignService.fetchCampaigns(1);
         console.log('Fetch camp action resp: --', response);
         if (response && response.data) {
             dispatch(fetchCampaignsAction(response.data.data));

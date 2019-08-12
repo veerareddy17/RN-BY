@@ -1,5 +1,6 @@
-import storage from '../database/storage-service';
 import config from './config';
+import StorageService from '../database/storage-service';
+import { StorageConstants } from './storage-constants';
 
 export default async function generateOTP() {
     try {
@@ -12,9 +13,9 @@ export default async function generateOTP() {
             otp = otp + digits[index];
         }
 
-        await storage.store('OTP', otp);
+        await StorageService.store(StorageConstants.USER_OTP, otp);
 
-        return otp;
+        return JSON.stringify(otp);
     } catch (error) {
         console.log('Something went wrong', error);
     }

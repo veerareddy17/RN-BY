@@ -4,13 +4,13 @@ import { ResponseViewModel } from '../models/response/response-view-model';
 import { StorageConstants } from '../helpers/storage-constants';
 import { CampaignResponse } from '../models/response/campaign-response';
 import { PaginatedResponseModel } from '../models/response/paginated-response-model';
+import { APIConstants } from '../helpers/api-constants';
 
 export class CampaignService {
     public static fetchCampaigns = async (
-        userId: string,
         pgNo: number,
     ): Promise<ResponseViewModel<PaginatedResponseModel<CampaignResponse>>> => {
-        const response = await HttpBaseService.get<CampaignResponse>(`/user/${userId}/campaigns?page=${pgNo}`);
+        const response = await HttpBaseService.get<CampaignResponse>(APIConstants.USER_CAMPAIGNS_URL + `${pgNo}`);
         console.log('Campaigns Response : ', response);
         if (response && response.data) {
             try {

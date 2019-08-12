@@ -1,17 +1,11 @@
 import { Dispatch } from 'redux';
-import axios from 'axios';
-import authHeader from '../../helpers/auth-header';
-import config from '../../helpers/config';
 import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL, OTP_SENT } from './action-types';
-import storage from '../../database/storage-service';
 import generateOTP from '../../helpers/otp-creation';
 import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
-import { CampaignService } from '../../services/campaign-service';
 import { LeadService } from '../../services/lead-service';
-import { HttpBaseService } from '../../services/http-base-service';
-import { LeadRequest } from '../../models/request/lead-request';
-import { LeadResponse } from '../../models/response';
+import { LeadRequest, OTPRequest } from '../../models/request';
+import { LeadResponse, OTPResponse } from '../../models/response';
 
 // The action creators
 export const createLeadAction = lead => {
@@ -47,10 +41,10 @@ export const leadFailureAction = error => {
     };
 };
 
-export const otpSuccessAction = (status: string) => {
+export const otpSuccessAction = (otpResponse: OTPResponse) => {
     return {
         type: OTP_SENT,
-        payload: status,
+        payload: otpResponse,
     };
 };
 
@@ -58,12 +52,12 @@ export const otpSuccessAction = (status: string) => {
 export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     try {
         dispatch(leadStartAction());
-        const response = await LeadService._fetchLeads();
+        const response = await LeadService.fetchLeads(1);
         console.log(response.data);
         if (response && response.data) {
-            dispatch(fetchLeadsAction(response.data));
+            dispatch(fetchLeadsAction(response.data.data));
             try {
-                await storage.store('leads', response.data);
+                await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -86,7 +80,8 @@ export const createLeadApi = (newLead: any): ((dispatch: Dispatch) => Promise<vo
                 dispatch(createLeadAction(response.data));
                 try {
                     //TODO: Fetch exisiting leads and append new lead to the list
-                    await storage.store('leads', response.data);
+                    await StorageService.store(StorageConstants.USER_LEADS, response.data);
+                    await StorageService.removeKey(StorageConstants.USER_OTP);
                 } catch (error) {
                     console.log('Error in storing asyncstorage', error);
                 }
@@ -101,29 +96,22 @@ export const createLeadApi = (newLead: any): ((dispatch: Dispatch) => Promise<vo
 };
 
 // POST method to generate and verify OTP
-export const verifyOTPApi = () => async (dispatch: Dispatch) => {
-    let header = await authHeader();
+export const verifyOTP = (phone: string) => async (dispatch: Dispatch) => {
     let OTP = await generateOTP();
+    let otpRequest = new OTPRequest(phone, OTP);
 
-    const options = {
-        headers: { ...header, 'Content-Type': 'application/json' },
-    };
-    const body = JSON.stringify({
-        phone: '7019432993',
-        code: OTP,
-    });
     try {
-        let response = await axios.post(`${config.api.baseURL}/meta/sms`, body, options);
-        console.log(response.data.data);
-        if (response.data.data !== null) {
+        let response = await LeadService.verifyOTP(otpRequest);
+        console.log(response.data);
+        if (response && response.data) {
             try {
-                dispatch(otpSuccessAction(response.data.data.status));
+                dispatch(otpSuccessAction(response.data));
                 console.log('OTP sent to server--', OTP);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
         } else {
-            dispatch(leadFailureAction(response.data.erros));
+            dispatch(leadFailureAction(response.errors));
         }
     } catch (error) {
         // Error

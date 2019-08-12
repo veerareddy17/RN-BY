@@ -3,6 +3,8 @@ import { NavigationScreenProp } from 'react-navigation';
 import { Container, Header, Content, Button, Text, Left, Body, Right, Title, Item, Input, Toast } from 'native-base';
 import styles from './otp-style';
 import storage from '../../database/storage-service';
+import StorageService from '../../database/storage-service';
+import { StorageConstants } from '../../helpers/storage-constants';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -24,10 +26,10 @@ class OTPScreen extends Component<Props, State> {
     };
 
     handleSubmit = async () => {
-        console.log('OTP entered', this.state.otp);
-        const storedOTP = await storage.get<string>('OTP');
-        console.log('From storage->', storedOTP);
-        if (storedOTP === JSON.stringify(this.state.otp)) {
+        console.log('OTP entered', typeof this.state.otp);
+        const storedOTP = await StorageService.get<string>(StorageConstants.USER_OTP);
+        console.log('From storage->', typeof storedOTP);
+        if (storedOTP === this.state.otp) {
             console.log('Lead created successfully...');
             // Toast.show({
             //     text: 'Lead created successfully...',
