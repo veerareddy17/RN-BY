@@ -106,7 +106,6 @@ export const verifyOTP = (phone: string) => async (dispatch: Dispatch) => {
         if (response && response.data) {
             try {
                 dispatch(otpSuccessAction(response.data));
-                console.log('OTP sent to server--', OTP);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

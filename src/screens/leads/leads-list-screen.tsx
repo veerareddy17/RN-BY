@@ -17,11 +17,10 @@ import {
     Icon,
 } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
-import { AppState } from '../../redux/reducers';
+import { AppState } from '../../redux/store';
 import Lead from './lead';
 import { fetchAllLeadsApi } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
-import store from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
 
 export interface LeadListProps {
@@ -39,9 +38,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     };
     async componentDidMount() {
         if (this.context.isConnected) {
-            console.log('before fetch leads -state', store.getState());
             await this.props.fetchLeads();
-            console.log('After fetch leads---state', store.getState());
         } else {
             console.log('Show Offline pop-up');
         }
