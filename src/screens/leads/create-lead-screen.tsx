@@ -66,7 +66,9 @@ export interface CreateLeadState {
 //const Item = Picker.Item;
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
-
+    static navigationOptions = {
+        title: 'Capture Lead',
+    };
     async componentDidMount() {
         try {
             const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
@@ -162,17 +164,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     render() {
         return (
             <Container>
-                <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#74137d">
-                    <Left>
-                        <Button transparent onPress={() => this.props.navigation.navigate('Dashboard')}>
-                            <Icon name="arrow-back" />
-                        </Button>
-                    </Left>
-                    <Body>
-                        <Title>Lead Capture</Title>
-                    </Body>
-                    <Right />
-                </Header>
                 <Content>
                     <View style={styles.campaingStyle}>
                         <Text>Your Campaign:{this.state.campaignName}</Text>

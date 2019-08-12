@@ -1,4 +1,4 @@
-import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { createStackNavigator, createAppContainer, createSwitchNavigator } from 'react-navigation';
 import Dashboard from '../screens/dashboard/dashboard-screen';
 import Login from '../screens/login/login-screen';
 import Splash from '../screens/splash/splash-screen';
@@ -7,16 +7,12 @@ import CreateLead from '../screens/leads/create-lead-screen';
 import CampaignList from '../screens/campaign/campaign-list-selection';
 import OTPScreen from '../screens/leads/otp-screen';
 
-const homeStackNavigator = createStackNavigator(
+const AuthStack = createStackNavigator({ Login: Login });
+
+const AppStack = createStackNavigator(
     {
         Dashboard: {
             screen: Dashboard,
-        },
-        Login: {
-            screen: Login,
-        },
-        Splash: {
-            screen: Splash,
         },
         LeadList: {
             screen: LeadList,
@@ -32,10 +28,31 @@ const homeStackNavigator = createStackNavigator(
         },
     },
     {
-        initialRouteName: 'Splash',
-        headerMode: 'none',
+        initialRouteName: 'Dashboard',
+        /* The header config from Dashboard */
+        defaultNavigationOptions: {
+            headerStyle: {
+                backgroundColor: '#813588',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                alignSelf: 'center',
+            },
+        },
     },
 );
-const AppContainer = createAppContainer(homeStackNavigator);
+const AppContainer = createAppContainer(
+    createSwitchNavigator(
+        {
+            AuthLoading: Splash,
+            App: AppStack,
+            Auth: AuthStack,
+        },
+        {
+            initialRouteName: 'AuthLoading',
+        },
+    ),
+);
 
 export default AppContainer;

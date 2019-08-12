@@ -34,7 +34,9 @@ export interface LeadListState {}
 
 class LeadList extends Component<LeadListProps, LeadListState> {
     static contextType = NetworkContext;
-
+    static navigationOptions = {
+        title: 'Leads',
+    };
     async componentDidMount() {
         if (this.context.isConnected) {
             console.log('before fetch leads -state', store.getState());
@@ -58,13 +60,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     render() {
         return (
             <Container>
-                <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="purple">
-                    <Left></Left>
-                    <Body>
-                        <Title>Leads</Title>
-                    </Body>
-                    <Right />
-                </Header>
                 <Content padder>
                     {this.props.leadState.isLoading ? (
                         <View>

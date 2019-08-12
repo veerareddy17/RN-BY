@@ -30,6 +30,18 @@ export interface State {
     campaignName: any;
 }
 class Dashboard extends React.Component<Props, State> {
+    static navigationOptions = ({ navigation }) => {
+        const { params = {} } = navigation.state;
+        return {
+            title: 'Dashboard',
+            headerRight: (
+                <Button transparent onPress={() => params.logout()}>
+                    <Icon name="ios-log-out" style={{ color: 'white' }} />
+                </Button>
+            ),
+        };
+    };
+
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -38,7 +50,9 @@ class Dashboard extends React.Component<Props, State> {
         };
     }
 
-    componentDidMount() {}
+    componentDidMount() {
+        this.props.navigation.setParams({ logout: this.logout });
+    }
 
     getLeads = () => {
         this.props.navigation.navigate('LeadList');
@@ -59,7 +73,7 @@ class Dashboard extends React.Component<Props, State> {
     render() {
         return (
             <Container>
-                <Header style={{ backgroundColor: 'purple' }} androidStatusBarColor="purple">
+                {/* <Header style={{ backgroundColor: 'purple' }} androidStatusBarColor="purple">
                     <Left>
                         <Button transparent></Button>
                     </Left>
@@ -71,7 +85,7 @@ class Dashboard extends React.Component<Props, State> {
                             <Icon name="ios-log-out" style={{ color: 'white' }} />
                         </Button>
                     </Right>
-                </Header>
+                </Header> */}
 
                 <Content>
                     <View style={{ alignItems: 'center', flexDirection: 'column', padding: 10 }}>

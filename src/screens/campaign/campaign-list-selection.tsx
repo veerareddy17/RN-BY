@@ -36,7 +36,9 @@ export interface CampaignListState {}
 
 class CampaignList extends Component<CampaignListProps, CampaignListState> {
     static contextType = NetworkContext;
-
+    static navigationOptions = {
+        title: 'Select Campaign',
+    };
     async componentDidMount() {
         await this.props.fetchCampaigns();
         console.log('After fetch campains---state', store.getState());
@@ -54,13 +56,6 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
     render() {
         return (
             <Container>
-                <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="purple">
-                    <Left></Left>
-                    <Body>
-                        <Title>Select Campaign</Title>
-                    </Body>
-                    <Right />
-                </Header>
                 <Content>
                     {this.props.campaignState.isLoading ? (
                         <View>

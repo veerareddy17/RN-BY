@@ -44,7 +44,7 @@ class Login extends React.Component<Props, State> {
         console.log(' User', this.state.email, this.state.password);
         await this.props.requestLoginApi('bde@example.com', 'admin');
         console.log('after login --state', this.props.userState);
-        this.props.navigation.replace(this.props.userState.user.token ? 'CampaignList' : 'Login');
+        this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
     };
 
     render() {
@@ -53,7 +53,7 @@ class Login extends React.Component<Props, State> {
             <ScrollView>
                 <Container>
                     <ImageBackground source={images.background} style={{ width, height }}>
-                        <StatusBar backgroundColor="purple" barStyle="light-content" />
+                        {/* <StatusBar backgroundColor="purple" barStyle="light-content" /> */}
                         <Content contentContainerStyle={styles.containerStyle}>
                             <View style={{ alignItems: 'center', flexDirection: 'column' }}>
                                 <Image source={images.logo} />
