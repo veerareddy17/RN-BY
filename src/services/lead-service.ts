@@ -11,10 +11,10 @@ import { OTPRequest } from '../models/request';
 export class LeadService {
     //Non Paginated method
     public static _fetchLeads = async (): Promise<ResponseViewModel<LeadResponse>> => {
-        const response = await HttpBaseService._get<LeadResponse>(`/user/leads`);
+        const response = await HttpBaseService._get<LeadResponse>(APIConstants.ALL_LEADS_URL);
         if (response && response.data) {
             try {
-                // await StorageService.store(StorageConstants.USER_LEADS, response.data);
+                await StorageService.store(StorageConstants.USER_LEADS, response.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

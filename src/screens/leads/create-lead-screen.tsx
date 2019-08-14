@@ -54,13 +54,13 @@ export interface CreateLeadState {
     school_name: string;
     address: string;
     comments: string;
-    user_id: string;
     campaign_id: string;
     country_id?: number;
     state_id?: number;
     country: string;
     state: string;
     city: string;
+    pin_code: string;
 }
 
 //const Item = Picker.Item;
@@ -96,22 +96,23 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     constructor(props: CreateLeadProps) {
         super(props);
         this.state = {
-            campaignName: 'Test1',
-            name: 'Mick',
-            parent_name: 'Zack',
+            campaignName: 'INOX Cinema2',
+            name: 'Ramesh K',
+            parent_name: 'Suresh',
             email: 'zack@abc.com',
-            phone: '7019432993',
+            phone: '7019432993', //'6361253956',
             class_name: 'class 9',
             school_board: 'CSKD',
             school_name: 'CDC',
-            address: '',
+            address: 'sadasd',
             comments: '',
-            //user_id: 'f4493b36-6139-4c2d-a0a8-227c88cff71c',
-            user_id: '84d6410a-fb4e-4dd9-8fdb-0e439eebd5d4',
-            campaign_id: '',
-            country: '1',
-            state: '1',
+            country_id: 101,
+            state_id: 17,
+            pin_code: '560095',
             city: 'blore',
+            campaign_id: '722f088d-a34c-4c5e-bf9d-42810fa0bcaa',
+            country: 'India',
+            state: 'Kar',
         };
     }
 
@@ -121,8 +122,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         console.log('new Const', newLead);
         // uncomment below and pass state
         try {
-            this.verifyOTP();
-            // await this.props.createLead(newLead);
+            await this.verifyOTP();
+            await this.props.createLead(newLead);
             // this.props.navigation.navigate('LeadList');
         } catch (error) {
             console.log('Error in createlead api call');

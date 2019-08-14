@@ -15,7 +15,7 @@ export default async function generateOTP() {
 
         await StorageService.store(StorageConstants.USER_OTP, otp);
 
-        return JSON.stringify(otp);
+        return otp;
     } catch (error) {
         console.log('Something went wrong', error);
     }

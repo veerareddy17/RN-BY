@@ -52,12 +52,12 @@ export const otpSuccessAction = (otpResponse: OTPResponse) => {
 export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
     try {
         dispatch(leadStartAction());
-        const response = await LeadService.fetchLeads(1);
+        const response = await LeadService._fetchLeads();
         console.log(response.data);
         if (response && response.data) {
-            dispatch(fetchLeadsAction(response.data.data));
+            dispatch(fetchLeadsAction(response.data));
             try {
-                await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
+                await StorageService.store(StorageConstants.USER_LEADS, response.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -81,7 +81,7 @@ export const createLeadApi = (newLead: any): ((dispatch: Dispatch) => Promise<vo
                 try {
                     //TODO: Fetch exisiting leads and append new lead to the list
                     await StorageService.store(StorageConstants.USER_LEADS, response.data);
-                    await StorageService.removeKey(StorageConstants.USER_OTP);
+                    // await StorageService.removeKey(StorageConstants.USER_OTP);
                 } catch (error) {
                     console.log('Error in storing asyncstorage', error);
                 }
@@ -98,6 +98,7 @@ export const createLeadApi = (newLead: any): ((dispatch: Dispatch) => Promise<vo
 // POST method to generate and verify OTP
 export const verifyOTP = (phone: string) => async (dispatch: Dispatch) => {
     let OTP = await generateOTP();
+    console.log('OTP generated - ', OTP);
     let otpRequest = new OTPRequest(phone, OTP);
 
     try {

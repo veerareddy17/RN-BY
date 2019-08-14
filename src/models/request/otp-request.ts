@@ -1,9 +1,9 @@
 export class OTPRequest {
     public phone: string;
-    public otp: string;
+    public code: string;
 
-    constructor(phone: string, otp: string) {
+    constructor(phone: string, code: string) {
         this.phone = phone;
-        this.otp = otp;
+        this.code = code;
     }
 }
