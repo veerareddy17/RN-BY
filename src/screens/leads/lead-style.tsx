@@ -22,7 +22,18 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 3,
         top: 0
+    },
+    buttonPickerStyle: {
+        backgroundColor: '#FCFCFC',
+        borderWidth: 1,
+        borderRadius: 5,
+        marginTop: 10,
+        height: 50,
+    },
+    marginLeft: {
+        marginLeft: 15,
     }
+
 
 })
 

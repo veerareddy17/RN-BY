@@ -15,6 +15,7 @@ export class HttpBaseService {
         axios.defaults.baseURL = Config.api.baseURL;
         axios.defaults.headers = {
             'content-type': 'application/json',
+            'vnd_source': 'APP'
         };
         axios.interceptors.request.use(
             async config => {

@@ -1,3 +1,5 @@
+import { Formik } from 'formik'
+
 import * as React from 'react';
 import { Component } from 'react';
 import {
@@ -21,29 +23,44 @@ import {
     Left,
     Footer,
     FooterTab,
+    Row,
+    Grid,
 } from 'native-base';
+
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
-import { fetchCampaigns } from '../../redux/actions/campaign-actions';
+import { fetchCampaigns, selectedCampaign } from '../../redux/actions/campaign-actions';
 import { createLeadApi, verifyOTP } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
-import styles from './lead-style';
+import leadStyle from './lead-style';
+import style from '../style/styles';
+
+var FloatingLabel = require('react-native-floating-labels');
+
 import { StorageConstants } from '../../helpers/storage-constants';
 import StorageService from '../../database/storage-service';
+import RBSheet from "react-native-raw-bottom-sheet";
+import BottomSheet from "../../components/bottom-sheet/bottom-sheet";
+import store from '../../redux/store';
+import { captureLocation } from '../../redux/actions/location-action';
+import { leadValidation } from '../../validations/validation-model';
+import { Error } from '../error/error';
+
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
     campaignState: any;
     leadState: any;
+    location: any;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     generateAndVerifyOTP(phone: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    selectCampaign(campaignId: any): void;
+    captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface CreateLeadState {
-    // lead: {};
-    // selectedCampaign: '';
     campaignName: string;
     name: string;
     parent_name: string;
@@ -56,14 +73,17 @@ export interface CreateLeadState {
     comments: string;
     campaign_id: string;
     country_id?: number;
+    otp: String;
     state_id?: number;
     country: string;
     state: string;
     city: string;
+    campaignList: Array<String>;
+    statuses: Array<String>;
     pin_code: string;
+    isOTPVerified: boolean;
 }
 
-//const Item = Picker.Item;
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
     static navigationOptions = {
@@ -72,304 +92,438 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     async componentDidMount() {
         try {
             const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+            await this.props.fetchCampaigns();
+            const compaignList = store.getState().campaignReducer.campaignList;
+            this.setState({ campaignList: compaignList });
+            let statuseList = new Array(compaignList.length)
+            for (let i = 0; i < statuseList.length; i++) {
+                statuseList[i] = 'visible';
+            }
+            this.setState({ statuses: statuseList });
             this.setState({ campaign_id: selectedCampaign.id });
             this.setState({ campaignName: selectedCampaign.name });
         } catch (error) {
-            console.log('Something went wrong', error);
+            {/*
+            error to be handled
+            */}
         }
 
         if (this.context.isConnected) {
             await this.props.fetchCampaigns();
         } else {
-            console.log('Show Offline pop-up');
+            {/*
+            show offline
+            */}
         }
     }
 
+    submitOtp = async () => {
+        const storedOTP = await StorageService.get<string>(StorageConstants.USER_OTP);
+        this.setState({ isOTPVerified: (storedOTP === this.state.otp) });
+        const { isOTPVerified, campaignList, statuses, otp, ...state } = this.state;
+        if (this.state.isOTPVerified) {
+            await this.props.createLead(state);
+            this.props.navigation.navigate('Dashboard');
+        }
+        else {
+            {/*
+            otp not verified error handling
+            */}
+        }
+    }
     verifyOTP = async () => {
         await this.props.generateAndVerifyOTP(this.state.phone);
-        console.log('OTP sent --->', this.props.leadState.otp);
-        if (this.props.leadState.otp.status == 'ok') {
-            this.props.navigation.navigate('OTP');
+        if (this.props.leadState.otp.success) {
+            await this.RBSheetOtp.open();
         }
     };
 
     constructor(props: CreateLeadProps) {
         super(props);
+        this.onPressCampaign = this.onPressCampaign.bind(this)
         this.state = {
-            campaignName: 'INOX Cinema2',
-            name: 'Ramesh K',
-            parent_name: 'Suresh',
-            email: 'zack@abc.com',
-            phone: '7019432993', //'6361253956',
-            class_name: 'class 9',
-            school_board: 'CSKD',
-            school_name: 'CDC',
-            address: 'sadasd',
+            campaignList: [],
+            campaignName: '',
+            name: '',
+            parent_name: '',
+            email: '',
+            otp: "",
+            phone: '',
+            class_name: '',
+            school_board: '',
+            school_name: '',
+            statuses: [],
+            address: '',
             comments: '',
-            country_id: 101,
-            state_id: 17,
-            pin_code: '560095',
-            city: 'blore',
-            campaign_id: '722f088d-a34c-4c5e-bf9d-42810fa0bcaa',
-            country: 'India',
-            state: 'Kar',
+            pin_code: '',
+            city: '',
+            campaign_id: '',
+            country: '',
+            state: '',
+            isOTPVerified: false
         };
     }
 
-    handleSubmit = async () => {
-        console.log('state', this.state);
-        const newLead = this.state;
-        console.log('new Const', newLead);
-        // uncomment below and pass state
+    handleSubmit = async (values) => {
+        this.setState({
+            name: values.name, school_board: values.school_board, school_name: values.school_name,
+            class_name: values.class_name, parent_name: values.parent_name, phone: values.phone, email: values.email,
+            address: values.address, country_id: values.country, state_id: values.state, city: values.city, pin_code: values.pincode
+        })
         try {
+            this.props.captureLocation();
+            {/*
+                state to have lat and long property,this.props.location.coords.lat,long
+            */}
             await this.verifyOTP();
             await this.props.createLead(newLead);
-            // this.props.navigation.navigate('LeadList');
+            this.props.navigation.navigate('Dashboard');
         } catch (error) {
-            console.log('Error in createlead api call');
+            {/*
+            error to be handled
+            */}
         }
     };
 
-    loadDashboard = () => {
-        this.props.navigation.navigate('Dashboard');
-    };
-
-    onBoardChange(value: string) {
-        this.setState({
-            school_board: value,
-        });
-    }
-    onCountryChange(value: string) {
-        console.log('onset country id', this.state, value, parseInt(value));
-        const id = parseInt(value);
-        this.setState({
-            country_id: id,
-            country: value,
-        });
-        console.log('onset country id', this.state, value, parseInt(value));
+    closeBottomSheet = () => {
+        this.RBSheet.close();
+        this.RBSheetOtp.close();
     }
 
-    onStateChange(value: string) {
-        console.log('onset state id', parseInt(value));
-        this.setState({
-            state_id: parseInt(value),
-            state: value,
-        });
-        console.log('after state id', this.state, value, parseInt(value));
+    onChangeOtpText = (fieldName: String, text: String) => {
+        this.setState({ otp: text })
     }
-    onClassChange(value: string) {
+
+    onPressCampaign = (index: number, campaign: Object) => {
+        this.props.selectCampaign(campaign.id);
         this.setState({
-            class_name: value,
+            ...this.state,
+            campaignName: campaign.name,
+            statuses: this.state.statuses.map((val, id) => {
+                if (id == index) {
+                    return 'invisible'
+                }
+                if (val == 'invisible') {
+                    return this.state.statuses[id] = "visible";
+                }
+                return val
+            })
         });
     }
+
     render() {
         return (
-            <Container>
-                <Content>
-                    <View style={styles.campaingStyle}>
-                        <Text>Your Campaign:{this.state.campaignName}</Text>
-                        <Button small bordered style={styles.buttonChangeCampaingStyle}>
-                            <Text style={{ color: 'purple' }}>Change</Text>
-                        </Button>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <Card>
-                            <CardItem header>
-                                <Text style={{ fontWeight: 'bold' }}>Student Details</Text>
-                            </CardItem>
-                            <CardItem>
-                                <Body>
-                                    <Item floatingLabel={true} style={{ marginBottom: 15 }}>
-                                        <Label style={{ marginLeft: 10 }}>Student Name</Label>
-                                        <Input
-                                            onChangeText={text => this.setState({ name: text })}
-                                            value={this.state.name}
-                                            style={styles.borderStyle}
-                                        />
-                                    </Item>
-                                    <Button style={{ backgroundColor: '#fdfdfd', marginBottom: 10 }}>
-                                        <Picker
-                                            mode="dropdown"
-                                            iosIcon={<Icon name="arrow-down" />}
-                                            style={{ width: undefined }}
-                                            placeholder="Select your Board"
-                                            placeholderStyle={{ color: '#bfc6ea' }}
-                                            placeholderIconColor="#007aff"
-                                            selectedValue={this.state.school_board}
-                                            onValueChange={this.onBoardChange.bind(this)}
-                                        >
-                                            <Picker.Item label="Karnataka Board" value="Karnataka Board" />
-                                            <Picker.Item label="Madya Pradesh Board" value="Madya Pradesh Board" />
-                                            <Picker.Item label="Delhi Board" value="Delhi Board" />
-                                        </Picker>
-                                    </Button>
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <Item floatingLabel={true} style={{ marginBottom: 15, width: 180 }}>
-                                            <Label style={{ marginLeft: 10 }}>School</Label>
-                                            <Input
-                                                onChangeText={text => this.setState({ school_name: text })}
-                                                value={this.state.school_name}
-                                                style={styles.borderStyle}
-                                            />
-                                        </Item>
-                                        <Button
-                                            style={{
-                                                backgroundColor: '#F8F8F8',
-                                                marginBottom: 10,
-                                                width: 125,
-                                                marginLeft: 15,
-                                                height: 50,
-                                            }}
-                                        >
-                                            <Picker
-                                                mode="dropdown"
-                                                iosIcon={<Icon name="arrow-down" />}
-                                                placeholder="Gender"
-                                                placeholderStyle={{ color: '#bfc6ea' }}
-                                                placeholderIconColor="#007aff"
-                                                style={{ width: undefined }}
-                                                selectedValue={this.state.class_name}
-                                                onValueChange={this.onClassChange.bind(this)}
-                                            >
-                                                <Picker.Item label="Class 1" value="Class 1" />
-                                                <Picker.Item label="Class 2" value="Class 2" />
-                                                <Picker.Item label="Class 3" value="Class 3" />
-                                                <Picker.Item label="Class 4" value="Class 4" />
-                                            </Picker>
-                                        </Button>
-                                    </View>
-                                </Body>
-                            </CardItem>
-                        </Card>
-
-                        <Card>
-                            <CardItem header>
-                                <Text style={{ fontWeight: 'bold' }}>Parent Details</Text>
-                            </CardItem>
-                            <CardItem>
-                                <Body>
-                                    <Item floatingLabel={true} style={{ marginBottom: 15 }}>
-                                        <Label style={{ marginLeft: 10 }}>Parent Name</Label>
-                                        <Input
-                                            onChangeText={text => this.setState({ parent_name: text })}
-                                            value={this.state.parent_name}
-                                            style={styles.borderStyle}
-                                        />
-                                    </Item>
-                                    <Item floatingLabel={true} style={{ marginBottom: 15 }}>
-                                        <Label style={{ marginLeft: 10 }}>Mobile Number</Label>
-                                        <Input
-                                            keyboardType="phone-pad"
-                                            maxLength={10}
-                                            onChangeText={text => this.setState({ phone: text })}
-                                            value={String(this.state.phone)}
-                                            style={styles.borderStyle}
-                                        />
-                                    </Item>
-                                    <Item floatingLabel={true} style={{ marginBottom: 15 }}>
-                                        <Label style={{ marginLeft: 10 }}>Alternate Mobile Number</Label>
-                                        <Input keyboardType="phone-pad" maxLength={10} style={styles.borderStyle} />
-                                    </Item>
-                                    <Item floatingLabel={true} style={{ marginBottom: 15 }}>
-                                        <Label style={{ marginLeft: 10 }}>Email</Label>
-                                        <Input
-                                            autoCompleteType="email"
-                                            onChangeText={text => this.setState({ email: text })}
-                                            value={this.state.email}
-                                            style={styles.borderStyle}
-                                        />
-                                    </Item>
-                                    <Item floatingLabel={true} style={{ marginBottom: 15 }}>
-                                        <Label style={{ marginLeft: 10 }}>Address</Label>
-                                        <Input
-                                            onChangeText={text => this.setState({ address: text })}
-                                            value={this.state.address}
-                                            style={styles.borderStyle}
-                                        />
-                                    </Item>
-                                    <View style={{ flexDirection: 'row' }}>
-                                        <Button
-                                            style={{
-                                                backgroundColor: '#F8F8F8',
-                                                marginBottom: 10,
-                                                width: 155,
-                                                height: 50,
-                                            }}
-                                        >
-                                            <Picker
-                                                mode="dropdown"
-                                                iosIcon={<Icon name="arrow-down" />}
-                                                placeholder="Country"
-                                                placeholderStyle={{ color: '#bfc6ea' }}
-                                                placeholderIconColor="#007aff"
-                                                style={{ width: undefined }}
-                                                selectedValue={this.state.country}
-                                                onValueChange={this.onCountryChange.bind(this)}
-                                            >
-                                                <Picker.Item label="India" value="1" />
-                                                <Picker.Item label="Sri Lanka" value="2" />
-                                            </Picker>
-                                        </Button>
-                                        <Button
-                                            style={{
-                                                backgroundColor: '#F8F8F8',
-                                                marginBottom: 10,
-                                                width: 155,
-                                                height: 50,
-                                                marginLeft: 10,
-                                            }}
-                                        >
-                                            <Picker
-                                                mode="dropdown"
-                                                iosIcon={<Icon name="arrow-down" />}
-                                                placeholder="State"
-                                                placeholderStyle={{ color: '#bfc6ea' }}
-                                                placeholderIconColor="#007aff"
-                                                style={{ width: undefined }}
-                                                selectedValue={this.state.state}
-                                                onValueChange={this.onStateChange.bind(this)}
-                                            >
-                                                <Picker.Item label="Karnataka" value="1" />
-                                                <Picker.Item label="Madya Pradesh" value="2" />
-                                            </Picker>
-                                        </Button>
-                                    </View>
-                                    <View style={{ flexDirection: 'row', marginBottom: 10 }}>
-                                        <Item floatingLabel={true} style={{ width: 155 }}>
-                                            <Label style={{ marginLeft: 10 }}>City</Label>
-                                            <Input
-                                                onChangeText={text => this.setState({ city: text })}
-                                                value={this.state.city}
-                                                style={styles.borderStyle}
-                                            />
-                                        </Item>
-                                        <Item floatingLabel={true} style={{ width: 155, marginLeft: 10 }}>
-                                            <Label style={{ marginLeft: 10 }}>Pin code</Label>
-                                            <Input style={styles.borderStyle} />
-                                        </Item>
-                                    </View>
-
-                                    <Textarea
-                                        rowSpan={5}
-                                        onChangeText={text => this.setState({ comments: text })}
-                                        style={styles.borderTextareaStyle}
-                                        value={this.state.comments}
-                                        placeholder="Comments"
+            <Formik
+                enableReinitialize
+                initialValues={{
+                    name: '', school_board: '', school_name: '', class_name: '', parent_name: '', phone: '', alternateMobileNumber: '', email: '', address: '',
+                    country: '', state: '', city: '', pincode: ''
+                }}
+                onSubmit={values => this.handleSubmit(values)}
+                validationSchema={leadValidation}
+            >
+                {({ values, handleChange, errors, setFieldTouched, touched, handleBlur, isValid, handleSubmit }) => (
+                    <Container >
+                        <Content>
+                            <View style={leadStyle.campaingStyle}>
+                                <Text>Your Campaign:{this.state.campaignName}</Text>
+                                <Button onPress={
+                                    () => {
+                                        this.setState({
+                                            ...this.state,
+                                            statuses: this.state.statuses.map((val, id) => {
+                                                return "visible";
+                                            })
+                                        });
+                                        // this.RBSheet.open();
+                                        this.RBSheetOtp.open();
+                                    }
+                                }
+                                    small bordered style={leadStyle.buttonChangeCampaingStyle}>
+                                    <Text style={{ color: 'purple' }}>Change</Text>
+                                </Button>
+                                <RBSheet
+                                    ref={ref => {
+                                        this.RBSheet = ref;
+                                    }}
+                                    height={400}
+                                    duration={150}
+                                    closeOnDragDown={true}
+                                    customStyles={{
+                                        container: {
+                                            flex: 1,
+                                            borderTopRightRadius: 20,
+                                            borderTopLeftRadius: 20
+                                        }
+                                    }}
+                                >
+                                    <BottomSheet
+                                        type="List"
+                                        data={this.state.campaignList}
+                                        statuses={this.state.statuses}
+                                        close={this.closeBottomSheet}
+                                        title='Change Campaign'
+                                        onPress={this.onPressCampaign}
                                     />
-                                </Body>
-                            </CardItem>
-                        </Card>
-                    </View>
-                    <View style={{ justifyContent: 'flex-end' }}></View>
-                </Content>
-                <Footer>
-                    <FooterTab>
-                        <Button full={true} onPress={this.handleSubmit} style={{ backgroundColor: 'purple' }}>
-                            <Text style={{ color: 'white', fontWeight: 'bold' }}>Submit</Text>
-                        </Button>
-                    </FooterTab>
-                </Footer>
-            </Container>
+                                </RBSheet>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Card>
+                                    <CardItem header>
+                                        <Text style={{ fontWeight: 'bold' }}>Student Details</Text>
+                                    </CardItem>
+                                    <CardItem>
+                                        <Body>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel value={values.name}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('name')}
+                                                        onBlur={handleBlur('name')}>Student Name</FloatingLabel>
+                                                    <Error error={errors.name} touched={touched.name} />
+                                                </View>
+                                            </View>
+                                            <Button style={leadStyle.buttonPickerStyle}>
+                                                <Picker
+                                                    mode="dropdown"
+                                                    iosIcon={<Icon name="arrow-down" />}
+                                                    style={{ fontSize: 15, width: undefined }}
+                                                    placeholder="Select your Board"
+                                                    placeholderStyle={{ color: '#bfc6ea' }}
+                                                    placeholderIconColor="#007aff"
+                                                    selectedValue={values.school_board}
+                                                    onValueChange={(value) => {
+                                                        handleChange('school_board')(value);
+                                                        setFieldTouched('school_board', true);
+                                                    }}
+                                                >
+                                                    <Picker.Item label="Please select" value="" />
+                                                    <Picker.Item label="Karnataka Board" value="Karnataka Board" />
+                                                    <Picker.Item label="Madya Pradesh Board" value="Madya Pradesh Board" />
+                                                    <Picker.Item label="Delhi Board" value="Delhi Board" />
+                                                </Picker>
+                                            </Button>
+                                            <Error error={errors.school_board} touched={touched.school_board} />
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <View style={{ flex: .60 }}>
+                                                    <FloatingLabel value={values.school_name}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('school_name')}
+                                                        onBlur={() => setFieldTouched('school_name')}>School Name</FloatingLabel>
+                                                    <Error error={errors.school_name} touched={touched.school_name} />
+                                                </View>
+                                                <View style={[leadStyle.marginLeft, style.flexQuater]}>
+                                                    <Button style={leadStyle.buttonPickerStyle}>
+                                                        <Picker
+                                                            mode="dropdown"
+                                                            iosIcon={<Icon name="arrow-down" />}
+                                                            placeholder="Class"
+                                                            placeholderStyle={{ color: '#bfc6ea' }}
+                                                            placeholderIconColor="#007aff"
+                                                            style={{ width: undefined }}
+                                                            selectedValue={values.class_name}
+                                                            onValueChange={(value) => {
+                                                                handleChange('class_name')(value);
+                                                                setFieldTouched('class_name', true);
+                                                            }}
+                                                        >
+                                                            <Picker.Item label="Class 1" value="Class 1" />
+                                                            <Picker.Item label="Class 2" value="Class 2" />
+                                                            <Picker.Item label="Class 3" value="Class 3" />
+                                                            <Picker.Item label="Class 4" value="Class 4" />
+                                                        </Picker>
+                                                    </Button>
+                                                    <Error error={errors.class_name} touched={touched.class_name} />
+                                                </View>
+
+                                            </View>
+                                        </Body>
+                                    </CardItem>
+                                </Card>
+                                <Card>
+                                    <CardItem header>
+                                        <Text style={{ fontWeight: 'bold' }}>Parent Details</Text>
+                                    </CardItem>
+                                    <CardItem>
+                                        <Body>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel value={values.parent_name}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('parent_name')}
+                                                        onBlur={() => setFieldTouched('parent_name')}>Parent Name</FloatingLabel>
+                                                    <Error error={errors.parent_name} touched={touched.parent_name} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel value={values.phone}
+                                                        keyboardType="phone-pad"
+                                                        maxLength={10}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('phone')}
+                                                        onBlur={() => setFieldTouched('phone')}>Mobile Number</FloatingLabel>
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel value={values.alternateMobileNumber}
+                                                        keyboardType="phone-pad"
+                                                        maxLength={10}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('alternateMobileNumber')}
+                                                        onBlur={() => setFieldTouched('alternateMobileNumber')}>Alternate Mobile Number</FloatingLabel>
+                                                    <Error error={errors.alternateMobileNumber} touched={touched.alternateMobileNumber} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel value={values.email}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('email')}
+                                                        onBlur={() => setFieldTouched('email')}>Email</FloatingLabel>
+                                                    <Error error={errors.email} touched={touched.email} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel value={values.address}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('address')}
+                                                        onBlur={() => setFieldTouched('address')}>Address</FloatingLabel>
+                                                    <Error error={errors.address} touched={touched.address} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <View style={style.felxHalf}>
+                                                    <Button style={[leadStyle.buttonPickerStyle,]}>
+                                                        <Picker
+                                                            mode="dropdown"
+                                                            iosIcon={<Icon name="arrow-down" />}
+                                                            placeholder="Country"
+                                                            placeholderStyle={{ color: '#bfc6ea' }}
+                                                            placeholderIconColor="#007aff"
+                                                            style={{ width: undefined }}
+                                                            selectedValue={values.country}
+                                                            onValueChange={(value) => {
+                                                                handleChange('country')(value);
+                                                                setFieldTouched('country', true);
+                                                            }}
+                                                        >
+                                                            <Picker.Item label="India" value="1" />
+                                                            <Picker.Item label="Sri Lanka" value="2" />
+                                                        </Picker>
+                                                    </Button>
+                                                    <Error error={errors.country} touched={touched.country} />
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
+                                                    <Button style={leadStyle.buttonPickerStyle}>
+                                                        <Picker
+                                                            mode="dropdown"
+                                                            iosIcon={<Icon name="arrow-down" />}
+                                                            placeholder="State"
+                                                            placeholderStyle={{ color: '#bfc6ea' }}
+                                                            placeholderIconColor="#007aff"
+                                                            style={{ width: undefined }}
+                                                            selectedValue={values.state}
+                                                            onValueChange={(value) => {
+                                                                handleChange('state')(value);
+                                                                setFieldTouched('state', true);
+                                                            }}
+                                                        >
+                                                            <Picker.Item label="Karnataka" value="1" />
+                                                            <Picker.Item label="Madya Pradesh" value="2" />
+                                                        </Picker>
+                                                    </Button>
+                                                    <Error error={errors.state} touched={touched.state} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1, justifyContent: "center", alignItems: "center" }}>
+                                                <View style={[style.felxHalf]}>
+                                                    <FloatingLabel value={values.city}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('city')}
+                                                        onBlur={() => setFieldTouched('city')}>City</FloatingLabel>
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
+                                                    <FloatingLabel value={values.pincode}
+                                                        keyboardType="phone-pad"
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={style.formInput}
+                                                        onChangeText={handleChange('pincode')}
+                                                        onBlur={() => setFieldTouched('pincode')}>Pin Code</FloatingLabel>
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1, marginBottom: 10, justifyContent: "center", alignItems: "center" }}>
+                                                <View style={[style.felxHalf]}>
+                                                    <Error error={errors.city} touched={touched.city} />
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
+                                                    <Error error={errors.pincode} touched={touched.pincode} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <View>{isValid}</View>
+                                                    <Textarea style={{ borderRadius: 5 }} rowSpan={5} bordered={true} placeholder="Comments" />
+                                                </View>
+                                            </View>
+                                        </Body>
+                                    </CardItem>
+                                </Card>
+                            </View>
+                        </Content>
+                        <Footer>
+                            <FooterTab>
+                                <Button full={true} onPress={handleSubmit} style={{ backgroundColor: 'purple' }}>
+                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Save</Text>
+                                </Button>
+                                <RBSheet
+                                    ref={ref => {
+                                        this.RBSheetOtp = ref;
+                                    }}
+                                    closeOnPressMask={false}
+                                    duration={10}
+                                    customStyles={{
+                                        container: {
+                                            height: 400,
+                                            borderTopRightRadius: 20,
+                                            borderTopLeftRadius: 20
+                                        }
+                                    }}
+                                >
+                                    <BottomSheet
+                                        type="inputType"
+                                        actionType="Submit"
+                                        onChangeText={this.onChangeOtpText}
+                                        data={["OTP",]}
+                                        close={this.closeBottomSheet}
+                                        submit={this.submitOtp}
+                                        title='Enter the OTP'
+                                    />
+                                </RBSheet>
+                            </FooterTab>
+                        </Footer>
+                    </Container>
+                )}
+            </Formik >
         );
     }
 }
@@ -377,12 +531,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 const mapStateToProps = (state: AppState) => ({
     campaignState: state.campaignReducer,
     leadState: state.leadReducer,
+    location: state.locationReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     createLead: bindActionCreators(createLeadApi, dispatch),
     fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
     generateAndVerifyOTP: bindActionCreators(verifyOTP, dispatch),
+    selectCampaign: bindActionCreators(selectedCampaign, dispatch),
+    captureLocation: bindActionCreators(captureLocation, dispatch)
 });
 
 export default connect(

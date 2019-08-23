@@ -1,3 +1,4 @@
+import { Location } from './../../models/request/authentication-request';
 import { Dispatch } from 'redux';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-types';
 import { AuthenticationService } from '../../services/authentication-service';
@@ -33,10 +34,12 @@ export const logoutAction = () => {
     };
 };
 
-export const authenticate = (username: string, password: string): ((dispatch: Dispatch) => Promise<void>) => {
+export const authenticate = (username: string, password: string, latitude: number, longitude: number): ((dispatch: Dispatch) => Promise<void>) => {
     return async (dispatch: Dispatch) => {
         dispatch(requestAction());
-        const authRequest = new AuthenticationRequest(username, password);
+
+        const authRequest = new AuthenticationRequest(username, password, new Location(latitude, longitude));
+        console.log('auth request ==>', authRequest);
         const response = await AuthenticationService.authenticate(authRequest);
         if (response.data !== null) {
             dispatch(successAction(response.data));

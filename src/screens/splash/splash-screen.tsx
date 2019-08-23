@@ -11,6 +11,7 @@ export interface Props {
 }
 export interface State {}
 class Splash extends React.Component<Props, State> {
+    static navigationOptions = { header: null };
     async componentDidMount() {
         const userTokenExists = await AuthenticationService.authCheck();
         this.props.navigation.navigate(userTokenExists ? 'App' : 'Auth');

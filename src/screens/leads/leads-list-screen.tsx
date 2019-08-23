@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { FlatList, ListView } from "react-native"
 import { connect } from 'react-redux';
 import {
     Text,
@@ -12,6 +13,8 @@ import {
     Title,
     Right,
     Body,
+    List,
+    ListItem,
     Footer,
     FooterTab,
     Icon,
@@ -19,26 +22,36 @@ import {
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
 import Lead from './lead';
-import { fetchAllLeadsApi } from '../../redux/actions/lead-actions';
+import { fetchAllLeadsApi, fetchLeadsAction } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
 
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
-    fetchLeads(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchLeads(pageNumber: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
-export interface LeadListState {}
+export interface LeadListState {
+    pageNumber: number;
+}
 
 class LeadList extends Component<LeadListProps, LeadListState> {
     static contextType = NetworkContext;
     static navigationOptions = {
         title: 'Leads',
     };
+    constructor(props: LeadListProps) {
+        super(props);
+        this.fetchLeadsList = this.fetchLeadsList.bind(this);
+        this.state = {
+            pageNumber: 1,
+
+        }
+    }
     async componentDidMount() {
         if (this.context.isConnected) {
-            await this.props.fetchLeads();
+            await this.props.fetchLeads(0);
         } else {
             console.log('Show Offline pop-up');
         }
@@ -53,24 +66,47 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     loadDashboard = () => {
         this.props.navigation.navigate('Dashboard');
     };
+    async  fetchLeadsList() {
+        if (this.context.isConnected) {
+            await this.props.fetchLeads(this.state.pageNumber);
+        } else {
+            console.log('Show Offline pop-up');
+        }
+    }
+    loadMorePage = () => {
+        this.setState((prevState, props) => ({
+            pageNumber: prevState.pageNumber + 1
+        }));
+        this.fetchLeadsList()
+
+    }
 
     render() {
         return (
             <Container>
-                <Content padder>
+                <View style={{ flex: 1 }}>
                     {this.props.leadState.isLoading ? (
                         <View>
                             <Spinner />
                             <Text>Fetching Leads...</Text>
                         </View>
                     ) : (
-                        <View>
-                            {this.props.leadState.leadList.map(lead => {
-                                return <Lead lead={lead} key={lead.id} />;
-                            })}
-                        </View>
-                    )}
-                </Content>
+                            <View>
+                                <FlatList
+                                    data={this.props.leadState.leadList}
+                                    renderItem={({ item, index }) => <ListItem key={item.id} ><Body><Lead lead={item} /></Body></ListItem>
+                                    }
+                                    onEndReached={(x) => this.loadMorePage()}
+                                    keyExtractor={(item, index) => `${item.id}+${index}`}
+
+                                    onEndReachedThreshold={0.1}
+                                    initialNumToRender={2}
+                                />
+                            </View>
+
+
+                        )}
+                </View>
                 <Footer>
                     <FooterTab style={{ backgroundColor: 'purple' }}>
                         <Button
@@ -91,8 +127,8 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         </Button>
                         <Button
                             vertical
-                            //   active={props.navigationState.index === 2}
-                            // onPress={this.getLeads}
+                        //   active={props.navigationState.index === 2}
+                        // onPress={this.getLeads}
                         >
                             <Icon name="person" style={{ color: 'white' }} />
                             <Text style={{ color: 'white' }}>Lead List</Text>

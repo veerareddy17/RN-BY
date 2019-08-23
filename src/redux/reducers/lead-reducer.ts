@@ -22,7 +22,7 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 status: 'done', // add some valid flag
                 isLoading: false,
-                leadList: action.payload,
+                leadList: state.leadList.concat(action.payload),
             };
         case LOAD_LEAD_START:
             return {

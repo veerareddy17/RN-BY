@@ -49,13 +49,20 @@ export const otpSuccessAction = (otpResponse: OTPResponse) => {
 };
 
 // GET method to fetch all captured leads
-export const fetchAllLeadsApi = () => async (dispatch: Dispatch) => {
+export const fetchAllLeadsApi = (pageNumber: number) => async (dispatch: Dispatch) => {
     try {
-        dispatch(leadStartAction());
-        const response = await LeadService._fetchLeads();
+        console.log("action lead is... =>", pageNumber);
+        if (pageNumber === 0) {
+            console.log("inside if consyion lead action is")
+
+            dispatch(leadStartAction());
+        }
+
+
+        const response = await LeadService.fetchLeads(pageNumber);
         console.log(response.data);
         if (response && response.data) {
-            dispatch(fetchLeadsAction(response.data));
+            dispatch(fetchLeadsAction(response.data.data));
             try {
                 await StorageService.store(StorageConstants.USER_LEADS, response.data);
             } catch (error) {

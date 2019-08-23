@@ -32,7 +32,7 @@ export interface CampaignListProps {
     selectCampaign(campaignId: any): void;
 }
 
-export interface CampaignListState {}
+export interface CampaignListState { }
 
 class CampaignList extends Component<CampaignListProps, CampaignListState> {
     static contextType = NetworkContext;
@@ -63,26 +63,26 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                             <Text>Fetching Campaigns...</Text>
                         </View>
                     ) : (
-                        <View>
-                            <List>
-                                {this.props.campaignState.campaignList.map(campaign => {
-                                    return (
-                                        <ListItem>
-                                            <Left>
-                                                <Text>{campaign.name}</Text>
-                                            </Left>
-                                            <Right>
-                                                <Icon
-                                                    name="arrow-forward"
-                                                    onPress={() => this.handleSelections(campaign)}
-                                                />
-                                            </Right>
-                                        </ListItem>
-                                    );
-                                })}
-                            </List>
-                        </View>
-                    )}
+                            <View>
+                                <List>
+                                    {this.props.campaignState.campaignList.map(campaign => {
+                                        return (
+                                            <ListItem>
+                                                <Left>
+                                                    <Text>{campaign.name}</Text>
+                                                </Left>
+                                                <Right>
+                                                    <Icon
+                                                        name="arrow-forward"
+                                                        onPress={() => this.handleSelections(campaign)}
+                                                    />
+                                                </Right>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
+                            </View>
+                        )}
                 </Content>
             </Container>
         );
