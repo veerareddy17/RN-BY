@@ -1,0 +1,8 @@
+version: 0.1
+phases:
+  build:
+    commands:
+      - cd android && ./gradlew assembleRelease
+artifacts:
+  files:
+    - android/app/build/outputs/apk/app-prod-release-unsigned.apk
