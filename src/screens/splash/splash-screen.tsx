@@ -1,53 +1,35 @@
-import * as React from 'react'
-import {
-  Container,
-  Header,
-  Title,
-  Content,
-  Text,
-  Button,
-  Icon,
-  Left,
-  Body,
-  Right,
-  List,
-  ListItem,
-} from 'native-base'
-
-import { NavigationScreenProp } from 'react-navigation'
+import * as React from 'react';
+import { Container, Content } from 'native-base';
+import { StatusBar, ImageBackground, Image, Dimensions } from 'react-native';
+import { NavigationScreenProp } from 'react-navigation';
+import images from '../../assets';
+import { AuthenticationService } from '../../services/authentication-service';
 
 export interface Props {
-  navigation: NavigationScreenProp<any>
-  list: any
+    navigation: NavigationScreenProp<any>;
+    list: any;
 }
 export interface State {}
 class Splash extends React.Component<Props, State> {
-  componentDidMount() {
-    setTimeout(() => {
-      this.props.navigation.navigate('Login')
-    }, 3000)
-  }
+    static navigationOptions = { header: null };
+    async componentDidMount() {
+        const userTokenExists = await AuthenticationService.authCheck();
+        this.props.navigation.navigate(userTokenExists ? 'App' : 'Auth');
+    }
 
-  render() {
-    return (
-      <Container>
-        <Header>
-          <Left>
-            <Button transparent>
-              <Text>Header</Text>
-            </Button>
-          </Left>
-          <Body>
-            <Title>Home</Title>
-          </Body>
-          <Right />
-        </Header>
-        <Content>
-          <Text>Splash Content</Text>
-        </Content>
-      </Container>
-    )
-  }
+    render() {
+        const { width, height } = Dimensions.get('window');
+        return (
+            <Container>
+                <StatusBar backgroundColor="purple" barStyle="light-content" />
+                <ImageBackground source={images.background} style={{ width, height }}>
+                    <Content contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                        <Image source={images.logo} />
+                    </Content>
+                </ImageBackground>
+            </Container>
+        );
+    }
 }
 
-export default Splash
+export default Splash;

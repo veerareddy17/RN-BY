@@ -3,14 +3,24 @@
     "extends": [
         "plugin:@typescript-eslint/recommended",
         "prettier/@typescript-eslint",
-        "plugin:prettier/recommended"
+        "plugin:prettier/recommended",
+        "plugin:react-native/all"
     ],
     "parserOptions": {
         "ecmaVersion": 2018,
-        "sourceType": "module"
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
     },
     "rules": {
         "semi": ["error", "always"],
-        "@typescript-eslint/no-parameter-properties": "off"
+        "@typescript-eslint/no-parameter-properties": "off",
+        "@typescript-eslint/camelcase": "off",
+        "react-native/no-unused-styles": 2,
+        "react-native/split-platform-components": 2,
+        "react-native/no-inline-styles": 2,
+        "react-native/no-color-literals": 2,
+        "react-native/no-raw-text": 2
     }
 }

@@ -29,7 +29,6 @@ target 'Byjus' do
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
 
-  pod 'react-native-netinfo', :path => '../node_modules/@react-native-community/netinfo'
 
   target 'ByjusTests' do
     inherit! :search_paths
