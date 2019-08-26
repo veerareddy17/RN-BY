@@ -6,8 +6,7 @@ phases:
             android: 28
     pre_build: 
         commands: 
-            - npm install
-            - npx jetify
+            - chmod +x ./gradlew
     build:
         commands:
             - cd android && ./gradlew assembleDebug
