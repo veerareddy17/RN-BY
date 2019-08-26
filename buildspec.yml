@@ -6,7 +6,7 @@ phases:
       android: 28
   build:
     commands:
-      - cd android && ./gradlew assembleDebug
+      - cd android && ./gradlew assembleRelease
 artifacts:
   files:
-    - android/app/build/outputs/apk/app-debug-unsigned.apk
+    - android/app/build/outputs/apk/app-prod-release-unsigned.apk
