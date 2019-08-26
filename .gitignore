@@ -1,6 +1,15 @@
 /node_modules
 /dist
-android/*
+android/*.gradle/
+android/*.project
+android/*.settings/
+android/app/.classpath
+android/app/.project
+android/app/.settings/
+android/app/build/generated
+android/app/build/intermediates
+android/app/build/outputs/logs
+android/app/build/tmp
 ios/*
 
 *.log
