@@ -4,6 +4,10 @@ phases:
         runtime-versions:
             java: openjdk8
             android: 28
+    pre_build: 
+        commands: 
+            - npm install
+            - npx jetify
     build:
         commands:
             - cd android && ./gradlew assembleDebug
