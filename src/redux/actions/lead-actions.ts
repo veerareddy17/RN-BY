@@ -77,11 +77,11 @@ export const fetchAllLeadsApi = (pageNumber: number) => async (dispatch: Dispatc
 };
 
 // POST method to create Lead
-export const createLeadApi = (newLead: any): ((dispatch: Dispatch) => Promise<void>) => {
+export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) => Promise<void>) => {
     return async (dispatch: Dispatch) => {
         try {
             dispatch(leadStartAction());
-            let response = await LeadService.createLead(newLead);
+            let response = await LeadService.createLead(leadRequest);
             console.log(response.data);
             if (response && response.data) {
                 dispatch(createLeadAction(response.data));
@@ -104,11 +104,13 @@ export const createLeadApi = (newLead: any): ((dispatch: Dispatch) => Promise<vo
 
 // POST method to generate and verify OTP
 export const verifyOTP = (phone: string) => async (dispatch: Dispatch) => {
+
     let OTP = await generateOTP();
     console.log('OTP generated - ', OTP);
     let otpRequest = new OTPRequest(phone, OTP);
 
     try {
+
         let response = await LeadService.verifyOTP(otpRequest);
         console.log(response.data);
         if (response && response.data) {

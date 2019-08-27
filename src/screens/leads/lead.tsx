@@ -10,7 +10,6 @@ export default ({ lead }) => {
                     <Button rounded small style={{ backgroundColor: 'purple', marginLeft: 6 }}>
                         <Text style={{ textTransform: 'capitalize' }}>{lead.class_name}</Text>
                     </Button>
-                    <Icon type="FontAwesome" name="pencil" style={{ position: 'absolute', right: 0 }} />
                 </CardItem>
 
                 <CardItem style={{ borderBottomColor: 'lightGrey', borderBottomWidth: 0.25 }}>

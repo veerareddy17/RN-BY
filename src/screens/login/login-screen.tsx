@@ -1,4 +1,4 @@
-import { Formik } from 'formik';
+import { Formik } from 'formik'
 
 import * as React from 'react';
 
@@ -18,8 +18,6 @@ import { loginValidation } from '../../validations/validation-model';
 import { captureLocation } from '../../redux/actions/location-action';
 import { Error } from '../error/error';
 import requestLocationPermission from '../../permissions/permission';
-import Geolocation, { GeolocationResponse } from '@react-native-community/geolocation';
-//import { GeoPosition } from 'react-native-geolocation-service';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -27,12 +25,7 @@ export interface Props {
     user: any;
     token: string;
     locationState: any;
-    requestLoginApi(
-        email: string,
-        password: string,
-        latitude: number,
-        longitude: number,
-    ): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    requestLoginApi(email: string, password: string, latitude: number, longitude: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
     error: any;
@@ -41,8 +34,8 @@ export interface State {
     showPassword: boolean;
     email: string;
     password: string;
-    latitude: number;
-    longitude: number;
+    latitude: number,
+    longitude: number,
 }
 
 class Login extends React.Component<Props, State> {
@@ -60,6 +53,7 @@ class Login extends React.Component<Props, State> {
     }
 
     async componentDidMount() {
+
         if (Platform.OS == 'android') {
             const locationPermission = await PermissionsAndroid.check(
                 PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
@@ -70,63 +64,14 @@ class Login extends React.Component<Props, State> {
         }
     }
 
-    getLocation = () => {
-        console.log('did mount');
-        return new Promise((resolve, reject) => {
-            Geolocation.getCurrentPosition(
-                position => {
-                    console.log('position', position);
-                    this.setState({
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude,
-                    });
-                    resolve(true);
-                },
-                err => {
-                    console.log('error', err);
-                    reject(reject);
-                },
-                { enableHighAccuracy: false },
-            );
-            // Geolocation.getCurrentPosition((pos) => {
-            //     resolve(pos);
-            // },
-            //     (err) => {
-            //         reject(err);
-            //     },
-            //     { enableHighAccuracy: true, timeout: 1000, maximumAge: 1000 })
-        });
-    };
+    handlePress() { }
 
-    handlePress() {}
-
-    handleSubmit = async values => {
-        //await this.captureLocation();
-        // await this.getLocation();
-        console.log('after position', this.state);
-        this.setState({
-            latitude: 12.92881,
-            longitude: 77.56139,
-        });
-        await this.props.requestLoginApi(values.email, values.password, this.state.latitude, this.state.longitude);
+    handleSubmit = async (values) => {
+        await this.props.captureLocation();
+        console.log('location', this.props.locationState.location);
+        await this.props.requestLoginApi(values.email, values.password, this.props.locationState.location.latitude, this.props.locationState.location.longitude);
         this.props.navigation.navigate(this.props.userState.user.token ? 'CampaignList' : 'Auth');
     };
-
-    // captureLocation = async () => {
-    //     await Geolocation.getCurrentPosition((position) => {
-    //         this.successFuntion(position);
-    //     },
-    //         (error) => {
-    //             console.log('error', error)
-    //         });
-    // }
-
-    // successFuntion = (position: GeolocationResponse) => {
-    //     console.log('position', position)
-    //     this.setState({ latitude: position.coords.latitude, longitude: position.coords.longitude });
-    //     console.log('state', this.state)
-    // }
-
     render() {
         const { width, height } = Dimensions.get('window');
         return (
@@ -143,15 +88,7 @@ class Login extends React.Component<Props, State> {
                                     onSubmit={values => this.handleSubmit(values)}
                                     validationSchema={loginValidation}
                                 >
-                                    {({
-                                        values,
-                                        handleChange,
-                                        errors,
-                                        setFieldTouched,
-                                        touched,
-                                        isValid,
-                                        handleSubmit,
-                                    }) => (
+                                    {({ values, handleChange, errors, setFieldTouched, touched, isValid, handleSubmit }) => (
                                         <Form>
                                             <Item floatingLabel={true} style={loginStyle.userName}>
                                                 <Label style={{ marginLeft: 10 }}>Email</Label>
@@ -174,26 +111,25 @@ class Login extends React.Component<Props, State> {
                                                 <Icon
                                                     active
                                                     name="eye"
-                                                    onPress={() =>
-                                                        this.setState({ showPassword: !this.state.showPassword })
-                                                    }
+                                                    onPress={() => this.setState({ showPassword: !this.state.showPassword })}
                                                 />
                                             </Item>
                                             <Error error={errors.password} touched={touched.password} />
-                                            <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
+                                            <Button block={true}
+                                                onPress={handleSubmit} style={loginStyle.submitButton}>
                                                 <Text>Sign In</Text>
                                             </Button>
-                                            {this.props.locationState.isLoading ? (
+                                            {this.props.userState.isLoading ? (
                                                 <View>
                                                     <Spinner />
                                                 </View>
                                             ) : (
-                                                <View />
-                                            )}
+                                                    <View />
+                                                )}
                                             <View style={{ alignItems: 'center', flexDirection: 'column' }}>
                                                 <Text onPress={this.handlePress} style={{ color: 'white' }}>
                                                     Forgot Password?
-                                                </Text>
+                                        </Text>
                                             </View>
                                         </Form>
                                     )}
@@ -213,10 +149,11 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     requestLoginApi: bindActionCreators(authenticate, dispatch),
-    captureLocation: bindActionCreators(captureLocation, dispatch),
+    captureLocation: bindActionCreators(captureLocation, dispatch)
 });
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps,
 )(Login);
+

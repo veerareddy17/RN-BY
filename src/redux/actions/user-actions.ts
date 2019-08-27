@@ -1,4 +1,5 @@
-import { Location } from './../../models/request/authentication-request';
+import { Location } from './../../models/request/location-request';
+
 import { Dispatch } from 'redux';
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-types';
 import { AuthenticationService } from '../../services/authentication-service';
@@ -37,7 +38,7 @@ export const logoutAction = () => {
 export const authenticate = (username: string, password: string, latitude: number, longitude: number): ((dispatch: Dispatch) => Promise<void>) => {
     return async (dispatch: Dispatch) => {
         dispatch(requestAction());
-
+        console.log('in authenticate')
         const authRequest = new AuthenticationRequest(username, password, new Location(latitude, longitude));
         console.log('auth request ==>', authRequest);
         const response = await AuthenticationService.authenticate(authRequest);

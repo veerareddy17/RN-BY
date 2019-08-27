@@ -8,7 +8,6 @@ export const initialState = {
 };
 
 export default function locationReducer(state = initialState, action) {
-    console.log('type,payload', action.type, action.payload)
     switch (action.type) {
         case LOCATION_CAPTURE_START:
             return {

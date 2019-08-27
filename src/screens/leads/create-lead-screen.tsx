@@ -47,12 +47,13 @@ import store from '../../redux/store';
 import { captureLocation } from '../../redux/actions/location-action';
 import { leadValidation } from '../../validations/validation-model';
 import { Error } from '../error/error';
+import { LeadRequest } from '../../models/request';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
     campaignState: any;
     leadState: any;
-    location: any;
+    locationState: any;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     generateAndVerifyOTP(phone: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -61,6 +62,7 @@ export interface CreateLeadProps {
 }
 
 export interface CreateLeadState {
+    leadRequest: {};
     campaignName: string;
     name: string;
     parent_name: string;
@@ -82,6 +84,7 @@ export interface CreateLeadState {
     statuses: Array<String>;
     pin_code: string;
     isOTPVerified: boolean;
+    location: { latitude: number, longitude: number }
 }
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
@@ -122,7 +125,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         this.setState({ isOTPVerified: (storedOTP === this.state.otp) });
         const { isOTPVerified, campaignList, statuses, otp, ...state } = this.state;
         if (this.state.isOTPVerified) {
-            await this.props.createLead(state);
+            await this.props.createLead(this.state.leadRequest);
             this.props.navigation.navigate('Dashboard');
         }
         else {
@@ -142,6 +145,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         super(props);
         this.onPressCampaign = this.onPressCampaign.bind(this)
         this.state = {
+            leadRequest: new LeadRequest(),
             campaignList: [],
             campaignName: '',
             name: '',
@@ -160,7 +164,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             campaign_id: '',
             country: '',
             state: '',
-            isOTPVerified: false
+            isOTPVerified: false,
+            location: { latitude: 0, longitude: 0 }
         };
     }
 
@@ -171,13 +176,21 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             address: values.address, country_id: values.country, state_id: values.state, city: values.city, pin_code: values.pincode
         })
         try {
-            this.props.captureLocation();
-            {/*
-                state to have lat and long property,this.props.location.coords.lat,long
-            */}
+            await this.props.captureLocation();
+            let locObj = {
+                latitude: this.props.locationState.location.latitude,
+                longitude: this.props.locationState.location.longitude,
+            }
+            console.log('locObj', locObj)
+
+            this.setState({ location: locObj })
+
+            let req = this.state;
+
+            this.setState({ leadRequest: req })
+            console.log('state', this.state)
+
             await this.verifyOTP();
-            await this.props.createLead(newLead);
-            this.props.navigation.navigate('Dashboard');
         } catch (error) {
             {/*
             error to be handled
@@ -235,8 +248,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                 return "visible";
                                             })
                                         });
-                                        // this.RBSheet.open();
-                                        this.RBSheetOtp.open();
+                                        this.RBSheet.open();
                                     }
                                 }
                                     small bordered style={leadStyle.buttonChangeCampaingStyle}>
@@ -531,7 +543,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 const mapStateToProps = (state: AppState) => ({
     campaignState: state.campaignReducer,
     leadState: state.leadReducer,
-    location: state.locationReducer,
+    locationState: state.locationReducer
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
