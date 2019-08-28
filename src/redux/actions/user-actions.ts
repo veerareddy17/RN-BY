@@ -7,6 +7,7 @@ import { AuthenticationRequest } from '../../models/request/authentication-reque
 import { AuthenticationResponse } from '../../models/response/authentication-response';
 import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
+import { Toast } from 'native-base';
 
 // The action creators
 export const requestAction = () => {
@@ -41,12 +42,23 @@ export const authenticate = (username: string, password: string, latitude: numbe
         console.log('in authenticate')
         const authRequest = new AuthenticationRequest(username, password, new Location(latitude, longitude));
         console.log('auth request ==>', authRequest);
-        const response = await AuthenticationService.authenticate(authRequest);
-        if (response.data !== null) {
-            dispatch(successAction(response.data));
-        } else {
-            dispatch(failureAction(response.errors));
+        try {
+            const response = await AuthenticationService.authenticate(authRequest);
+            if (response.data !== null) {
+                dispatch(successAction(response.data));
+            } else {
+                dispatch(failureAction(response.errors));
+            }
+        } catch(e) {
+            console.log('error:', e.message);
+            dispatch(failureAction(e.message));
+            Toast.show({
+                text: e.message,
+                buttonText: 'Ok',
+                type: 'danger',
+            });
         }
+       
     };
 };
 
