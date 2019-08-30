@@ -5,9 +5,11 @@ export const loginValidation =
         email: yup
             .string()
             .email()
+            .label('Email Id')
             .required(),
         password: yup
             .string()
+            .label('Password')
             .required(),
     });
 

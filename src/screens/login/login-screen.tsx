@@ -59,13 +59,13 @@ class Login extends React.Component<Props, State> {
             input: {},
         };
     }
-    focusTheField = (id : string) => {
+    focusTheField = (id: string) => {
         this.state.input[id]._root.focus();
     };
 
-    async componentDidMount() {}
+    async componentDidMount() { }
 
-    handlePress() {}
+    handlePress() { }
 
     handleSubmit = async (values: LoginRequestData) => {
         if (this.context.isConnected) {
@@ -111,59 +111,67 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                        <Form>
-                                            <Item floatingLabel={true} style={loginStyle.userName}>
-                                                <Label style={{ marginLeft: 10 }}>Email</Label>
-                                                <Input
-                                                    keyboardType="email-address"
-                                                    onChangeText={handleChange('email')}
-                                                    onBlur={() => setFieldTouched('email')}
-                                                    style={{ marginLeft: 10 }}
-                                                    returnKeyType="next"
-                                                    blurOnSubmit={false}
-                                                    onSubmitEditing= {() => this.focusTheField('password') }
-                                                    autoCapitalize='none'
-                                                />
-                                            </Item>
-                                            <Error error={errors.email} touched={touched.email} />
-                                            <Item floatingLabel={true} style={loginStyle.password}>
-                                                <Label style={{ marginLeft: 10 }}>Password</Label>
-                                                <Input
-                                                    secureTextEntry={this.state.showPassword}
-                                                    value={values.password}
-                                                    onChangeText={handleChange('password')}
-                                                    onBlur={() => setFieldTouched('password')}
-                                                    style={{ marginLeft: 10 }}
-                                                    returnKeyType="done"
-                                                    getRef={input => { this.state.input['password'] = input }}
-                                                    onSubmitEditing= {() => this.handleSubmit(values) }
-                                                />
-                                                <Icon
-                                                    active
-                                                    name="eye"
-                                                    onPress={() =>
-                                                        this.setState({ showPassword: !this.state.showPassword })
-                                                    }
-                                                />
-                                            </Item>
-                                            <Error error={errors.password} touched={touched.password} />
-                                            <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                <Text>Sign In</Text>
-                                            </Button>
-                                            {this.props.userState.isLoading ? (
-                                                <View>
-                                                    <Spinner />
-                                                </View>
-                                            ) : (
-                                                <View />
-                                            )}
-                                            <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                <Text onPress={this.handlePress} style={{ color: 'white' }}>
-                                                    Forgot Password?
+                                            <Form>
+                                                <Item floatingLabel={true} style={loginStyle.userName}>
+                                                    <Label style={{ marginLeft: 10 }}>Email</Label>
+                                                    <Input
+                                                        keyboardType="email-address"
+                                                        onChangeText={handleChange('email')}
+                                                        onBlur={() => setFieldTouched('email')}
+                                                        style={{ marginLeft: 10 }}
+                                                        returnKeyType="next"
+                                                        blurOnSubmit={false}
+                                                        onSubmitEditing={() => this.focusTheField('password')}
+                                                        autoCapitalize='none'
+                                                    />
+                                                </Item>
+                                                <Item floatingLabel={true} style={loginStyle.password}>
+                                                    <Label style={{ marginLeft: 10 }}>Password</Label>
+                                                    <Input
+                                                        secureTextEntry={this.state.showPassword}
+                                                        value={values.password}
+                                                        onChangeText={handleChange('password')}
+                                                        onBlur={() => setFieldTouched('password')}
+                                                        style={{ marginLeft: 10 }}
+                                                        returnKeyType="done"
+                                                        getRef={input => { this.state.input['password'] = input }}
+                                                        onSubmitEditing={() => this.handleSubmit(values)}
+                                                    />
+                                                    <Icon
+                                                        active
+                                                        name="eye"
+                                                        onPress={() =>
+                                                            this.setState({ showPassword: !this.state.showPassword })
+                                                        }
+                                                    />
+                                                </Item>
+                                                {errors.password || errors.email || this.props.userState.error ? (
+                                                    <View>
+                                                        {(errors.email) ? <Text style={loginStyle.error}>{errors.email}</Text>
+                                                            : errors.password ? <Text style={loginStyle.error}>{errors.password}</Text>
+                                                                : this.props.userState.error ? <Text style={loginStyle.error}>Invalid Email Id/Password</Text> : <Text />}
+                                                    </View>
+                                                ) : (
+                                                        <View />
+                                                    )}
+
+                                                <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
+                                                    <Text>Sign In</Text>
+                                                </Button>
+                                                {this.props.userState.isLoading ? (
+                                                    <View>
+                                                        <Spinner />
+                                                    </View>
+                                                ) : (
+                                                        <View />
+                                                    )}
+                                                <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                                                    <Text onPress={this.handlePress} style={{ color: 'white' }}>
+                                                        Forgot Password?
                                                 </Text>
-                                            </View>
-                                        </Form>
-                                    )}
+                                                </View>
+                                            </Form>
+                                        )}
                                 </Formik>
                             </View>
                         </Content>
