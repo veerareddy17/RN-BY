@@ -11,7 +11,8 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingBottom: 10,
         marginRight: 20,
-        marginLeft: 20
+        marginLeft: 20,
+        borderBottomWidth:0
     },
     password: {
         backgroundColor: 'white',
@@ -19,10 +20,11 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         marginRight: 20,
         marginLeft: 20,
-        marginBottom: 20
+        marginBottom: 20,
+        borderBottomWidth:0
     },
     submitButton: {
-        backgroundColor: 'purple',
+        backgroundColor: '#813588',
         borderRadius: 5,
         borderColor: 'white',
         borderWidth: 1,

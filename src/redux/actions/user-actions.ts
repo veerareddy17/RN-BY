@@ -44,6 +44,7 @@ export const authenticate = (username: string, password: string, latitude: numbe
         console.log('auth request ==>', authRequest);
         try {
             const response = await AuthenticationService.authenticate(authRequest);
+        console.log(response.data);
             if (response.data !== null) {
                 dispatch(successAction(response.data));
             } else {

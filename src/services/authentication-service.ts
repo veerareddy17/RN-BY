@@ -14,8 +14,8 @@ export class AuthenticationService {
             APIConstants.AUTHENTICATION_URL,
             authenticationRequest,
         );
-        console.log('Auth Response : ', response);
         if (response && response.data) {
+            console.log('In auth service', response.data);
             try {
                 await StorageService.store(StorageConstants.TOKEN_KEY, response.data.token);
                 await StorageService.store(StorageConstants.USER, response.data);

@@ -1,11 +1,12 @@
 import { Dispatch } from 'redux';
 import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL, OTP_SENT } from './action-types';
-import generateOTP from '../../helpers/otp-creation';
 import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
 import { LeadService } from '../../services/lead-service';
 import { LeadRequest, OTPRequest } from '../../models/request';
 import { LeadResponse, OTPResponse } from '../../models/response';
+import config from '../../helpers/config';
+import { APIConstants } from '../../helpers/api-constants';
 
 // The action creators
 export const createLeadAction = lead => {
@@ -51,20 +52,19 @@ export const otpSuccessAction = (otpResponse: OTPResponse) => {
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = (pageNumber: number) => async (dispatch: Dispatch) => {
     try {
-        console.log("action lead is... =>", pageNumber);
+        console.log('action lead is... =>', pageNumber);
         if (pageNumber === 0) {
-            console.log("inside if consyion lead action is")
+            console.log('inside if consyion lead action is');
 
             dispatch(leadStartAction());
         }
-
 
         const response = await LeadService.fetchLeads(pageNumber);
         console.log(response.data);
         if (response && response.data) {
             dispatch(fetchLeadsAction(response.data.data));
             try {
-                await StorageService.store(StorageConstants.USER_LEADS, response.data);
+                // await StorageService.store(StorageConstants.USER_LEADS, response.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -87,7 +87,7 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) =
                 dispatch(createLeadAction(response.data));
                 try {
                     //TODO: Fetch exisiting leads and append new lead to the list
-                    await StorageService.store(StorageConstants.USER_LEADS, response.data);
+                    // await StorageService.store(StorageConstants.USER_LEADS, response.data);
                     // await StorageService.removeKey(StorageConstants.USER_OTP);
                 } catch (error) {
                     console.log('Error in storing asyncstorage', error);
@@ -103,14 +103,12 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) =
 };
 
 // POST method to generate and verify OTP
-export const verifyOTP = (phone: string) => async (dispatch: Dispatch) => {
-
+export const verifyOTP = (phone: string, OTP: string) => async (dispatch: Dispatch) => {
     let OTP = await generateOTP();
     console.log('OTP generated - ', OTP);
     let otpRequest = new OTPRequest(phone, OTP);
 
     try {
-
         let response = await LeadService.verifyOTP(otpRequest);
         console.log(response.data);
         if (response && response.data) {

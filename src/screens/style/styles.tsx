@@ -7,13 +7,14 @@ const style = StyleSheet.create({
     //     backgroundColor: 'white',
     // },
     labelInput: {
-        color: 'black',
-        fontSize: 12,
+        color: '#555',
+        fontSize: 11,
     },
     formInput: {
         borderWidth: 1,
         borderRadius: 5,
-        marginTop: 10,
+        marginTop: 5,
+        marginBottom:10,
         height: 50,
         //marginLeft: 20,
         borderColor: '#333',
@@ -25,7 +26,7 @@ const style = StyleSheet.create({
         paddingBottom: 5,
     },
     flexQuater: {
-        flex: .4
+        flex: 1
     },
     felxHalf: {
         flex: .5

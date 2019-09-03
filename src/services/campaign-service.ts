@@ -11,10 +11,9 @@ export class CampaignService {
         pgNo: number,
     ): Promise<ResponseViewModel<PaginatedResponseModel<CampaignResponse>>> => {
         const response = await HttpBaseService.get<CampaignResponse>(APIConstants.USER_CAMPAIGNS_URL + `${pgNo}`);
-        console.log('Campaigns Response : ', response);
         if (response && response.data) {
             try {
-                await StorageService.store(StorageConstants.USER_CAMPAIGNS, response.data.data);
+                // await StorageService.store(StorageConstants.USER_CAMPAIGNS, response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

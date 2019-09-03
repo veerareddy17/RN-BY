@@ -20,10 +20,11 @@ import {
 } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
-import { NetworkContext } from '../../provider/network-provider';
+// import { NetworkContext } from '../../provider/network-provider';
 import store from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
 import { fetchCampaigns, selectedCampaign } from '../../redux/actions/campaign-actions';
+import { StatusBar } from 'react-native';
 
 export interface CampaignListProps {
     navigation: NavigationScreenProp<any>;
@@ -32,56 +33,63 @@ export interface CampaignListProps {
     selectCampaign(campaignId: any): void;
 }
 
-export interface CampaignListState { }
+export interface CampaignListState {}
 
 class CampaignList extends Component<CampaignListProps, CampaignListState> {
-    static contextType = NetworkContext;
-    static navigationOptions = {
-        title: 'Select Campaign',
+    // static contextType = NetworkContext;
+    static navigationOptions = ({ navigation }) => {
+        return {
+            title: 'Select Campaign',
+            headerStyle: {
+                backgroundColor: '#813588',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                fontWeight: 'bold',
+                alignSelf: 'center',
+            },
+        };
     };
+
     async componentDidMount() {
         await this.props.fetchCampaigns();
-        console.log('After fetch campains---state', store.getState());
     }
 
     handleSelections = (campaignId: any) => {
-        console.log('campaign selected', campaignId);
         //this.setState({ campaignId: campaignId });
         this.props.selectCampaign(campaignId);
-        console.log('After fetch campains---state', store.getState());
 
-        this.props.navigation.navigate('Dashboard');
+        this.props.navigation.navigate('App');
     };
 
     render() {
         return (
             <Container>
+                <StatusBar backgroundColor="#813588" barStyle="light-content" />
                 <Content>
                     {this.props.campaignState.isLoading ? (
                         <View>
                             <Spinner />
-                            <Text>Fetching Campaigns...</Text>
+                            <Text style={{textAlign:'center'}}>Fetching Campaigns...</Text>
                         </View>
                     ) : (
-                            <View>
-                                <List>
-                                    {this.props.campaignState.campaignList.map(campaign => {
-                                        return (
-                                            <ListItem button={true} onPress={() => this.handleSelections(campaign)}>
-                                                <Left>
-                                                    <Text>{campaign.name}</Text>
-                                                </Left>
-                                                <Right>
-                                                    <Icon
-                                                        name="arrow-forward"
-                                                    />
-                                                </Right>
-                                            </ListItem>
-                                        );
-                                    })}
-                                </List>
-                            </View>
-                        )}
+                        <View>
+                            <List>
+                                {this.props.campaignState.campaignList.map(campaign => {
+                                    return (
+                                        <ListItem button={true} onPress={() => this.handleSelections(campaign)}>
+                                            <Left>
+                                                <Text>{campaign.name}</Text>
+                                            </Left>
+                                            <Right>
+                                                <Icon name="arrow-forward" />
+                                            </Right>
+                                        </ListItem>
+                                    );
+                                })}
+                            </List>
+                        </View>
+                    )}
                 </Content>
             </Container>
         );

@@ -1,7 +1,7 @@
 import { Formik } from 'formik';
 import * as React from 'react';
 import { Container, Content, Text, Button, Form, Item, Input, Label, Icon, Spinner, Toast } from 'native-base';
-import { ImageBackground, Dimensions, Image, View } from 'react-native';
+import { ImageBackground, Dimensions, Image, View, StatusBar } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import images from '../../assets';
 import { NavigationScreenProp } from 'react-navigation';
@@ -46,8 +46,8 @@ export interface LoginRequestData {
 }
 
 class Login extends React.Component<Props, State> {
-    static navigationOptions = { header: null };
     static contextType = NetworkContext;
+    static navigationOptions = { header: null };
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -64,6 +64,10 @@ class Login extends React.Component<Props, State> {
     };
 
     async componentDidMount() { }
+        if (this.props.userState.user) {
+            this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
+        }
+    };
 
     handlePress() { }
 
@@ -77,7 +81,7 @@ class Login extends React.Component<Props, State> {
                 this.props.locationState.location.latitude,
                 this.props.locationState.location.longitude,
             );
-            this.props.navigation.navigate(this.props.userState.user.token ? 'CampaignList' : 'Auth');
+            this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
         } else {
             Toast.show({
                 text: 'No Internet Connection',
@@ -90,6 +94,7 @@ class Login extends React.Component<Props, State> {
         const { width, height } = Dimensions.get('window');
         return (
             <ScrollView>
+                <StatusBar backgroundColor="#813588" barStyle="light-content" />
                 <Container>
                     <ImageBackground source={images.background} style={{ width, height }}>
                         <Content contentContainerStyle={loginStyle.containerStyle}>
@@ -121,8 +126,8 @@ class Login extends React.Component<Props, State> {
                                                         style={{ marginLeft: 10 }}
                                                         returnKeyType="next"
                                                         blurOnSubmit={false}
-                                                        onSubmitEditing={() => this.focusTheField('password')}
-                                                        autoCapitalize='none'
+                                                    onSubmitEditing={() => this.focusTheField('password')}
+                                                    autoCapitalize="none"
                                                     />
                                                 </Item>
                                                 <Item floatingLabel={true} style={loginStyle.password}>
@@ -134,8 +139,10 @@ class Login extends React.Component<Props, State> {
                                                         onBlur={() => setFieldTouched('password')}
                                                         style={{ marginLeft: 10 }}
                                                         returnKeyType="done"
-                                                        getRef={input => { this.state.input['password'] = input }}
-                                                        onSubmitEditing={() => this.handleSubmit(values)}
+                                                    getRef={input => {
+                                                        this.state.input['password'] = input;
+                                                    }}
+                                                    onSubmitEditing={() => this.handleSubmit(values)}
                                                     />
                                                     <Icon
                                                         active
@@ -156,7 +163,7 @@ class Login extends React.Component<Props, State> {
                                                     )}
 
                                                 <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                    <Text>Sign In</Text>
+                                                <Text style={{fontSize: 16}}>Login</Text>
                                                 </Button>
                                                 {this.props.userState.isLoading ? (
                                                     <View>
@@ -166,7 +173,7 @@ class Login extends React.Component<Props, State> {
                                                         <View />
                                                     )}
                                                 <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                    <Text onPress={this.handlePress} style={{ color: 'white' }}>
+                                                <Text onPress={this.handlePress} style={{ color: '#fff', fontSize: 14 }}>
                                                         Forgot Password?
                                                 </Text>
                                                 </View>

@@ -50,6 +50,10 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                 position => {
                                     console.log('success..', position);
                                     dispatch(locationCaptureSuccessAction(position.coords));
+                                    // dispatch(
+                                    //     locationCaptureSuccessAction({ latitude: 12.234244, longitude: 77.323233 }),
+                                    // );
+
                                     resolve(true);
                                 },
                                 error => {
@@ -78,7 +82,13 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                                 Geolocation.getCurrentPosition(
                                                     position => {
                                                         console.log('success', position);
-                                                        dispatch(locationCaptureSuccessAction(position.coords));
+                                                        // dispatch(locationCaptureSuccessAction(position.coords));
+                                                        dispatch(
+                                                            locationCaptureSuccessAction({
+                                                                latitude: 12.234244,
+                                                                longitude: 77.3232332,
+                                                            }),
+                                                        );
                                                         resolve(true);
                                                     },
                                                     error => {
@@ -101,6 +111,8 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                 }
             } else {
                 console.log('ios');
+                // dispatch(locationCaptureSuccessAction({ latitude: 12.234244, longitude: 77.323233 }));
+                // resolve(true);
                 SystemSetting.isLocationEnabled().then((enable: boolean) => {
                     const state = enable ? 'On' : 'Off';
                     console.log('Current location is ' + state);
@@ -115,7 +127,7 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                             error => {
                                 console.log('error', error);
                                 dispatch(locationCaptureFailureAction(error.message));
-                                reject(error)
+                                reject(error);
                             },
                             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
                         );
@@ -138,7 +150,6 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                             Geolocation.getCurrentPosition(
                                                 position => {
                                                     console.log('success', position);
-                                                    // let lat = position.coords.latitude;
                                                     dispatch(locationCaptureSuccessAction(position.coords));
                                                     resolve(true);
                                                 },

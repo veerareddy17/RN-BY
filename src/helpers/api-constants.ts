@@ -6,4 +6,5 @@ export const APIConstants = {
     // USER_LEADS_URL: '/lead',
     VERIFY_OTP_URL: '/meta/sms',
     ALL_LEADS_URL: '/lead/lightweight',
+    CREATE_LEAD_URL: '/lead',
 };
