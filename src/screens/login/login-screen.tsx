@@ -63,7 +63,7 @@ class Login extends React.Component<Props, State> {
         this.state.input[id]._root.focus();
     };
 
-    async componentDidMount() { }
+    async componentDidMount() { 
         if (this.props.userState.user) {
             this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
         }
