@@ -29,10 +29,8 @@ export interface State {
 export default class BottomSheet extends React.Component<Props, State> {
 
     onBlur() {
-        console.log('#####: onBlur');
     }
     onChangeHandle = (text: String, item: String) => {
-        console.log('text,item', text, item)
         this.props.onChangeText(text, item)
     }
     _onPressClose = () => {
@@ -50,7 +48,6 @@ export default class BottomSheet extends React.Component<Props, State> {
         this.props.resend();
     }
     renderItem(type: String) {
-        console.log('current state in bottom sheet', this.props.currentState)
         switch (type) {
             case "inputType":
                 return <KeyboardAwareScrollView

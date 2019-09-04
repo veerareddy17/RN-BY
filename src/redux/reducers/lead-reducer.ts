@@ -15,33 +15,33 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 status: 'new', // add some valid flag
                 isLoading: false,
-                leadList: [...state.leadList, action.payload],
             };
         case FETCH_LEAD:
             return {
                 ...state,
                 status: 'done', // add some valid flag
                 isLoading: false,
-                leadList: state.leadList.concat(action.payload),
+                paginatedLeadList: action.payload,
+                leadList: state.leadList.concat(action.payload.data),
             };
         case LOAD_LEAD_START:
             return {
                 ...state,
                 isLoading: true,
-                leadList: state.leadList,
+                paginatedLeadList: state.paginatedLeadList,
                 error: '',
             };
         case LOAD_LEAD_SUCCESS:
             return {
                 ...state,
                 isLoading: false,
-                leadList: action.payload,
+                paginatedLeadList: action.payload,
             };
         case LOAD_LEAD_FAIL:
             return {
                 ...state,
                 isLoading: false,
-                leadList: state.leadList,
+                paginatedLeadList: state.paginatedLeadList,
                 error: action.payload,
             };
         case OTP_SENT:

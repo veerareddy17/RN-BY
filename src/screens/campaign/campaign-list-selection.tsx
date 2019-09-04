@@ -77,7 +77,11 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                                 <List>
                                     {this.props.campaignState.campaignList.map(campaign => {
                                         return (
-                                            <ListItem button={true} onPress={() => this.handleSelections(campaign)}>
+                                        <ListItem
+                                            button={true}
+                                            key={campaign.id}
+                                            onPress={() => this.handleSelections(campaign)}
+                                        >
                                                 <Left>
                                                     <Text>{campaign.name}</Text>
                                                 </Left>

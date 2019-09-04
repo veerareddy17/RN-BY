@@ -1,34 +1,16 @@
 import React, { Component } from 'react';
-import { FlatList, ListView, Platform } from 'react-native';
+import { FlatList, ListView, Platform, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-import {
-    Text,
-    View,
-    Spinner,
-    Content,
-    Header,
-    Container,
-    Left,
-    Button,
-    Title,
-    Right,
-    Body,
-    List,
-    ListItem,
-    Footer,
-    FooterTab,
-    Icon,
-} from 'native-base';
+import { View, Header, Container, Content, Left, Button, Title, Right, Body, ListItem, Icon } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
 import Lead from './lead';
-import { fetchAllLeadsApi, fetchLeadsAction } from '../../redux/actions/lead-actions';
+import { fetchAllLeadsApi } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
 import { Alert } from 'react-native';
 import { logout } from '../../redux/actions/user-actions';
 import Loader from '../../components/content-loader/content-loader';
-
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
@@ -39,6 +21,7 @@ export interface LeadListProps {
 
 export interface LeadListState {
     pageNumber: number;
+    loadingMore: boolean;
 }
 
 class LeadList extends Component<LeadListProps, LeadListState> {
@@ -48,52 +31,83 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     };
     constructor(props: LeadListProps) {
         super(props);
-        this.fetchLeadsList = this.fetchLeadsList.bind(this);
         this.state = {
-            pageNumber: 1,
+            pageNumber: this.props.leadState.paginatedLeadList.current_page,
+            loadingMore: false,
         };
     }
     async componentDidMount() {
-        console.log('in component did mount leadlist')
-        if (this.context.isConnected) {
-            await this.props.fetchLeads(0);
-        } else {
-            console.log('Show Offline pop-up');
-            Alert.alert('Offline', 'Your app is offline');
+        if (this.props.leadState.paginatedLeadList.next_page_url == null) {
+            this.setState({ loadingMore: false });
+            return;
         }
+        this.setState({ pageNumber: this.props.leadState.paginatedLeadList.current_page });
+        this.fetchLeadsList();
     }
 
-    getLeads = () => {
-        this.props.navigation.navigate('LeadList');
-    };
-    createLead = () => {
-        this.props.navigation.navigate('CreateLead');
-    };
-    loadDashboard = () => {
-        this.props.navigation.navigate('Dashboard');
-    };
-    async fetchLeadsList() {
+    fetchLeadsList = async () => {
         if (this.context.isConnected) {
             await this.props.fetchLeads(this.state.pageNumber);
+            this.setState({ loadingMore: false });
         } else {
-            console.log('Show Offline pop-up');
+            //Fetch leads from lead state where sync_status is false
+            Alert.alert('Offline', 'Your app is offline');
         }
-    }
-    loadMorePage = () => {
-        this.setState((prevState, props) => ({
-            pageNumber: prevState.pageNumber + 1,
-        }));
-        this.fetchLeadsList();
     };
 
     logout = async () => {
-        console.log('Logged oi');
         await this.props.logout();
         if (this.props.userState.user == '') {
             this.props.navigation.navigate('Auth');
         }
     };
 
+    fetchMore = () => {
+        console.log('Fetchmore :', this.state.loadingMore);
+        if (this.props.leadState.paginatedLeadList.next_page_url == null) {
+            this.setState({ loadingMore: false });
+            return;
+        }
+        this.setState(
+            (prevState, nextProps) => ({
+                pageNumber: prevState.pageNumber + 1,
+                loadingMore: true,
+            }),
+            () => {
+                this.fetchLeadsList();
+            },
+        );
+    };
+
+    renderFooter = () => {
+        if (!this.state.loadingMore) return null;
+
+        return (
+            <View>
+                <ActivityIndicator animating size="large" />
+            </View>
+        );
+    };
+
+    renderItem(item) {
+        return (
+            <ListItem
+                key={item.id}
+                style={{
+                    marginLeft: 0,
+                    paddingRight: 0,
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    marginBottom: 15,
+                    borderBottomWidth: 0,
+                }}
+            >
+                <Body>
+                    <Lead lead={item} />
+                </Body>
+            </ListItem>
+        );
+    }
     render() {
         return (
             <Container>
@@ -112,7 +126,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 ) : (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold', marginLeft:10, fontSize: 18 }}>Leads</Title>
+                            <Title style={{ color: 'white', fontWeight: 'bold', marginLeft: 10, fontSize: 18 }}>
+                                Leads
+                            </Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.logout}>
@@ -122,69 +138,30 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     </Header>
                 )}
                 <Content style={{ backgroundColor: '#eee', padding: 15 }}>
-                    <View style={{ flex: 1, paddingBottom: 15}}>
+                    <View style={{ flex: 1, paddingBottom: 15 }}>
                         {this.props.leadState.isLoading ? (
                             <View>
                                 <Loader />
                             </View>
                         ) : (
-                            <View>
+                            <View style={{ flex: 1 }}>
                                 <FlatList
-                                    data={this.props.leadState.leadList}
-                                    renderItem={({ item, index }) => (
-                                        <ListItem
-                                            key={item.id}
-                                            style={{
-                                                marginLeft: 0,
-                                                paddingRight: 0,
-                                                paddingTop: 0,
-                                                paddingBottom: 0,
-                                                marginBottom: 15,
-                                                borderBottomWidth: 0,
-                                            }}
-                                        >
-                                            <Body>
-                                                <Lead lead={item} />
-                                            </Body>
-                                        </ListItem>
-                                    )}
-                                    onEndReached={x => this.loadMorePage()}
+                                    data={
+                                        this.context.isConnected
+                                            ? this.props.leadState.leadList
+                                            : this.props.leadState.offlineLeadList
+                                    }
+                                    renderItem={({ item, index }) => this.renderItem(item)}
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
-                                    onEndReachedThreshold={0.1}
+                                    ListFooterComponent={this.renderFooter}
+                                    onEndReached={this.fetchMore}
+                                    onEndReachedThreshold={0.5}
                                     initialNumToRender={2}
                                 />
                             </View>
                         )}
                     </View>
                 </Content>
-                {/* <Footer>
-                    <FooterTab style={{ backgroundColor: '#813588' }}>
-                        <Button
-                            vertical
-                            //   active={props.navigationState.index === 0}
-                            onPress={() => this.props.navigation.navigate('Dashboard')}
-                        >
-                            <Icon name="home" style={{ color: 'white' }} />
-                            <Text style={{ color: 'white' }}>Dashboard</Text>
-                        </Button>
-                        <Button
-                            vertical
-                            //   active={props.navigationState.index === 1}
-                            onPress={this.createLead}
-                        >
-                            <Icon name="add" style={{ color: 'white' }} />
-                            <Text style={{ color: 'white' }}>Lead Capture</Text>
-                        </Button>
-                        <Button
-                            vertical
-                        //   active={props.navigationState.index === 2}
-                        // onPress={this.getLeads}
-                        >
-                            <Icon name="person" style={{ color: 'white' }} />
-                            <Text style={{ color: 'white' }}>Lead List</Text>
-                        </Button>
-                    </FooterTab>
-                </Footer> */}
             </Container>
         );
     }

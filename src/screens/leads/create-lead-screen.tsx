@@ -47,8 +47,8 @@ import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
 import { captureLocation } from '../../redux/actions/location-action';
 import { leadValidation } from '../../validations/validation-model';
 import { Error } from '../error/error';
-import { LeadRequest } from '../../models/request';
 import { submitOTP, verifyOTP, otpInitAction } from '../../redux/actions/otp-actions';
+import { LeadRequest } from '../../models/request';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -89,13 +89,11 @@ export interface CreateLeadState {
     pin_code: string;
     isOTPVerified: boolean;
     location: { latitude: number; longitude: number };
+    sync_status: boolean;
 }
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
-    // static navigationOptions = {
-    //     title: 'Capture Lead',
-    // };
     async componentDidMount() {
         try {
             const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
@@ -133,23 +131,20 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     };
 
     submitOtp = async () => {
-        console.log('otpState', this.props.otpState);
-        await this.props.submitOtp(this.state.otp)
+        await this.props.submitOtp(this.state.otp);
         if (!this.props.otpState.error) {
             await this.RBSheetOtp.close();
             await this.props.createLead(this.state.leadRequest);
             this.props.navigation.navigate('LeadList');
         }
-    }
+    };
 
     handleResend = async () => {
-        console.log('otpState', this.props.otpState);
         await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
-    }
+    };
 
     verifyOTP = async () => {
         await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
-        console.log('otpState', this.props.otpState);
         if (this.props.otpState.otp.success) {
             await this.RBSheetOtp.open();
         }
@@ -180,6 +175,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             state: '',
             isOTPVerified: false,
             location: { latitude: 0, longitude: 0 },
+            sync_status: false,
         };
     }
 
@@ -204,9 +200,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 latitude: this.props.locationState.location.latitude,
                 longitude: this.props.locationState.location.longitude,
             };
-            console.log('locObj', locObj);
 
             this.setState({ location: locObj });
+            this.setState({ sync_status: this.context.isConnected ? true : false });
 
             let req = this.state;
 
@@ -723,7 +719,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         close={this.closeBottomSheet}
                                         submit={this.submitOtp}
                                         resend={this.handleResend}
-                                        title='Enter the OTP'
+                                        title="Enter the OTP"
                                     />
                                 </RBSheet>
                             </FooterTab>
@@ -739,7 +735,7 @@ const mapStateToProps = (state: AppState) => ({
     campaignState: state.campaignReducer,
     leadState: state.leadReducer,
     locationState: state.locationReducer,
-    otpState: state.otpReducer
+    otpState: state.otpReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -749,7 +745,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
     captureLocation: bindActionCreators(captureLocation, dispatch),
     submitOtp: bindActionCreators(submitOTP, dispatch),
-    otpInitialState: bindActionCreators(otpInitAction, dispatch)
+    otpInitialState: bindActionCreators(otpInitAction, dispatch),
 });
 
 export default connect(

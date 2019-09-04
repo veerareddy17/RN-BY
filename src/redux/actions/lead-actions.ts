@@ -1,7 +1,5 @@
 import { Dispatch } from 'redux';
 import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL, OTP_SENT } from './action-types';
-import StorageService from '../../database/storage-service';
-import { StorageConstants } from '../../helpers/storage-constants';
 import { LeadService } from '../../services/lead-service';
 import { LeadRequest } from '../../models/request';
 import config from '../../helpers/config';
@@ -45,22 +43,12 @@ export const leadFailureAction = error => {
 export const fetchAllLeadsApi = (pageNumber: number) => async (dispatch: Dispatch) => {
     console.log("action lead is... =>", pageNumber);
     try {
-        console.log('action lead is... =>', pageNumber);
         if (pageNumber === 0) {
-            console.log('inside if consyion lead action is');
-
             dispatch(leadStartAction());
         }
-
         const response = await LeadService.fetchLeads(pageNumber);
-        console.log(response.data);
         if (response && response.data) {
-            dispatch(fetchLeadsAction(response.data.data));
-            try {
-                // await StorageService.store(StorageConstants.USER_LEADS, response.data);
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
+            dispatch(fetchLeadsAction(response.data));
         } else {
             dispatch(leadFailureAction(response.errors));
         }
@@ -79,13 +67,6 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) =
             console.log('response obj', response);
             if (response && response.data) {
                 dispatch(createLeadAction(response.data));
-                try {
-                    //TODO: Fetch exisiting leads and append new lead to the list
-                    // await StorageService.store(StorageConstants.USER_LEADS, response.data);
-                    // await StorageService.removeKey(StorageConstants.USER_OTP);
-                } catch (error) {
-                    console.log('Error in storing asyncstorage', error);
-                }
             } else {
                 dispatch(leadFailureAction(response.errors));
             }

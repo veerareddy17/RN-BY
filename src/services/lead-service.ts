@@ -9,21 +9,6 @@ import { APIConstants } from '../helpers/api-constants';
 import { OTPRequest } from '../models/request';
 
 export class LeadService {
-    //Non Paginated method
-    public static _fetchLeads = async (): Promise<ResponseViewModel<LeadResponse>> => {
-        const response = await HttpBaseService._get<LeadResponse>(APIConstants.USER_LEADS_URL);
-        if (response && response.data) {
-            try {
-                // await StorageService.store(StorageConstants.USER_LEADS, response.data);
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
-        } else {
-            console.log('Failure');
-        }
-        return response;
-    };
-
     //Paginated method
     public static fetchLeads = async (
         pgNo: number,
@@ -31,6 +16,7 @@ export class LeadService {
         const response = await HttpBaseService.get<LeadResponse>(APIConstants.USER_LEADS_URL + pgNo);
         if (response && response.data) {
             try {
+                console.log(response.data);
                 // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
@@ -41,8 +27,11 @@ export class LeadService {
         return response;
     };
 
-    public static createLead = async (leadRequest: any): Promise<ResponseViewModel<LeadResponse>> => {
-        const response = await HttpBaseService.post<any, LeadResponse>(APIConstants.CREATE_LEAD_URL, leadRequest);
+    public static createLead = async (leadRequest: LeadRequest): Promise<ResponseViewModel<LeadResponse>> => {
+        const response = await HttpBaseService.post<LeadRequest, LeadResponse>(
+            APIConstants.CREATE_LEAD_URL,
+            leadRequest,
+        );
         if (response && response.data) {
             try {
                 // await StorageService.store(StorageConstants.USER_LEADS, response.data);
@@ -56,7 +45,6 @@ export class LeadService {
     };
 
     public static verifyOTP = async (otpRequest: OTPRequest): Promise<ResponseViewModel<OTPResponse>> => {
-        console.log('OTPRequest:', otpRequest.otp);
         const response = await HttpBaseService.post<OTPRequest, OTPResponse>(APIConstants.VERIFY_OTP_URL, otpRequest);
         if (response && response.data) {
             try {

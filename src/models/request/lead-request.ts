@@ -1,4 +1,4 @@
-import { Location } from "./location-request";
+import { Location } from './location-request';
 
 export class LeadRequest {
     public id: string | undefined;
@@ -18,5 +18,6 @@ export class LeadRequest {
     public comments: string | undefined;
     public siblings: JSON | undefined;
     public campaign_id: string | undefined;
-    public location: Location | undefined
+    public location: Location | undefined;
+    public sync_status: boolean | undefined;
 }
