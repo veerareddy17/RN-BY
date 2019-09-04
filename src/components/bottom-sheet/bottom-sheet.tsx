@@ -52,7 +52,44 @@ export default class BottomSheet extends React.Component<Props, State> {
     renderItem(type: String) {
         console.log('current state in bottom sheet', this.props.currentState)
         switch (type) {
-
+            case "inputType":
+                return <KeyboardAwareScrollView
+                    style={{ width: "100%", }}>
+                    {this.props.data.map((item, index) => {
+                        return <View>
+                            <View key={index}
+                                style={{
+                                    width: "100%",
+                                    flexDirection: "row",
+                                    height: 65,
+                                }}>
+                                <View style={{
+                                    flex: 1, borderWidth: 1,
+                                    borderColor: "rgba(136,136,136,0.4)",
+                                    backgroundColor: "rgba(252,252,252,0.6)",
+                                    marginLeft: 40, marginRight: 40, borderRadius: 5, marginTop: 10
+                                }}>
+                                    <FloatingLabel
+                                        keyboardType={this.props.keyBoardStyle}
+                                        labelStyle={styles.labelInput}
+                                        inputStyle={styles.input}
+                                        onChangeText={(text: String) => { this.onChangeHandle(text, item) }}
+                                        onBlur={this.onBlur}
+                                    >{item}</FloatingLabel>
+                                </View>
+                            </View>
+                            <View style={{ marginLeft: 40, marginRight: 40, borderRadius: 5, marginTop: 5 }}>
+                                {this.props.currentState.isLoading ?
+                                    (<View>
+                                        <Spinner />
+                                    </View>) : this.props.currentState.error ?
+                                        <Text style={{ color: "red" }}>{this.props.currentState.error}</Text>
+                                        : <View />}
+                            </View>
+                        </View>
+                    })}
+                </KeyboardAwareScrollView>
+                break;
             case "inputTypeOTP":
                 return <KeyboardAwareScrollView
                     style={{ width: "100%", }}>

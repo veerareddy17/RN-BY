@@ -15,6 +15,9 @@ import { loginValidation } from '../../validations/validation-model';
 import { captureLocation } from '../../redux/actions/location-action';
 import { Error } from '../error/error';
 import { LocationState } from '../../redux/init/location-initial-state';
+import { forgotPassword, initStateForgotPassword } from '../../redux/actions/forgot-password-action';
+import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
+import RBSheet from 'react-native-raw-bottom-sheet';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -22,6 +25,7 @@ export interface Props {
     user: any;
     token: string;
     locationState: LocationState;
+    forgotPasswordState: any;
     requestLoginApi(
         email: string,
         password: string,
@@ -29,6 +33,8 @@ export interface Props {
         longitude: number,
     ): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<boolean>;
+    forgotPassword(email: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    resetForgotPassword(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
     error: any;
 }
@@ -63,13 +69,37 @@ class Login extends React.Component<Props, State> {
         this.state.input[id]._root.focus();
     };
 
-     componentDidMount = async() => { 
+    componentDidMount = async () => {
         if (this.props.userState.user) {
             this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
         }
     };
 
-    handlePress() { }
+    handlePress = () => {
+        this.RBSheetForgotPass.open();
+    }
+
+    closeBottomSheet = () => {
+        this.RBSheetForgotPass.close();
+        this.props.resetForgotPassword();
+
+    }
+
+    onChangeTextBottomSheet = (text: string, fieldName: string) => {
+        console.log('text,item', text, fieldName)
+        this.setState({ email: text })
+        console.log('state in onchange', this.state)
+    }
+
+    submitForgotPassword = async () => {
+
+        console.log('state in submit', this.state)
+        await this.props.forgotPassword(this.state.email);
+        console.log('forgot password response', this.props.forgotPasswordState.forgotPasswordResponse);
+        if (this.props.forgotPasswordState.forgotPasswordResponse.success) {
+            this.RBSheetForgotPass.close();
+        }
+    }
 
     handleSubmit = async (values: LoginRequestData) => {
         if (this.context.isConnected) {
@@ -139,10 +169,10 @@ class Login extends React.Component<Props, State> {
                                                         onBlur={() => setFieldTouched('password')}
                                                         style={{ marginLeft: 10 }}
                                                         returnKeyType="done"
-                                                    getRef={input => {
-                                                        this.state.input['password'] = input;
-                                                    }}
-                                                    onSubmitEditing={() => this.handleSubmit(values)}
+                                                        getRef={input => {
+                                                            this.state.input['password'] = input;
+                                                        }}
+                                                        onSubmitEditing={() => this.handleSubmit(values)}
                                                     />
                                                     <Icon
                                                         active
@@ -163,7 +193,7 @@ class Login extends React.Component<Props, State> {
                                                     )}
 
                                                 <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                <Text style={{fontSize: 16}}>Login</Text>
+                                                    <Text style={{ fontSize: 16 }}>Login</Text>
                                                 </Button>
                                                 {this.props.userState.isLoading ? (
                                                     <View>
@@ -172,8 +202,9 @@ class Login extends React.Component<Props, State> {
                                                 ) : (
                                                         <View />
                                                     )}
+
                                                 <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                <Text onPress={this.handlePress} style={{ color: '#fff', fontSize: 14 }}>
+                                                    <Text onPress={this.handlePress} style={{ color: '#fff', fontSize: 14 }}>
                                                         Forgot Password?
                                                 </Text>
                                                 </View>
@@ -181,6 +212,34 @@ class Login extends React.Component<Props, State> {
                                         )}
                                 </Formik>
                             </View>
+                            <RBSheet
+                                ref={ref => {
+                                    this.RBSheetForgotPass = ref;
+                                }}
+                                closeOnPressMask={false}
+                                duration={10}
+                                customStyles={{
+                                    container: {
+                                        height: 400,
+                                        borderTopRightRadius: 20,
+                                        borderTopLeftRadius: 20
+                                    }
+                                }}
+                            >
+
+                                <BottomSheet
+                                    keyBoardStyle="email-address"
+                                    type="inputType"
+                                    actionType="Submit"
+                                    currentState={this.props.forgotPasswordState}
+                                    onChangeText={this.onChangeTextBottomSheet}
+                                    data={["Email Id",]}
+                                    close={this.closeBottomSheet}
+                                    description="Enter your registered email id"
+                                    submit={this.submitForgotPassword}
+                                    title='Forgot Password'
+                                />
+                            </RBSheet>
                         </Content>
                     </ImageBackground>
                 </Container>
@@ -191,11 +250,14 @@ class Login extends React.Component<Props, State> {
 const mapStateToProps = (state: AppState) => ({
     userState: state.userReducer,
     locationState: state.locationReducer,
+    forgotPasswordState: state.forgotPasswordReducer
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     requestLoginApi: bindActionCreators(authenticate, dispatch),
     captureLocation: bindActionCreators(captureLocation, dispatch),
+    forgotPassword: bindActionCreators(forgotPassword, dispatch),
+    resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch)
 });
 
 export default connect(

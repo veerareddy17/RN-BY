@@ -7,4 +7,5 @@ export const APIConstants = {
     VERIFY_OTP_URL: '/meta/sms',
     ALL_LEADS_URL: '/lead/lightweight',
     CREATE_LEAD_URL: '/lead',
+    FORGOT_PASSWORD_URL: '/user/forgot-password',
 };

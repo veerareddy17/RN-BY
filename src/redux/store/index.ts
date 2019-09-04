@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import { logger } from 'redux-logger';
 import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
+import forgotPasswordReducer from '../reducers/forgot-password-reducer';
 
 const rootReducer = combineReducers({
     leadReducer: leadReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
     campaignReducer: campaignReducer,
     locationReducer: locationReducer,
     otpReducer: otpReducer,
+    forgotPasswordReducer: forgotPasswordReducer,
 });
 
 const middleware = [thunk];

@@ -1,3 +1,5 @@
+import { ForgotPasswordResponse } from './../models/response/forgot-password-response';
+import { ForgotPasswordRequest } from './../models/request/forgot-password-request';
 import { HttpBaseService } from './http-base-service';
 import StorageService from '../database/storage-service';
 import { AuthenticationRequest } from '../models/request/authentication-request';
@@ -37,4 +39,14 @@ export class AuthenticationService {
         }
         return false;
     };
+
+    public static forgotPassword = async (forgotPasswordRequest: ForgotPasswordRequest, ): Promise<ResponseViewModel<ForgotPasswordResponse>> => {
+        const response = await HttpBaseService.post<ForgotPasswordRequest, ForgotPasswordResponse>(
+            APIConstants.FORGOT_PASSWORD_URL,
+            forgotPasswordRequest,
+        );
+        console.log('Forgot Password Response : ', response);
+        return response;
+    };
+
 }
