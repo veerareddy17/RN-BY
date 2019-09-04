@@ -31,7 +31,7 @@ import {
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { fetchCampaigns, selectedCampaign } from '../../redux/actions/campaign-actions';
-import { createLeadApi, verifyOTP } from '../../redux/actions/lead-actions';
+import { createLeadApi } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { AppState } from '../../redux/store';
 import { NavigationScreenProp } from 'react-navigation';
@@ -48,17 +48,21 @@ import { captureLocation } from '../../redux/actions/location-action';
 import { leadValidation } from '../../validations/validation-model';
 import { Error } from '../error/error';
 import { LeadRequest } from '../../models/request';
+import { submitOTP, verifyOTP, otpInitAction } from '../../redux/actions/otp-actions';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
     campaignState: any;
     leadState: any;
     locationState: any;
+    otpState: any;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    generateAndVerifyOTP(phone: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    generateAndVerifyOTP(phone: string, connection: boolean): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     selectCampaign(campaignId: any): void;
     captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    submitOtp(otp: String): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    otpInitialState(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface CreateLeadState {
@@ -68,8 +72,8 @@ export interface CreateLeadState {
     parent_name: string;
     email: string;
     phone: string;
-    class_name: string;
-    school_board: string;
+    classes_id: string;
+    board_id: string;
     school_name: string;
     address: string;
     comments: string;
@@ -129,23 +133,24 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     };
 
     submitOtp = async () => {
-        const storedOTP = await StorageService.get<string>(StorageConstants.USER_OTP);
-        this.setState({ isOTPVerified: storedOTP === this.state.otp });
-        const { isOTPVerified, campaignList, statuses, otp, ...state } = this.state;
-        if (this.state.isOTPVerified) {
+        console.log('otpState', this.props.otpState);
+        await this.props.submitOtp(this.state.otp)
+        if (!this.props.otpState.error) {
+            await this.RBSheetOtp.close();
             await this.props.createLead(this.state.leadRequest);
-            this.props.navigation.navigate('LeadList'); //navigate to leadlist page on successful lead creation
-        } else {
-            {
-                /*
-            otp not verified error handling
-            */
-            }
+            this.props.navigation.navigate('LeadList');
         }
-    };
+    }
+
+    handleResend = async () => {
+        console.log('otpState', this.props.otpState);
+        await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
+    }
+
     verifyOTP = async () => {
-        await this.props.generateAndVerifyOTP(this.state.phone);
-        if (this.props.leadState.otp.success) {
+        await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
+        console.log('otpState', this.props.otpState);
+        if (this.props.otpState.otp.success) {
             await this.RBSheetOtp.open();
         }
     };
@@ -162,8 +167,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             email: '',
             otp: '',
             phone: '',
-            class_name: '',
-            school_board: '',
+            classes_id: '',
+            board_id: '',
             school_name: '',
             statuses: [],
             address: '',
@@ -181,9 +186,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     handleSubmit = async values => {
         this.setState({
             name: values.name,
-            school_board: values.school_board,
+            board_id: values.board_id,
             school_name: values.school_name,
-            class_name: values.class_name,
+            classes_id: values.classes_id,
             parent_name: values.parent_name,
             phone: values.phone,
             email: values.email,
@@ -220,14 +225,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     closeBottomSheet = () => {
         this.RBSheet.close();
         this.RBSheetOtp.close();
+        this.props.otpInitialState();
     };
 
-    onChangeOtpText = (fieldName: String, text: String) => {
+    onChangeOtpText = (text: String, fieldName: String) => {
         this.setState({ otp: text });
     };
 
     onPressCampaign = (index: number, campaign: Object) => {
-        this.props.selectCampaign(campaign.id);
+        this.props.selectCampaign(campaign);
         this.setState({
             ...this.state,
             campaignName: campaign.name,
@@ -249,9 +255,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 enableReinitialize
                 initialValues={{
                     name: '',
-                    school_board: '',
+                    board_id: '',
                     school_name: '',
-                    class_name: '',
+                    classes_id: '',
                     parent_name: '',
                     phone: '',
                     alternateMobileNumber: '',
@@ -373,27 +379,21 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             placeholder="Select"
                                                             placeholderStyle={{ color: '#bfc6ea' }}
                                                             placeholderIconColor="#007aff"
-                                                            selectedValue={values.school_board}
+                                                            selectedValue={values.board_id}
                                                             onValueChange={value => {
-                                                                handleChange('school_board')(value);
-                                                                setFieldTouched('school_board', true);
+                                                                handleChange('board_id')(value);
+                                                                setFieldTouched('board_id', true);
                                                             }}
                                                         >
                                                             <Picker.Item label="Select" color="#ccc" value="" />
-                                                            <Picker.Item
-                                                                label="Karnataka Board"
-                                                                value="Karnataka Board"
-                                                            />
-                                                            <Picker.Item
-                                                                label="Madya Pradesh Board"
-                                                                value="Madya Pradesh Board"
-                                                            />
-                                                            <Picker.Item label="Delhi Board" value="Delhi Board" />
+                                                            <Picker.Item label="CBSC" value="1" />
+                                                            <Picker.Item label="ICSC" value="2" />
+                                                            <Picker.Item label="SBSC" value="3" />
                                                         </Picker>
                                                     </View>
                                                 </Item>
                                             </View>
-                                            <Error error={errors.school_board} touched={touched.school_board} />
+                                            <Error error={errors.board_id} touched={touched.board_id} />
                                             <View style={{ flexDirection: 'row' }}>
                                                 <View style={{ flex: 1 }}>
                                                     <FloatingLabel
@@ -434,22 +434,22 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     placeholderStyle={{ color: '#bfc6ea' }}
                                                                     placeholderIconColor="#007aff"
                                                                     style={{ fontSize: 15, height: 30 }}
-                                                                    selectedValue={values.class_name}
+                                                                    selectedValue={values.classes_id}
                                                                     onValueChange={value => {
-                                                                        handleChange('class_name')(value);
-                                                                        setFieldTouched('class_name', true);
+                                                                        handleChange('classes_id')(value);
+                                                                        setFieldTouched('classes_id', true);
                                                                     }}
                                                                 >
                                                                     <Picker.Item label="Select" color="#ccc" value="" />
-                                                                    <Picker.Item label="Class 1" value="Class 1" />
-                                                                    <Picker.Item label="Class 2" value="Class 2" />
-                                                                    <Picker.Item label="Class 3" value="Class 3" />
-                                                                    <Picker.Item label="Class 4" value="Class 4" />
+                                                                    <Picker.Item label="1" value="1" />
+                                                                    <Picker.Item label="2" value="2" />
+                                                                    <Picker.Item label="3" value="3" />
+                                                                    <Picker.Item label="4" value="4" />
                                                                 </Picker>
                                                             </View>
                                                         </Item>
                                                     </View>
-                                                    <Error error={errors.class_name} touched={touched.class_name} />
+                                                    <Error error={errors.classes_id} touched={touched.classes_id} />
                                                 </View>
                                             </View>
                                         </Body>
@@ -488,10 +488,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         onChangeText={handleChange('phone')}
                                                         onBlur={() => setFieldTouched('phone')}
                                                     >
-                                                        Mobile Number
+                                                        Mobile Number*
                                                     </FloatingLabel>
                                                 </View>
                                             </View>
+                                            <Error error={errors.phone} touched={touched.phone} />
                                             <View style={{ flexDirection: 'row', flex: 1 }}>
                                                 <View style={{ flex: 1 }}>
                                                     <FloatingLabel
@@ -713,13 +714,16 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     }}
                                 >
                                     <BottomSheet
-                                        type="inputType"
+                                        keyBoardStyle="numeric"
+                                        type="inputTypeOTP"
                                         actionType="Submit"
+                                        currentState={this.props.otpState}
                                         onChangeText={this.onChangeOtpText}
                                         data={['OTP']}
                                         close={this.closeBottomSheet}
                                         submit={this.submitOtp}
-                                        title="Enter the OTP"
+                                        resend={this.handleResend}
+                                        title='Enter the OTP'
                                     />
                                 </RBSheet>
                             </FooterTab>
@@ -735,6 +739,7 @@ const mapStateToProps = (state: AppState) => ({
     campaignState: state.campaignReducer,
     leadState: state.leadReducer,
     locationState: state.locationReducer,
+    otpState: state.otpReducer
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -743,6 +748,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     generateAndVerifyOTP: bindActionCreators(verifyOTP, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
     captureLocation: bindActionCreators(captureLocation, dispatch),
+    submitOtp: bindActionCreators(submitOTP, dispatch),
+    otpInitialState: bindActionCreators(otpInitAction, dispatch)
 });
 
 export default connect(

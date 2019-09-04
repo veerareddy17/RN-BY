@@ -8,7 +8,7 @@ export class LeadRequest {
     public phone: string | undefined;
     public alternate_phone: string | undefined;
     public classes_id: string | undefined;
-    public school_board: string | undefined;
+    public board_id: string | undefined;
     public school_name: string | undefined;
     public address: string | undefined;
     public country_id: string | undefined;

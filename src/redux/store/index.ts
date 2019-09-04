@@ -5,6 +5,7 @@ import leadReducer from '../reducers/lead-reducer';
 import userReducer from '../reducers/user-reducer';
 import campaignReducer from '../reducers/campaign-reducer';
 import locationReducer from '../reducers/location-reducer';
+import otpReducer from '../reducers/otp-reducer';
 import AsyncStorage from '@react-native-community/async-storage';
 import { logger } from 'redux-logger';
 import { persistStore, persistReducer } from 'redux-persist';
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     userReducer: userReducer,
     campaignReducer: campaignReducer,
     locationReducer: locationReducer,
+    otpReducer: otpReducer,
 });
 
 const middleware = [thunk];

@@ -63,7 +63,7 @@ class Login extends React.Component<Props, State> {
         this.state.input[id]._root.focus();
     };
 
-    async componentDidMount() { 
+     componentDidMount = async() => { 
         if (this.props.userState.user) {
             this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
         }
@@ -126,8 +126,8 @@ class Login extends React.Component<Props, State> {
                                                         style={{ marginLeft: 10 }}
                                                         returnKeyType="next"
                                                         blurOnSubmit={false}
-                                                    onSubmitEditing={() => this.focusTheField('password')}
-                                                    autoCapitalize="none"
+                                                        onSubmitEditing={() => this.focusTheField('password')}
+                                                        autoCapitalize='none'
                                                     />
                                                 </Item>
                                                 <Item floatingLabel={true} style={loginStyle.password}>

@@ -3,8 +3,7 @@ import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAI
 import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
 import { LeadService } from '../../services/lead-service';
-import { LeadRequest, OTPRequest } from '../../models/request';
-import { LeadResponse, OTPResponse } from '../../models/response';
+import { LeadRequest } from '../../models/request';
 import config from '../../helpers/config';
 import { APIConstants } from '../../helpers/api-constants';
 
@@ -42,15 +41,9 @@ export const leadFailureAction = error => {
     };
 };
 
-export const otpSuccessAction = (otpResponse: OTPResponse) => {
-    return {
-        type: OTP_SENT,
-        payload: otpResponse,
-    };
-};
-
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = (pageNumber: number) => async (dispatch: Dispatch) => {
+    console.log("action lead is... =>", pageNumber);
     try {
         console.log('action lead is... =>', pageNumber);
         if (pageNumber === 0) {
@@ -82,7 +75,8 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) =
         try {
             dispatch(leadStartAction());
             let response = await LeadService.createLead(leadRequest);
-            console.log(response.data);
+            console.log('response data', response.data);
+            console.log('response obj', response);
             if (response && response.data) {
                 dispatch(createLeadAction(response.data));
                 try {
@@ -102,26 +96,3 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) =
     };
 };
 
-// POST method to generate and verify OTP
-export const verifyOTP = (phone: string, OTP: string) => async (dispatch: Dispatch) => {
-    let OTP = await generateOTP();
-    console.log('OTP generated - ', OTP);
-    let otpRequest = new OTPRequest(phone, OTP);
-
-    try {
-        let response = await LeadService.verifyOTP(otpRequest);
-        console.log(response.data);
-        if (response && response.data) {
-            try {
-                dispatch(otpSuccessAction(response.data));
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
-        } else {
-            dispatch(leadFailureAction(response.errors));
-        }
-    } catch (error) {
-        // Error
-        console.log(error);
-    }
-};

@@ -19,7 +19,7 @@ export const leadValidation =
             .string()
             .label('Student Name')
             .required(),
-        school_board: yup
+        board_id: yup
             .string()
             .label('Board')
             .required(),
@@ -27,7 +27,7 @@ export const leadValidation =
             .string()
             .label('School Name')
             .required(),
-        class_name: yup
+        classes_id: yup
             .string()
             .label('Class')
             .required(),

@@ -54,6 +54,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         };
     }
     async componentDidMount() {
+        console.log('in component did mount leadlist')
         if (this.context.isConnected) {
             await this.props.fetchLeads(0);
         } else {
