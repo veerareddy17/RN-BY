@@ -62,6 +62,22 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         }
     };
 
+    confirmLogout = () => {
+        Alert.alert(
+            'Confirm Logout',
+            'Are you sure you want to logout?',
+            [
+                {
+                    text: 'Cancel',
+                    onPress: () => console.log('Cancel Pressed'),
+                    style: 'cancel',
+                },
+                { text: 'OK', onPress: () => this.logout() },
+            ],
+            { cancelable: false },
+        );
+    };
+
     fetchMore = () => {
         console.log('Fetchmore :', this.state.loadingMore);
         if (this.props.leadState.paginatedLeadList.next_page_url == null) {
@@ -118,7 +134,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                             <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Leads</Title>
                         </Body>
                         <Right>
-                            <Button transparent onPress={this.logout}>
+                            <Button transparent onPress={this.confirmLogout}>
                                 <Icon name="ios-log-out" style={{ color: 'white' }} />
                             </Button>
                         </Right>
@@ -131,7 +147,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                             </Title>
                         </Body>
                         <Right>
-                            <Button transparent onPress={this.logout}>
+                            <Button transparent onPress={this.confirmLogout}>
                                 <Icon name="ios-log-out" style={{ color: 'white' }} />
                             </Button>
                         </Right>
@@ -156,7 +172,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     ListFooterComponent={this.renderFooter}
                                     onEndReached={this.fetchMore}
                                     onEndReachedThreshold={0.5}
-                                    initialNumToRender={2}
                                 />
                             </View>
                         )}

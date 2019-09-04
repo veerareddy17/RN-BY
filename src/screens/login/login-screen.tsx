@@ -73,7 +73,7 @@ class Login extends React.Component<Props, State> {
         if (this.props.userState.user) {
             this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
         }
-    };
+    }
 
     handlePress = () => {
         this.RBSheetForgotPass.open();
@@ -115,7 +115,6 @@ class Login extends React.Component<Props, State> {
         } else {
             Toast.show({
                 text: 'No Internet Connection',
-                buttonText: 'Ok',
                 type: 'danger',
             });
         }
@@ -123,9 +122,9 @@ class Login extends React.Component<Props, State> {
     render() {
         const { width, height } = Dimensions.get('window');
         return (
-            <ScrollView>
+            <Container>
                 <StatusBar backgroundColor="#813588" barStyle="light-content" />
-                <Container>
+                <ScrollView keyboardShouldPersistTaps="always">
                     <ImageBackground source={images.background} style={{ width, height }}>
                         <Content contentContainerStyle={loginStyle.containerStyle}>
                             <View style={{ alignItems: 'center', flexDirection: 'column' }}>
@@ -146,70 +145,78 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                            <Form>
-                                                <Item floatingLabel={true} style={loginStyle.userName}>
-                                                    <Label style={{ marginLeft: 10 }}>Email</Label>
-                                                    <Input
-                                                        keyboardType="email-address"
-                                                        onChangeText={handleChange('email')}
-                                                        onBlur={() => setFieldTouched('email')}
-                                                        style={{ marginLeft: 10 }}
-                                                        returnKeyType="next"
-                                                        blurOnSubmit={false}
+                                        <Form>
+                                            <Item floatingLabel style={loginStyle.userName}>
+                                                <Label style={{ marginLeft: 10 }}>Email</Label>
+                                                <Input
+                                                    keyboardType="email-address"
+                                                    onChangeText={handleChange('email')}
+                                                    onBlur={() => setFieldTouched('email')}
+                                                    style={{ marginLeft: 10 }}
+                                                    returnKeyType="next"
+                                                    blurOnSubmit={false}
                                                         onSubmitEditing={() => this.focusTheField('password')}
                                                         autoCapitalize='none'
-                                                    />
-                                                </Item>
-                                                <Item floatingLabel={true} style={loginStyle.password}>
-                                                    <Label style={{ marginLeft: 10 }}>Password</Label>
-                                                    <Input
-                                                        secureTextEntry={this.state.showPassword}
-                                                        value={values.password}
-                                                        onChangeText={handleChange('password')}
-                                                        onBlur={() => setFieldTouched('password')}
-                                                        style={{ marginLeft: 10 }}
-                                                        returnKeyType="done"
+                                                />
+                                            </Item>
+                                            <Item floatingLabel style={loginStyle.password}>
+                                                <Label style={{ marginLeft: 10 }}>Password</Label>
+                                                <Input
+                                                    secureTextEntry={this.state.showPassword}
+                                                    value={values.password}
+                                                    onChangeText={handleChange('password')}
+                                                    onBlur={() => setFieldTouched('password')}
+                                                    style={{ marginLeft: 10 }}
+                                                    returnKeyType="done"
                                                         getRef={input => {
                                                             this.state.input['password'] = input;
                                                         }}
                                                         onSubmitEditing={() => this.handleSubmit(values)}
-                                                    />
-                                                    <Icon
-                                                        active
-                                                        name="eye"
-                                                        onPress={() =>
-                                                            this.setState({ showPassword: !this.state.showPassword })
-                                                        }
-                                                    />
-                                                </Item>
-                                                {errors.password || errors.email || this.props.userState.error ? (
-                                                    <View>
-                                                        {(errors.email) ? <Text style={loginStyle.error}>{errors.email}</Text>
-                                                            : errors.password ? <Text style={loginStyle.error}>{errors.password}</Text>
-                                                                : this.props.userState.error ? <Text style={loginStyle.error}>Invalid Email Id/Password</Text> : <Text />}
-                                                    </View>
-                                                ) : (
-                                                        <View />
+                                                />
+                                                <Icon
+                                                    active
+                                                    name={this.state.showPassword ? 'eye-off' : 'eye'}
+                                                    onPress={e => {
+                                                        e.preventDefault();
+                                                        this.setState({ showPassword: !this.state.showPassword });
+                                                    }}
+                                                />
+                                            </Item>
+                                            {errors.password || errors.email || this.props.userState.error ? (
+                                                <View>
+                                                    {errors.email ? (
+                                                        <Text style={loginStyle.error}>{errors.email}</Text>
+                                                    ) : errors.password ? (
+                                                        <Text style={loginStyle.error}>{errors.password}</Text>
+                                                    ) : this.props.userState.error ? (
+                                                        <Text style={loginStyle.error}>Invalid Email Id/Password</Text>
+                                                    ) : (
+                                                        <Text />
                                                     )}
-
-                                                <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                    <Text style={{ fontSize: 16 }}>Login</Text>
-                                                </Button>
-                                                {this.props.userState.isLoading ? (
-                                                    <View>
-                                                        <Spinner />
-                                                    </View>
-                                                ) : (
-                                                        <View />
-                                                    )}
-
-                                                <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                    <Text onPress={this.handlePress} style={{ color: '#fff', fontSize: 14 }}>
-                                                        Forgot Password?
-                                                </Text>
                                                 </View>
-                                            </Form>
-                                        )}
+                                            ) : (
+                                                <View />
+                                            )}
+
+                                            <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
+                                                <Text style={{ fontSize: 16 }}>Login</Text>
+                                            </Button>
+                                            {this.props.userState.isLoading ? (
+                                                <View>
+                                                    <Spinner />
+                                                </View>
+                                            ) : null}
+
+                                            <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                                                <Text
+                                                    onPress={this.handlePress}
+                                                    style={{ color: '#fff', fontSize: 14 }}
+                                                >
+                                                    Forgot Password?
+                                                </Text>
+                                            </View>
+                                        </Form>
+                                    )}
                                 </Formik>
                             </View>
                             <RBSheet
@@ -242,8 +249,8 @@ class Login extends React.Component<Props, State> {
                             </RBSheet>
                         </Content>
                     </ImageBackground>
-                </Container>
-            </ScrollView>
+                </ScrollView>
+            </Container>
         );
     }
 }

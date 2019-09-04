@@ -18,6 +18,7 @@ export interface Props {
     onChangeText?: void;
     onPress?: void;
     submit?: Function;
+    currentcampaign: string;
     currentState: any;
     keyBoardStyle?: string
     resend?: Function;
@@ -129,8 +130,8 @@ export default class BottomSheet extends React.Component<Props, State> {
                 </KeyboardAwareScrollView>
                 break;
             case "List": return <FlatList
+                console.log('current campaign id:', this.props.currentcampaign);
                 data={this.props.data}
-                extraData={this.props.statuses}
                 renderItem={({ item, index }) =>
 
                     <View key={item.id}
@@ -138,9 +139,15 @@ export default class BottomSheet extends React.Component<Props, State> {
                         <TouchableOpacity onPress={() => this._selectCard(index, item)} style={{ borderBottomWidth: 0.2, width: "100%", }}>
                             <View style={{ height: 50, justifyContent: "space-between", alignItems: "center", flexDirection: "row" }}>
                                 <Text style={{ marginLeft: 30, color: this.props.statuses[index] == "visible" ? "#555555" : "#813588" }}>
+                                                color:
+                                                    this.props.data[index].id == this.props.currentcampaign
+                                                        ? '#813588'
+                                                        : '#333',
                                     {item.name}
                                 </Text>
-                                {this.props.statuses[index] == "visible" ? <Text></Text> : <Text style={{ marginRight: 10, color: "#813588" }}>yes</Text>}
+                                        {this.props.data[index].id == this.props.currentcampaign ? (
+                                            <Icon name="checkmark" style={{ marginRight: 10, color: '#813588' }}></Icon>
+                                        ) : null}
                             </View>
                         </TouchableOpacity>
                     </View>

@@ -26,6 +26,7 @@ import {
     Row,
     Grid,
     ListItem,
+    Spinner,
 } from 'native-base';
 
 import { connect } from 'react-redux';
@@ -49,6 +50,7 @@ import { leadValidation } from '../../validations/validation-model';
 import { Error } from '../error/error';
 import { submitOTP, verifyOTP, otpInitAction } from '../../redux/actions/otp-actions';
 import { LeadRequest } from '../../models/request';
+import { withNavigation } from 'react-navigation';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -94,36 +96,35 @@ export interface CreateLeadState {
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
-    async componentDidMount() {
+    componentDidMount() {
         try {
-            const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
-            await this.props.fetchCampaigns();
-            const compaignList = this.props.campaignState.campaignList;
-            this.setState({ campaignList: compaignList });
-            let statuseList = new Array(compaignList.length);
-            for (let i = 0; i < statuseList.length; i++) {
-                statuseList[i] = 'visible';
-            }
-            this.setState({ statuses: statuseList });
-            this.setState({ campaign_id: selectedCampaign.id });
-            this.setState({ campaignName: selectedCampaign.name });
-        } catch (error) {
-            {
-                /*
-            error to be handled
-            */
-            }
-        }
-
-        if (this.context.isConnected) {
-            await this.props.fetchCampaigns();
-        } else {
-            {
+            if (this.context.isConnected) {
+                this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+                    // The screen is focused
+                    // Call any action
+                    const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+                    await this.props.fetchCampaigns();
+                    const compaignList = this.props.campaignState.campaignList;
+                    this.setState({ campaignList: compaignList });
+                    this.setState({ campaign_id: selectedCampaign.id });
+                    this.setState({ campaignName: selectedCampaign.name });
+                });
+            } else {
                 /*
             show offline
             */
             }
+        } catch (error) {
+            /*
+            error to be handled
+            */
         }
+    }
+
+    componentWillUnmount() {
+        // Remove the event listener
+        console.log('listener removed');
+        this.focusListener.remove();
     }
 
     backToDashboard = () => {
@@ -229,19 +230,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     };
 
     onPressCampaign = (index: number, campaign: Object) => {
+        console.log('on click bottom sheet', campaign);
         this.props.selectCampaign(campaign);
         this.setState({
             ...this.state,
             campaignName: campaign.name,
-            statuses: this.state.statuses.map((val, id) => {
-                if (id == index) {
-                    return 'invisible';
-                }
-                if (val == 'invisible') {
-                    return (this.state.statuses[id] = 'visible');
-                }
-                return val;
-            }),
+            campaign_id: campaign.id,
         });
     };
 
@@ -284,24 +278,40 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         </Header>
                         <Content>
                             <View style={leadStyle.campaingStyle}>
-                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
-                                    Campaign : {this.state.campaignName}
-                                </Text>
+                                <View style={{ flexDirection: 'row', flex: 1 }}>
+                                    <Text>Campaign : </Text>
+                                    {this.props.campaignState.isLoading ? (
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                height: 30,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
+                                        </View>
+                                    ) : (
+                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
+                                            {this.state.campaignName}
+                                        </Text>
+                                    )}
+                                </View>
                                 <Button
                                     onPress={() => {
-                                        this.setState({
-                                            ...this.state,
-                                            statuses: this.state.statuses.map((val, id) => {
-                                                return 'visible';
-                                            }),
-                                        });
+                                        // this.setState({
+                                        //     ...this.state,
+                                        //     statuses: this.state.statuses.map((val, id) => {
+                                        //         return 'visible';
+                                        //     }),
+                                        // });
                                         this.RBSheet.open();
                                     }}
                                     small
                                     bordered
                                     style={leadStyle.buttonChangeCampaingStyle}
                                 >
-                                    <Text style={{ color: '#813588' }}>Change</Text>
+                                    <Text style={{ color: '#813588', paddingLeft: 8, paddingRight: 8 }}>Change</Text>
                                 </Button>
                                 <RBSheet
                                     ref={ref => {
@@ -320,8 +330,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                 >
                                     <BottomSheet
                                         type="List"
+                                        currentcampaign={this.state.campaign_id}
                                         data={this.state.campaignList}
-                                        statuses={this.state.statuses}
                                         close={this.closeBottomSheet}
                                         title="Change Campaign"
                                         onPress={this.onPressCampaign}
@@ -693,7 +703,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         <Footer>
                             <FooterTab>
                                 <Button full={true} onPress={handleSubmit} style={{ backgroundColor: '#813588' }}>
-                                    <Text style={{ color: 'white', fontWeight: 'bold' }}>Save</Text>
+                                    <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>Save</Text>
                                 </Button>
                                 <RBSheet
                                     ref={ref => {
@@ -748,7 +758,9 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     otpInitialState: bindActionCreators(otpInitAction, dispatch),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(CreateLead);
+export default withNavigation(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps,
+    )(CreateLead),
+);
