@@ -96,7 +96,7 @@ export interface CreateLeadState {
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
-    componentDidMount() {
+	async componentDidMount() {
         try {
             if (this.context.isConnected) {
                 this.focusListener = this.props.navigation.addListener('didFocus', async () => {

@@ -32,7 +32,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     constructor(props: LeadListProps) {
         super(props);
         this.state = {
-            pageNumber: this.props.leadState.paginatedLeadList.current_page,
+            pageNumber: 1,
             loadingMore: false,
         };
     }
@@ -85,10 +85,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             return;
         }
         this.setState(
-            (prevState, nextProps) => ({
-                pageNumber: prevState.pageNumber + 1,
+            {
+                pageNumber: this.state.pageNumber + 1,
                 loadingMore: true,
-            }),
+            },
             () => {
                 this.fetchLeadsList();
             },
@@ -153,7 +153,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         </Right>
                     </Header>
                 )}
-                <Content style={{ backgroundColor: '#eee', padding: 15 }}>
+                <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
                     <View style={{ flex: 1, paddingBottom: 15 }}>
                         {this.props.leadState.isLoading ? (
                             <View>
@@ -171,7 +171,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
                                     ListFooterComponent={this.renderFooter}
                                     onEndReached={this.fetchMore}
-                                    onEndReachedThreshold={0.5}
+                                    onEndReachedThreshold={0.1}
                                 />
                             </View>
                         )}

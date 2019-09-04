@@ -19,21 +19,41 @@ const Lead = ({ lead }) => {
             >
                 <CardItem header style={{ paddingBottom: 0, paddingTop: 12, paddingLeft: 12, paddingRight: 12 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{lead.name}</Text>
-                    <Button rounded small style={{
-                        backgroundColor: '#813588', marginLeft: 6, paddingTop: 0, paddingBottom: 0,
-                        alignItems: 'center', justifyContent: 'center', height: 25
-                    }}>
-                        <Text style={{ textTransform: 'capitalize', fontSize: 12 }}>{lead.name}</Text>
+                    <Button
+                        rounded
+                        small
+                        style={{
+                            backgroundColor: '#813588',
+                            marginLeft: 6,
+                            paddingTop: 0,
+                            paddingBottom: 0,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: 25,
+                        }}
+                    >
+                        <Text style={{ textTransform: 'capitalize', fontSize: 12 }}>{lead.classes.name}</Text>
                     </Button>
                 </CardItem>
 
-                <CardItem style={{ borderBottomColor: '#f6f6f6', borderBottomWidth: 1, paddingTop: 10, paddingBottom: 5, paddingLeft: 12, paddingRight: 12 }}>
+                <CardItem
+                    style={{
+                        borderBottomColor: '#f6f6f6',
+                        borderBottomWidth: 1,
+                        paddingTop: 10,
+                        paddingBottom: 5,
+                        paddingLeft: 12,
+                        paddingRight: 12,
+                    }}
+                >
                     <Grid>
                         <Col style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="phone-portrait" style={{ fontSize: 20, width: 20 }} />
                             <Text style={{ marginRight: 10, fontSize: 14 }}>{lead.phone}</Text>
                             <Icon name="mail" style={{ fontSize: 20, width: 25 }} />
-                            <Text style={{ flex: 1, fontSize: 14 }} numberOfLines={1}>{lead.email}</Text>
+                            <Text style={{ flex: 1, fontSize: 14 }} numberOfLines={1}>
+                                {lead.email}
+                            </Text>
                         </Col>
                     </Grid>
                 </CardItem>
@@ -53,10 +73,14 @@ const Lead = ({ lead }) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Grid>
                             <Col>
-                                <Text style={{ flex: 1 }} numberOfLines={1}>{lead.board.name}</Text>
+                                <Text style={{ flex: 1 }} numberOfLines={1}>
+                                    {lead.board.name}
+                                </Text>
                             </Col>
                             <Col style={{ marginLeft: 20 }}>
-                                <Text style={{ flex: 1 }} numberOfLines={1}>{lead.school_name}</Text>
+                                <Text style={{ flex: 1 }} numberOfLines={1}>
+                                    {lead.school_name}
+                                </Text>
                             </Col>
                         </Grid>
                     </View>

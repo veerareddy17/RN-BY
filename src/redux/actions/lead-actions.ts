@@ -1,4 +1,4 @@
-import { Dispatch } from 'redux';
+import { Dispatch, Store } from 'redux';
 import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL, OTP_SENT } from './action-types';
 import { LeadService } from '../../services/lead-service';
 import { LeadRequest } from '../../models/request';
@@ -40,21 +40,24 @@ export const leadFailureAction = error => {
 };
 
 // GET method to fetch all captured leads
-export const fetchAllLeadsApi = (pageNumber: number) => async (dispatch: Dispatch) => {
-    console.log("action lead is... =>", pageNumber);
-    try {
-        if (pageNumber === 0) {
-            dispatch(leadStartAction());
+export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    console.log('action lead is... =>', pageNumber);
+    return async (dispatch: Dispatch, getState) => {
+        console.log('getState :', getState());
+        try {
+            if (pageNumber === 0) {
+                dispatch(leadStartAction());
+            }
+            const response = await LeadService.fetchLeads(pageNumber);
+            if (response && response.data) {
+                dispatch(fetchLeadsAction(response.data));
+            } else {
+                dispatch(leadFailureAction(response.errors));
+            }
+        } catch (error) {
+            console.log(error);
         }
-        const response = await LeadService.fetchLeads(pageNumber);
-        if (response && response.data) {
-            dispatch(fetchLeadsAction(response.data));
-        } else {
-            dispatch(leadFailureAction(response.errors));
-        }
-    } catch (error) {
-        console.log(error);
-    }
+    };
 };
 
 // POST method to create Lead
@@ -63,8 +66,6 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) =
         try {
             dispatch(leadStartAction());
             let response = await LeadService.createLead(leadRequest);
-            console.log('response data', response.data);
-            console.log('response obj', response);
             if (response && response.data) {
                 dispatch(createLeadAction(response.data));
             } else {
@@ -76,4 +77,3 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch) =
         }
     };
 };
-
