@@ -14,6 +14,10 @@ export const LOAD_LEAD_FAIL = 'LOAD_LEAD_FAIL';
 export const ADD_LEAD = 'ADD_LEAD';
 export const FETCH_LEAD = 'FETCH_LEAD';
 export const DELETE_LEAD = 'DELETE_LEAD';
+export const FETCH_BOARD = 'FETCH_BOARD';
+export const FETCH_CLASSES = 'FETCH_CLASSES';
+export const FETCH_STATES = 'FETCH_STATES';
+export const META_DATA_ERROR = 'META_DATA_ERROR';
 
 //OTP Action types
 export const LOAD_OTP_START = 'LOAD_OTP_START';

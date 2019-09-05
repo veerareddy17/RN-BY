@@ -8,4 +8,6 @@ export const APIConstants = {
     ALL_LEADS_URL: '/lead/lightweight',
     CREATE_LEAD_URL: '/lead',
     FORGOT_PASSWORD_URL: '/user/forgot-password',
+    BOARDS_URL: '/meta/boards',
+    CLASSES_URL: '/meta/classes',
 };

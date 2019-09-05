@@ -1,4 +1,4 @@
-export class StateResponse {
+export class ClassesResponse {
     public id!: number;
     public name!: string;
 }

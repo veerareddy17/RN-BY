@@ -58,6 +58,7 @@ export interface CreateLeadProps {
     leadState: any;
     locationState: any;
     otpState: any;
+    metaData: any
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     generateAndVerifyOTP(phone: string, connection: boolean): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -96,14 +97,13 @@ export interface CreateLeadState {
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
-	async componentDidMount() {
+    async componentDidMount() {
         try {
             if (this.context.isConnected) {
                 this.focusListener = this.props.navigation.addListener('didFocus', async () => {
                     // The screen is focused
                     // Call any action
                     const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
-                    await this.props.fetchCampaigns();
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaign_id: selectedCampaign.id });
@@ -121,6 +121,29 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         }
     }
 
+    updateClassDropdown() {
+
+        const all_items = this.props.metaData.classesResponse.map((category, i) => {
+            return <Picker.Item key={category.id} color="#333" label={category.name} value={category.id} />;
+        });
+        return all_items;
+    }
+
+    updateBoardDropdown() {
+
+        const all_items = this.props.metaData.boardResponse.map((category, i) => {
+            return <Picker.Item key={category.id} color="#333" label={category.name} value={category.id} />;
+        });
+        return all_items;
+    }
+
+    updateStatesDropdown() {
+
+        const all_items = this.props.metaData.stateResponse.map((category, i) => {
+            return <Picker.Item key={category.id} color="#333" label={category.name} value={category.id} />;
+        });
+        return all_items;
+    }
     componentWillUnmount() {
         // Remove the event listener
         console.log('listener removed');
@@ -292,10 +315,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
                                         </View>
                                     ) : (
-                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
-                                            {this.state.campaignName}
-                                        </Text>
-                                    )}
+                                            <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
+                                                {this.state.campaignName}
+                                            </Text>
+                                        )}
                                 </View>
                                 <Button
                                     onPress={() => {
@@ -319,7 +342,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     }}
                                     height={400}
                                     duration={150}
-                                    closeOnDragDown={true}
+                                    closeOnDragDown={false}
                                     customStyles={{
                                         container: {
                                             flex: 1,
@@ -392,9 +415,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             }}
                                                         >
                                                             <Picker.Item label="Select" color="#ccc" value="" />
-                                                            <Picker.Item label="CBSC" value="1" />
-                                                            <Picker.Item label="ICSC" value="2" />
-                                                            <Picker.Item label="SBSC" value="3" />
+                                                            {this.updateBoardDropdown()}
                                                         </Picker>
                                                     </View>
                                                 </Item>
@@ -447,10 +468,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     }}
                                                                 >
                                                                     <Picker.Item label="Select" color="#ccc" value="" />
-                                                                    <Picker.Item label="1" value="1" />
-                                                                    <Picker.Item label="2" value="2" />
-                                                                    <Picker.Item label="3" value="3" />
-                                                                    <Picker.Item label="4" value="4" />
+                                                                    {this.updateClassDropdown()}
                                                                 </Picker>
                                                             </View>
                                                         </Item>
@@ -584,7 +602,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 >
                                                                     <Picker.Item label="Select" color="#ccc" value="" />
                                                                     <Picker.Item label="India" value="1" />
-                                                                    <Picker.Item label="Sri Lanka" value="2" />
                                                                 </Picker>
                                                             </View>
                                                         </Item>
@@ -624,8 +641,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     }}
                                                                 >
                                                                     <Picker.Item label="Select" color="#ccc" value="" />
-                                                                    <Picker.Item label="Karnataka" value="1" />
-                                                                    <Picker.Item label="Madya Pradesh" value="2" />
+                                                                    {this.updateStatesDropdown()}
                                                                 </Picker>
                                                             </View>
                                                         </Item>
@@ -710,6 +726,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         this.RBSheetOtp = ref;
                                     }}
                                     closeOnPressMask={false}
+                                    closeOnDragDown={false}
                                     duration={10}
                                     customStyles={{
                                         container: {
@@ -746,6 +763,7 @@ const mapStateToProps = (state: AppState) => ({
     leadState: state.leadReducer,
     locationState: state.locationReducer,
     otpState: state.otpReducer,
+    metaData: state.metaDataReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

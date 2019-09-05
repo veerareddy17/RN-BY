@@ -33,12 +33,15 @@ import { StorageConstants } from '../../helpers/storage-constants';
 import { fetchCampaigns, selectedCampaign } from '../../redux/actions/campaign-actions';
 import { withNavigation } from 'react-navigation';
 import { NetworkContext } from '../../provider/network-provider';
+import { fetchMetaData } from '../../redux/actions/meta-data-actions';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
     campaignState: any;
+    metaData: any;
+    fetchMetaData(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     selectCampaign(campaignId: any): void;
 }
@@ -78,12 +81,15 @@ class Dashboard extends React.Component<Props, State> {
                 console.log('inside');
                 this.focusListener = this.props.navigation.addListener('didFocus', async () => {
                     const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+                    await this.props.fetchMetaData();
                     await this.props.fetchCampaigns();
                     console.log('campagin state', this.props.campaignState);
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaignId: selectedCampaign.id });
                     this.setState({ campaignName: selectedCampaign.name });
+
+
                 });
             } else {
                 /*
@@ -161,19 +167,19 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 ) : (
-                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
-                                Dashboard
+                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                            <Body>
+                                <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
+                                    Dashboard
                             </Title>
-                        </Body>
-                        <Right>
-                            <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
-                            </Button>
-                        </Right>
-                    </Header>
-                )}
+                            </Body>
+                            <Right>
+                                <Button transparent onPress={this.confirmLogout}>
+                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                </Button>
+                            </Right>
+                        </Header>
+                    )}
 
                 <Content style={{ backgroundColor: '#eee' }}>
                     <View style={styles.containerStyle}>
@@ -282,10 +288,10 @@ class Dashboard extends React.Component<Props, State> {
                                     <Spinner size={15} color="#813588" style={{ marginTop: -25 }} />
                                 </View>
                             ) : (
-                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
-                                    {this.state.campaignName}
-                                </Text>
-                            )}
+                                    <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
+                                        {this.state.campaignName}
+                                    </Text>
+                                )}
                             <Button
                                 small
                                 bordered
@@ -302,7 +308,7 @@ class Dashboard extends React.Component<Props, State> {
                                 }}
                                 height={400}
                                 duration={150}
-                                closeOnDragDown={true}
+                                closeOnDragDown={false}
                                 customStyles={{
                                     container: {
                                         flex: 1,
@@ -362,6 +368,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: bindActionCreators(logout, dispatch),
     fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
+    fetchMetaData: bindActionCreators(fetchMetaData, dispatch)
 });
 
 export default withNavigation(

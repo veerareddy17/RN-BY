@@ -1,3 +1,5 @@
+import { BoardResponse } from './../models/response/board-response';
+import { StateResponse } from './../models/response/state-response';
 import { HttpBaseService } from './http-base-service';
 import StorageService from '../database/storage-service';
 import { ResponseViewModel } from '../models/response/response-view-model';
@@ -49,6 +51,51 @@ export class LeadService {
         if (response && response.data) {
             try {
                 return response;
+            } catch (error) {
+                console.log('Error in storing asyncstorage', error);
+            }
+        } else {
+            console.log('Failure');
+        }
+        return response;
+    };
+
+    public static fetchBoards = async (): Promise<ResponseViewModel<BoardResponse>> => {
+        const response = await HttpBaseService._get<BoardResponse>(APIConstants.BOARDS_URL);
+        if (response && response.data) {
+            try {
+                console.log('response in service', response.data);
+                // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
+            } catch (error) {
+                console.log('Error in storing asyncstorage', error);
+            }
+        } else {
+            console.log('Failure');
+        }
+        return response;
+    };
+
+    public static fetchClasses = async (): Promise<ResponseViewModel<BoardResponse>> => {
+        const response = await HttpBaseService._get<BoardResponse>(APIConstants.CLASSES_URL);
+        if (response && response.data) {
+            try {
+                console.log('response in service', response.data);
+                // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
+            } catch (error) {
+                console.log('Error in storing asyncstorage', error);
+            }
+        } else {
+            console.log('Failure');
+        }
+        return response;
+    };
+
+    public static fetchStateByCountry = async (countryId: number): Promise<ResponseViewModel<StateResponse>> => {
+        const response = await HttpBaseService._get<StateResponse>(`/meta/country/${countryId}/states`);
+        if (response && response.data) {
+            try {
+                console.log('response in service', response.data);
+                // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
