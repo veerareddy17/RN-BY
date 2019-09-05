@@ -33,7 +33,7 @@ export interface CampaignListProps {
     selectCampaign(campaignId: any): void;
 }
 
-export interface CampaignListState { }
+export interface CampaignListState {}
 
 class CampaignList extends Component<CampaignListProps, CampaignListState> {
     // static contextType = NetworkContext;
@@ -47,6 +47,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
             headerTitleStyle: {
                 fontWeight: 'bold',
                 alignSelf: 'center',
+                fontSize: 18,
             },
         };
     };
@@ -73,24 +74,24 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                             <Text style={{ textAlign: 'center' }}>Fetching Campaigns...</Text>
                         </View>
                     ) : (
-                            <View>
-                                <List>
-                                    {this.props.campaignState.campaignList.map(campaign => {
-                                        return (
+                        <View>
+                            <List>
+                                {this.props.campaignState.campaignList.map(campaign => {
+                                    return (
                                         <ListItem
                                             button={true}
                                             key={campaign.id}
                                             onPress={() => this.handleSelections(campaign)}
                                         >
-                                                <Left>
-                                                    <Text>{campaign.name}</Text>
-                                                </Left>
-                                            </ListItem>
-                                        );
-                                    })}
-                                </List>
-                            </View>
-                        )}
+                                            <Left>
+                                                <Text>{campaign.name}</Text>
+                                            </Left>
+                                        </ListItem>
+                                    );
+                                })}
+                            </List>
+                        </View>
+                    )}
                 </Content>
             </Container>
         );

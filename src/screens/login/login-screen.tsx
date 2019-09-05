@@ -73,33 +73,31 @@ class Login extends React.Component<Props, State> {
         if (this.props.userState.user) {
             this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
         }
-    }
+    };
 
     handlePress = () => {
         this.RBSheetForgotPass.open();
-    }
+    };
 
     closeBottomSheet = () => {
         this.RBSheetForgotPass.close();
         this.props.resetForgotPassword();
-
-    }
+    };
 
     onChangeTextBottomSheet = (text: string, fieldName: string) => {
-        console.log('text,item', text, fieldName)
-        this.setState({ email: text })
-        console.log('state in onchange', this.state)
-    }
+        console.log('text,item', text, fieldName);
+        this.setState({ email: text });
+        console.log('state in onchange', this.state);
+    };
 
     submitForgotPassword = async () => {
-
-        console.log('state in submit', this.state)
+        console.log('state in submit', this.state);
         await this.props.forgotPassword(this.state.email);
         console.log('forgot password response', this.props.forgotPasswordState.forgotPasswordResponse);
         if (this.props.forgotPasswordState.forgotPasswordResponse.success) {
             this.RBSheetForgotPass.close();
         }
-    }
+    };
 
     handleSubmit = async (values: LoginRequestData) => {
         if (this.context.isConnected) {
@@ -155,8 +153,8 @@ class Login extends React.Component<Props, State> {
                                                     style={{ marginLeft: 10 }}
                                                     returnKeyType="next"
                                                     blurOnSubmit={false}
-                                                        onSubmitEditing={() => this.focusTheField('password')}
-                                                        autoCapitalize='none'
+                                                    onSubmitEditing={() => this.focusTheField('password')}
+                                                    autoCapitalize="none"
                                                 />
                                             </Item>
                                             <Item floatingLabel style={loginStyle.password}>
@@ -168,12 +166,13 @@ class Login extends React.Component<Props, State> {
                                                     onBlur={() => setFieldTouched('password')}
                                                     style={{ marginLeft: 10 }}
                                                     returnKeyType="done"
-                                                        getRef={input => {
-                                                            this.state.input['password'] = input;
-                                                        }}
-                                                        onSubmitEditing={() => this.handleSubmit(values)}
+                                                    getRef={input => {
+                                                        this.state.input['password'] = input;
+                                                    }}
+                                                    onSubmitEditing={() => this.handleSubmit(values)}
                                                 />
                                                 <Icon
+                                                    style={{ paddingTop: 0 }}
                                                     active
                                                     name={this.state.showPassword ? 'eye-off' : 'eye'}
                                                     onPress={e => {
@@ -229,22 +228,21 @@ class Login extends React.Component<Props, State> {
                                     container: {
                                         height: 400,
                                         borderTopRightRadius: 20,
-                                        borderTopLeftRadius: 20
-                                    }
+                                        borderTopLeftRadius: 20,
+                                    },
                                 }}
                             >
-
                                 <BottomSheet
                                     keyBoardStyle="email-address"
                                     type="inputType"
                                     actionType="Submit"
                                     currentState={this.props.forgotPasswordState}
                                     onChangeText={this.onChangeTextBottomSheet}
-                                    data={["Email Id",]}
+                                    data={['Email Id']}
                                     close={this.closeBottomSheet}
                                     description="Enter your registered email id"
                                     submit={this.submitForgotPassword}
-                                    title='Forgot Password'
+                                    title="Forgot Password"
                                 />
                             </RBSheet>
                         </Content>
@@ -257,14 +255,14 @@ class Login extends React.Component<Props, State> {
 const mapStateToProps = (state: AppState) => ({
     userState: state.userReducer,
     locationState: state.locationReducer,
-    forgotPasswordState: state.forgotPasswordReducer
+    forgotPasswordState: state.forgotPasswordReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     requestLoginApi: bindActionCreators(authenticate, dispatch),
     captureLocation: bindActionCreators(captureLocation, dispatch),
     forgotPassword: bindActionCreators(forgotPassword, dispatch),
-    resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch)
+    resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch),
 });
 
 export default connect(

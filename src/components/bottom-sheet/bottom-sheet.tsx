@@ -99,7 +99,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                 <Spinner />
                                             </View>
                                         ) : this.props.currentState.error ? (
-                                            <Text style={{ color: 'red' }}>{this.props.currentState.error}</Text>
+                                            <Text style={{ color: '#ff0000' }}>{this.props.currentState.error}</Text>
                                         ) : (
                                             <View />
                                         )}
@@ -155,7 +155,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                 <Spinner />
                                             </View>
                                         ) : this.props.currentState.error ? (
-                                            <Text style={{ color: 'red' }}>{this.props.currentState.error}</Text>
+                                            <Text style={{ color: '#ff0000' }}>{this.props.currentState.error}</Text>
                                         ) : (
                                             <View />
                                         )}
@@ -174,6 +174,7 @@ export default class BottomSheet extends React.Component<Props, State> {
             case 'List':
                 return (
                     <FlatList
+                        style={{ marginBottom: 70 }}
                         data={this.props.data}
                         renderItem={({ item, index }) => (
                             <View key={item.id} style={{ flexDirection: 'row' }}>

@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const style = StyleSheet.create({
     // container: {
@@ -14,10 +14,10 @@ const style = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 5,
         marginTop: 5,
-        marginBottom:10,
+        marginBottom: 10,
         height: 50,
         //marginLeft: 20,
-        borderColor: '#333',
+        // borderColor: '#ff0000',
     },
     input: {
         borderWidth: 0,
@@ -26,15 +26,15 @@ const style = StyleSheet.create({
         paddingBottom: 5,
     },
     flexQuater: {
-        flex: 1
+        flex: 1,
     },
     felxHalf: {
-        flex: .5
+        flex: 0.5,
     },
     errorStyle: {
         fontSize: 10,
-        color: 'red'
-    }
+        color: '#ff0000',
+    },
 });
 
 export default style;

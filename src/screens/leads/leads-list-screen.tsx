@@ -154,7 +154,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     </Header>
                 )}
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
-                    <View style={{ flex: 1, paddingBottom: 15 }}>
+                    <View style={{ flex: 1, paddingBottom: 0 }}>
                         {this.props.leadState.isLoading ? (
                             <View>
                                 <Loader />

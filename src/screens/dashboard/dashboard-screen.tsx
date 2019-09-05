@@ -158,7 +158,7 @@ class Dashboard extends React.Component<Props, State> {
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Left />
                         <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold' }}>Dashboard</Title>
+                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Dashboard</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.logout}>
