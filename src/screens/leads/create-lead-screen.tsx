@@ -146,7 +146,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     }
     componentWillUnmount() {
         // Remove the event listener
-        console.log('listener removed');
         this.focusListener.remove();
     }
 
@@ -156,11 +155,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
     submitOtp = async () => {
         await this.props.submitOtp(this.state.otp);
-        if (!this.props.otpState.error) {
-            await this.RBSheetOtp.close();
-            await this.props.createLead(this.state.leadRequest);
-            this.props.navigation.navigate('LeadList');
-        }
+        // if (!this.props.otpState.error) {
+        await this.RBSheetOtp.close();
+        await this.props.createLead(this.state.leadRequest);
+        this.props.navigation.navigate('LeadList');
+        // }
     };
 
     handleResend = async () => {
@@ -321,12 +320,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                 </View>
                                 <Button
                                     onPress={() => {
-                                        // this.setState({
-                                        //     ...this.state,
-                                        //     statuses: this.state.statuses.map((val, id) => {
-                                        //         return 'visible';
-                                        //     }),
-                                        // });
                                         this.RBSheet.open();
                                     }}
                                     small

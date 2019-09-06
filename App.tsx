@@ -3,7 +3,7 @@ import { Provider } from 'react-redux';
 import { Root } from 'native-base';
 import { PersistGate } from 'redux-persist/es/integration/react';
 import AppContainer from './src/navigation/router';
-import { NetworkProvider } from './src/provider/network-provider';
+import NetworkProvider from './src/provider/network-provider';
 import { store, persistor } from './src/redux/store';
 import { HttpBaseService } from './src/services/http-base-service';
 

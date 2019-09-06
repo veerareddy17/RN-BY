@@ -10,6 +10,7 @@ export const PaginatedResponseState = {
 export const initialState = {
     paginatedLeadList: PaginatedResponseState,
     leadList: [],
+    offlineLeadList: [],
     status: '',
     isLoading: false,
 };

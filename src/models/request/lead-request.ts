@@ -1,23 +1,22 @@
 import { Location } from './location-request';
-
 export class LeadRequest {
-    public id: string | undefined;
-    public name: string | undefined;
-    public parent_name: string | undefined;
-    public email: string | undefined;
-    public phone: string | undefined;
-    public alternate_phone: string | undefined;
-    public classes_id: string | undefined;
-    public board_id: string | undefined;
-    public school_name: string | undefined;
-    public address: string | undefined;
-    public country_id: string | undefined;
-    public state_id: string | undefined;
-    public city: string | undefined;
-    public pin_code: number | undefined;
-    public comments: string | undefined;
-    public siblings: JSON | undefined;
-    public campaign_id: string | undefined;
-    public location: Location | undefined;
-    public sync_status: boolean | undefined;
+    public id = '';
+    public name = '';
+    public parent_name = '';
+    public email = '';
+    public phone = '';
+    public alternate_phone = '';
+    public classes_id = '';
+    public board_id = '';
+    public school_name = '';
+    public address = '';
+    public country_id = '';
+    public state_id = '';
+    public city = '';
+    public pin_code = 0;
+    public comments = '';
+    public siblings = null;
+    public campaign_id = '';
+    public location: Location;
+    public sync_status = false;
 }

@@ -11,6 +11,7 @@ import { logger } from 'redux-logger';
 import { persistStore, persistReducer } from 'redux-persist';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import forgotPasswordReducer from '../reducers/forgot-password-reducer';
+import connectionStateReducer from '../reducers/connection-reducer';
 import metaDataReducer from '../reducers/meta-data-reducer';
 
 const rootReducer = combineReducers({
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
     locationReducer: locationReducer,
     otpReducer: otpReducer,
     forgotPasswordReducer: forgotPasswordReducer,
+    connectionStateReducer: connectionStateReducer,
     metaDataReducer: metaDataReducer,
 });
 

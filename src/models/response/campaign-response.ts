@@ -1,4 +1,4 @@
-import { TeamResponse } from './team-response';
+import { MetaResponse } from './meta-response';
 
 export class CampaignResponse {
     public id: string;
@@ -11,7 +11,6 @@ export class CampaignResponse {
     public start_date: Date;
     public end_date: Date;
     public address: string;
-    public city: string;
+    public city: MetaResponse;
     public active: boolean;
-    public team: TeamResponse;
 }

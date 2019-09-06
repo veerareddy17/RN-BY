@@ -5,6 +5,8 @@ import {
     LOAD_LEAD_FAIL,
     LOAD_LEAD_SUCCESS,
     OTP_SENT,
+    ADD_OFFLINE_LEAD,
+    FETCH_OFFLINE_LEAD,
 } from '../actions/action-types';
 import { initialState } from '../init/lead-initial-state';
 
@@ -50,6 +52,22 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 otp: action.payload,
+            };
+
+        case ADD_OFFLINE_LEAD:
+            return {
+                ...state,
+                status: 'new offline',
+                isLoading: false,
+                offlineLeadList: [...[action.payload], ...state.offlineLeadList],
+            };
+        case FETCH_OFFLINE_LEAD:
+            return {
+                ...state,
+                status: 'done',
+                isLoading: false,
+                paginatedLeadList: action.payload,
+                offlineLeadList: [...state.offlineLeadList, ...action.payload.data],
             };
         default:
             return state;
