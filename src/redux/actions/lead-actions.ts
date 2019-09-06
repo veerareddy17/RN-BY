@@ -45,7 +45,7 @@ export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getS
     return async (dispatch: Dispatch, getState) => {
         console.log('getState :', getState());
         try {
-            if (pageNumber === 0) {
+            if (pageNumber === 1) {
                 dispatch(leadStartAction());
             }
             const response = await LeadService.fetchLeads(pageNumber);

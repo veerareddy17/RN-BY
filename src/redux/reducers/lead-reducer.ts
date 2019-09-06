@@ -15,6 +15,7 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 status: 'new', // add some valid flag
                 isLoading: false,
+                leadList: [...[action.payload], ...state.leadList],
             };
         case FETCH_LEAD:
             return {

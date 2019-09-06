@@ -8,7 +8,7 @@ export class Loader extends Component {
         return (
             <View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -20,7 +20,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -32,7 +32,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -44,7 +44,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -56,7 +56,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -68,7 +68,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -80,7 +80,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -92,7 +92,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -104,7 +104,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />
@@ -116,7 +116,7 @@ export class Loader extends Component {
                     </ContentLoader>
                 </View>
                 <View style={{ backgroundColor: '#fff', marginBottom: 15 }}>
-                    <ContentLoader width={'100%'} height={130}>
+                    <ContentLoader height={130}>
                         <Rect x="10" y="15" rx="4" ry="4" width="75%" height="10" />
                         <Rect x="10" y="40" rx="4" ry="4" width="25%" height="10" />
                         <Rect x="30%" y="40" rx="4" ry="4" width="25%" height="10" />

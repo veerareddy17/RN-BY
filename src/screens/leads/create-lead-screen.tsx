@@ -557,6 +557,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             <View style={{ flexDirection: 'row', flex: 1 }}>
                                                 <View style={{ flex: 1 }}>
                                                     <FloatingLabel
+                                                        keyboardType="email-address"
                                                         value={values.email}
                                                         labelStyle={style.labelInput}
                                                         inputStyle={style.input}
@@ -733,7 +734,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <View>{isValid}</View>
                                                     <Textarea
                                                         underline={true}
-                                                        style={{ borderRadius: 5 }}
+                                                        style={{ borderRadius: 5, borderColor: '#333' }}
                                                         rowSpan={5}
                                                         bordered={true}
                                                         placeholder="Comments"
