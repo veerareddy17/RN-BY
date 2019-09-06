@@ -155,11 +155,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
     submitOtp = async () => {
         await this.props.submitOtp(this.state.otp);
-        // if (!this.props.otpState.error) {
-        await this.RBSheetOtp.close();
-        await this.props.createLead(this.state.leadRequest);
-        this.props.navigation.navigate('LeadList');
-        // }
+        if (!this.props.otpState.error) {
+            await this.RBSheetOtp.close();
+            await this.props.createLead(this.state.leadRequest);
+            this.props.navigation.navigate('LeadList');
+        }
     };
 
     handleResend = async () => {
