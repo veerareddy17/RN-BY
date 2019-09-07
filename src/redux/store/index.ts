@@ -36,7 +36,7 @@ const persistConfig = {
     storage: AsyncStorage,
     stateReconciler: autoMergeLevel2,
     // Whitelist (Save Specific Reducers)
-    whitelist: ['userReducer', 'leadReducer', 'campaignReducer'],
+    whitelist: ['userReducer', 'leadReducer', 'campaignReducer', 'metaDataReducer'],
 };
 
 // Middleware: Redux Persist Persisted Reducer

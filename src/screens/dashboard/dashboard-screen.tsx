@@ -53,17 +53,6 @@ export interface State {
 }
 const window = Dimensions.get('window');
 class Dashboard extends React.Component<Props, State> {
-    // static navigationOptions = ({ navigation }) => {
-    //     const { params = {} } = navigation.state;
-    //     return {
-    //         title: 'Dashboard',
-    //         headerRight: (
-    //             <Button transparent onPress={() => params.logout()}>
-    //                 <Icon name="ios-log-out" style={{ color: 'white' }} />
-    //             </Button>
-    //         ),
-    //     };
-    // };
     static contextType = NetworkContext;
     constructor(props: Props) {
         super(props);
@@ -76,20 +65,15 @@ class Dashboard extends React.Component<Props, State> {
 
     componentDidMount() {
         try {
-            console.log('inside did mount');
             if (this.context.isConnected) {
-                console.log('inside');
                 this.focusListener = this.props.navigation.addListener('didFocus', async () => {
                     const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
                     await this.props.fetchMetaData();
                     await this.props.fetchCampaigns();
-                    console.log('campagin state', this.props.campaignState);
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaignId: selectedCampaign.id });
                     this.setState({ campaignName: selectedCampaign.name });
-
-
                 });
             } else {
                 /*
@@ -104,9 +88,7 @@ class Dashboard extends React.Component<Props, State> {
     }
 
     componentWillUnmount() {
-        // Remove the event listener
-        console.log('listener removed');
-        this.focusListener.remove();
+        if (this.focusListener) this.focusListener.remove();
     }
 
     getLeads = () => {
@@ -142,7 +124,6 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     onPressCampaign = (index: number, campaign: Object) => {
-        console.log('on click bottom sheet', campaign);
         this.props.selectCampaign(campaign);
         this.setState({
             ...this.state,
@@ -167,19 +148,19 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 ) : (
-                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                            <Body>
-                                <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
-                                    Dashboard
+                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                        <Body>
+                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
+                                Dashboard
                             </Title>
-                            </Body>
-                            <Right>
-                                <Button transparent onPress={this.confirmLogout}>
-                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
-                                </Button>
-                            </Right>
-                        </Header>
-                    )}
+                        </Body>
+                        <Right>
+                            <Button transparent onPress={this.confirmLogout}>
+                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                            </Button>
+                        </Right>
+                    </Header>
+                )}
 
                 <Content style={{ backgroundColor: '#eee' }}>
                     <View style={styles.containerStyle}>
@@ -288,10 +269,10 @@ class Dashboard extends React.Component<Props, State> {
                                     <Spinner size={15} color="#813588" style={{ marginTop: -25 }} />
                                 </View>
                             ) : (
-                                    <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
-                                        {this.state.campaignName}
-                                    </Text>
-                                )}
+                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
+                                    {this.state.campaignName}
+                                </Text>
+                            )}
                             <Button
                                 small
                                 bordered
@@ -350,14 +331,6 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         backgroundColor: '#813588',
     },
-    // slider: {
-    //     height: window.width / 1.7,
-    //     width: window.width,
-    //     position: 'absolute',
-    //     bottom: 0,
-    //     marginLeft: window.width / 2,
-    //     backgroundColor: '#9DD6EB',
-    // },
 });
 const mapStateToProps = (state: AppState) => ({
     userState: state.userReducer,
@@ -368,7 +341,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: bindActionCreators(logout, dispatch),
     fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
-    fetchMetaData: bindActionCreators(fetchMetaData, dispatch)
+    fetchMetaData: bindActionCreators(fetchMetaData, dispatch),
 });
 
 export default withNavigation(

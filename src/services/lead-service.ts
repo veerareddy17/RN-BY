@@ -64,7 +64,6 @@ export class LeadService {
         const response = await HttpBaseService._get<BoardResponse>(APIConstants.BOARDS_URL);
         if (response && response.data) {
             try {
-                console.log('response in service', response.data);
                 // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
@@ -79,7 +78,6 @@ export class LeadService {
         const response = await HttpBaseService._get<BoardResponse>(APIConstants.CLASSES_URL);
         if (response && response.data) {
             try {
-                console.log('response in service', response.data);
                 // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
@@ -94,7 +92,6 @@ export class LeadService {
         const response = await HttpBaseService._get<StateResponse>(`/meta/country/${countryId}/states`);
         if (response && response.data) {
             try {
-                console.log('response in service', response.data);
                 // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);

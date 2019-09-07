@@ -1,5 +1,5 @@
 import { FETCH_BOARD, FETCH_STATES, FETCH_CLASSES, META_DATA_ERROR } from './../actions/action-types';
-import { initialState } from "../init/meta-data-initial-state";
+import { initialState } from '../init/meta-data-initial-state';
 
 export default function metaDataReducer(state = initialState, action) {
     switch (action.type) {

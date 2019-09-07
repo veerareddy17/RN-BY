@@ -85,15 +85,11 @@ class Login extends React.Component<Props, State> {
     };
 
     onChangeTextBottomSheet = (text: string, fieldName: string) => {
-        console.log('text,item', text, fieldName);
         this.setState({ email: text });
-        console.log('state in onchange', this.state);
     };
 
     submitForgotPassword = async () => {
-        console.log('state in submit', this.state);
         await this.props.forgotPassword(this.state.email);
-        console.log('forgot password response', this.props.forgotPasswordState.forgotPasswordResponse);
         if (this.props.forgotPasswordState.forgotPasswordResponse.success) {
             this.RBSheetForgotPass.close();
         }
@@ -102,7 +98,6 @@ class Login extends React.Component<Props, State> {
     handleSubmit = async (values: LoginRequestData) => {
         if (this.context.isConnected) {
             await this.props.captureLocation();
-            console.log('location on submit', this.props.locationState.location);
             await this.props.requestLoginApi(
                 values.email,
                 values.password,

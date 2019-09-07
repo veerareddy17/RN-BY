@@ -46,12 +46,11 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     }
 
     fetchLeadsList = async () => {
-        if (this.context.isConnected) {
+        try {
             await this.props.fetchLeads(this.state.pageNumber);
             this.setState({ loadingMore: false });
-        } else {
-            //Fetch leads from lead state where sync_status is false
-            Alert.alert('Offline', 'Your app is offline');
+        } catch (error) {
+            /* show server error here*/
         }
     };
 
@@ -79,7 +78,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     };
 
     fetchMore = () => {
-        console.log('Fetchmore :', this.state.loadingMore);
         if (this.props.leadState.paginatedLeadList.next_page_url == null) {
             this.setState({ loadingMore: false });
             return;
@@ -96,8 +94,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     };
 
     renderFooter = () => {
-        if (!this.state.loadingMore) return null;
-
+        if (!this.state.loadingMore) {
+            return null;
+        }
         return (
             <View>
                 <ActivityIndicator animating size="large" />
@@ -155,23 +154,29 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 )}
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
                     <View style={{ flex: 1 }}>
-                        {this.props.leadState.isLoading ? (
-                            <View>
-                                <Loader />
-                            </View>
+                        {this.context.isConnected ? (
+                            this.props.leadState.isLoading ? (
+                                <View>
+                                    <Loader />
+                                </View>
+                            ) : (
+                                <View style={{ flex: 1 }}>
+                                    <FlatList
+                                        data={this.props.leadState.leadList}
+                                        renderItem={({ item, index }) => this.renderItem(item)}
+                                        keyExtractor={(item, index) => `${item.id}+${index}`}
+                                        ListFooterComponent={this.renderFooter}
+                                        onEndReached={this.fetchMore}
+                                        onEndReachedThreshold={0.1}
+                                    />
+                                </View>
+                            )
                         ) : (
                             <View style={{ flex: 1 }}>
                                 <FlatList
-                                    data={
-                                        this.context.isConnected
-                                            ? this.props.leadState.leadList
-                                            : this.props.leadState.offlineLeadList
-                                    }
+                                    data={this.props.leadState.offlineLeadList}
                                     renderItem={({ item, index }) => this.renderItem(item)}
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
-                                    ListFooterComponent={this.renderFooter}
-                                    onEndReached={this.fetchMore}
-                                    onEndReachedThreshold={0.1}
                                 />
                             </View>
                         )}

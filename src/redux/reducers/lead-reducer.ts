@@ -66,8 +66,7 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 status: 'done',
                 isLoading: false,
-                paginatedLeadList: action.payload,
-                offlineLeadList: [...state.offlineLeadList, ...action.payload.data],
+                offlineLeadList: [...state.offlineLeadList, ...action.payload],
             };
         default:
             return state;

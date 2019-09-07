@@ -1,4 +1,4 @@
-import { Dispatch, Store } from 'redux';
+import { Dispatch } from 'redux';
 import { LeadService } from '../../services/lead-service';
 import { LeadRequest } from '../../models/request';
 import {
@@ -10,11 +10,9 @@ import {
     fetchOfflineLeadsAction,
 } from './lead-action-creator';
 import { LeadResponse } from '../../models/response';
-import { MetaResponse } from '../../models/response/meta-response';
 
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
-    console.log('action lead is... =>', pageNumber);
     return async (dispatch: Dispatch, getState) => {
         let isConnected = getState().connectionStateReducer.isConnected;
         if (!isConnected) {
@@ -22,18 +20,14 @@ export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getS
             dispatch(fetchOfflineLeadsAction(response));
             return;
         }
-        try {
-            if (pageNumber === 1) {
-                dispatch(leadStartAction());
-            }
-            const response = await LeadService.fetchLeads(pageNumber);
-            if (response && response.data) {
-                dispatch(fetchLeadsAction(response.data));
-            } else {
-                dispatch(leadFailureAction(response.errors));
-            }
-        } catch (error) {
-            console.log(error);
+        if (pageNumber === 1) {
+            dispatch(leadStartAction());
+        }
+        const response = await LeadService.fetchLeads(pageNumber);
+        if (response && response.data) {
+            dispatch(fetchLeadsAction(response.data));
+        } else {
+            dispatch(leadFailureAction(response.errors));
         }
     };
 };
@@ -43,30 +37,38 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch, g
     return async (dispatch: Dispatch, getState) => {
         let isConnected = getState().connectionStateReducer.isConnected;
         if (!isConnected) {
-            let response = transformRequestToResponse(leadRequest);
+            let response = transformRequestToResponse(leadRequest, getState());
             dispatch(createOfflineLeadAction(response));
             return;
         }
-        try {
-            dispatch(leadStartAction());
-            let response = await LeadService.createLead(leadRequest);
-            if (response && response.data) {
-                dispatch(createLeadAction(response.data));
-            } else {
-                dispatch(leadFailureAction(response.errors));
-            }
-        } catch (error) {
-            // Error
-            console.log(error);
+        dispatch(leadStartAction());
+        let response = await LeadService.createLead(leadRequest);
+        if (response && response.data) {
+            dispatch(createLeadAction(response.data));
+        } else {
+            dispatch(leadFailureAction(response.errors));
         }
     };
 };
 
-export const transformRequestToResponse = (leadRequest: LeadRequest): LeadResponse => {
+export const transformRequestToResponse = (leadRequest: LeadRequest, store: any): LeadResponse => {
     let leadResponse = new LeadResponse();
     leadResponse = Object.assign(leadResponse, leadRequest);
-    leadResponse.board = new MetaResponse(leadRequest.board_id, 'ICSE');
-    leadResponse.classes = new MetaResponse(leadRequest.classes_id, '9');
+    leadResponse.board = getSelectedBoard(leadRequest.board_id, store);
+    leadResponse.classes = getSelectedClass(leadRequest.classes_id, store);
+    leadResponse.state = getSelectedState(leadRequest.state_id, store);
     leadResponse.sync_status = false;
     return leadResponse;
+};
+
+export const getSelectedBoard = (board_id: string, store: any) => {
+    return store.metaDataReducer.boardResponse.find(board => board.id == Number(board_id));
+};
+
+export const getSelectedClass = (classes_id: string, store: any) => {
+    return store.metaDataReducer.classesResponse.find(classes => classes.id == Number(classes_id));
+};
+
+export const getSelectedState = (state_id: string, store: any) => {
+    return store.metaDataReducer.stateResponse.find(state => state.id == Number(state_id));
 };

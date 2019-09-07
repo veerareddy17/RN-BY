@@ -58,7 +58,7 @@ export interface CreateLeadProps {
     leadState: any;
     locationState: any;
     otpState: any;
-    metaData: any
+    metaData: any;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     generateAndVerifyOTP(phone: string, connection: boolean): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -99,21 +99,20 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
     async componentDidMount() {
         try {
-            if (this.context.isConnected) {
-                this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-                    // The screen is focused
-                    // Call any action
+            this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+                // The screen is focused call any action
+                if (this.context.isConnected) {
                     const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaign_id: selectedCampaign.id });
                     this.setState({ campaignName: selectedCampaign.name });
-                });
-            } else {
-                /*
-            show offline
-            */
-            }
+                } else {
+                    /*
+                show offline
+                */
+                }
+            });
         } catch (error) {
             /*
             error to be handled
@@ -121,32 +120,29 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         }
     }
 
-    updateClassDropdown() {
-
-        const all_items = this.props.metaData.classesResponse.map((category, i) => {
-            return <Picker.Item key={category.id} color="#333" label={category.name} value={category.id} />;
+    updateClassDropdown = () => {
+        const all_items = this.props.metaData.classesResponse.map((_class, i) => {
+            return <Picker.Item key={_class.id} color="#333" label={_class.name} value={_class.id} />;
         });
         return all_items;
-    }
+    };
 
-    updateBoardDropdown() {
-
-        const all_items = this.props.metaData.boardResponse.map((category, i) => {
-            return <Picker.Item key={category.id} color="#333" label={category.name} value={category.id} />;
+    updateBoardDropdown = () => {
+        const all_items = this.props.metaData.boardResponse.map((_board, i) => {
+            return <Picker.Item key={_board.id} color="#333" label={_board.name} value={_board.id} />;
         });
         return all_items;
-    }
+    };
 
-    updateStatesDropdown() {
-
-        const all_items = this.props.metaData.stateResponse.map((category, i) => {
-            return <Picker.Item key={category.id} color="#333" label={category.name} value={category.id} />;
+    updateStatesDropdown = () => {
+        const all_items = this.props.metaData.stateResponse.map((_state, i) => {
+            return <Picker.Item key={_state.id} color="#333" label={_state.name} value={_state.id} />;
         });
         return all_items;
-    }
+    };
     componentWillUnmount() {
         // Remove the event listener
-        this.focusListener.remove();
+        if (this.focusListener) this.focusListener.remove();
     }
 
     backToDashboard = () => {
@@ -230,8 +226,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             let req = this.state;
 
             this.setState({ leadRequest: req });
-
             await this.verifyOTP();
+
+            // await this.props.createLead(this.state.leadRequest);
+            // this.props.navigation.navigate('LeadList');
         } catch (error) {
             {
                 /*
@@ -252,7 +250,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     };
 
     onPressCampaign = (index: number, campaign: Object) => {
-        console.log('on click bottom sheet', campaign);
         this.props.selectCampaign(campaign);
         this.setState({
             ...this.state,
@@ -313,10 +310,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
                                         </View>
                                     ) : (
-                                            <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
-                                                {this.state.campaignName}
-                                            </Text>
-                                        )}
+                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
+                                            {this.state.campaignName}
+                                        </Text>
+                                    )}
                                 </View>
                                 <Button
                                     onPress={() => {
@@ -384,7 +381,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             <View
                                                 style={[
                                                     leadStyle.buttonPickerStyle,
-                                                    { flex: 1, flexDirection: 'row', borderColor: touched.board_id && errors.board_id ? '#ff0000' : '#333' },
+                                                    {
+                                                        flex: 1,
+                                                        flexDirection: 'row',
+                                                        borderColor:
+                                                            touched.board_id && errors.board_id ? '#ff0000' : '#333',
+                                                    },
                                                 ]}
                                             >
                                                 <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
@@ -430,7 +432,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.school_name && errors.school_name ? '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.school_name && errors.school_name
+                                                                        ? '#ff0000'
+                                                                        : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('school_name')}
                                                         onBlur={() => setFieldTouched('school_name')}
@@ -443,7 +450,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <View
                                                         style={[
                                                             leadStyle.buttonPickerStyle,
-                                                            { flex: 1, flexDirection: 'row', borderColor: touched.classes_id && errors.classes_id ? '#ff0000' : '#333' },
+                                                            {
+                                                                flex: 1,
+                                                                flexDirection: 'row',
+                                                                borderColor:
+                                                                    touched.classes_id && errors.classes_id
+                                                                        ? '#ff0000'
+                                                                        : '#333',
+                                                            },
                                                         ]}
                                                     >
                                                         <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
@@ -497,7 +511,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.parent_name && errors.parent_name ? '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.parent_name && errors.parent_name
+                                                                        ? '#ff0000'
+                                                                        : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('parent_name')}
                                                         onBlur={() => setFieldTouched('parent_name')}
@@ -517,7 +536,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.phone && errors.phone ?  '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.phone && errors.phone ? '#ff0000' : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('phone')}
                                                         onBlur={() => setFieldTouched('phone')}
@@ -556,7 +578,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.email && errors.email ? '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.email && errors.email ? '#ff0000' : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('email')}
                                                         onBlur={() => setFieldTouched('email')}
@@ -574,7 +599,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.address && errors.address ? '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.address && errors.address
+                                                                        ? '#ff0000'
+                                                                        : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('address')}
                                                         onBlur={() => setFieldTouched('address')}
@@ -589,7 +619,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <View
                                                         style={[
                                                             leadStyle.buttonPickerStyle,
-                                                            { flex: 1, flexDirection: 'row', borderColor: touched.country && errors.country ? '#ff0000' : '#333' },
+                                                            {
+                                                                flex: 1,
+                                                                flexDirection: 'row',
+                                                                borderColor:
+                                                                    touched.country && errors.country
+                                                                        ? '#ff0000'
+                                                                        : '#333',
+                                                            },
                                                         ]}
                                                     >
                                                         <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
@@ -629,7 +666,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <View
                                                         style={[
                                                             leadStyle.buttonPickerStyle,
-                                                            { flex: 1, flexDirection: 'row', borderColor: touched.state && errors.state ? '#ff0000' : '#333' },
+                                                            {
+                                                                flex: 1,
+                                                                flexDirection: 'row',
+                                                                borderColor:
+                                                                    touched.state && errors.state ? '#ff0000' : '#333',
+                                                            },
                                                         ]}
                                                     >
                                                         <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
@@ -681,7 +723,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.city && errors.city ? '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.city && errors.city ? '#ff0000' : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('city')}
                                                         onBlur={() => setFieldTouched('city')}
@@ -697,7 +742,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.pincode && errors.pincode ? '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.pincode && errors.pincode
+                                                                        ? '#ff0000'
+                                                                        : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('pincode')}
                                                         onBlur={() => setFieldTouched('pincode')}
