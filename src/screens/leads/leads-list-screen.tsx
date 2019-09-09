@@ -14,7 +14,7 @@ import Loader from '../../components/content-loader/content-loader';
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
-    fetchLeads(pageNumber: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
 }
@@ -22,32 +22,42 @@ export interface LeadListProps {
 export interface LeadListState {
     pageNumber: number;
     loadingMore: boolean;
+    flag: string;
 }
 
 class LeadList extends Component<LeadListProps, LeadListState> {
     static contextType = NetworkContext;
-    static navigationOptions = {
-        title: 'Leads',
-    };
+
     constructor(props: LeadListProps) {
         super(props);
         this.state = {
             pageNumber: 1,
             loadingMore: false,
+            flag: '',
         };
     }
+
     async componentDidMount() {
-        if (this.props.leadState.paginatedLeadList.next_page_url == null) {
-            this.setState({ loadingMore: false });
-            return;
-        }
-        this.setState({ pageNumber: this.props.leadState.paginatedLeadList.current_page });
-        this.fetchLeadsList();
+        this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
+            let selectedFlag = this.props.navigation.getParam('flag', '');
+            this.setState({
+                pageNumber:
+                    this.props.leadState.flag !== selectedFlag
+                        ? 1
+                        : this.props.leadState.paginatedLeadList.current_page,
+                flag: selectedFlag,
+            });
+            this.fetchLeadsList(this.state.pageNumber, selectedFlag);
+        });
     }
 
-    fetchLeadsList = async () => {
+    componentWillUnmount() {
+        if (this.focusLeadListener) this.focusLeadListener.remove();
+    }
+
+    fetchLeadsList = async (pgNo: number, flag: string) => {
         try {
-            await this.props.fetchLeads(this.state.pageNumber);
+            await this.props.fetchLeads(pgNo, flag);
             this.setState({ loadingMore: false });
         } catch (error) {
             /* show server error here*/
@@ -84,11 +94,15 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         }
         this.setState(
             {
-                pageNumber: this.state.pageNumber + 1,
+                pageNumber:
+                    this.props.leadState.flag !== this.props.navigation.getParam('flag', '')
+                        ? 1
+                        : this.state.pageNumber + 1,
+                flag: this.props.navigation.getParam('flag', ''),
                 loadingMore: true,
             },
             () => {
-                this.fetchLeadsList();
+                this.fetchLeadsList(this.state.pageNumber, this.state.flag);
             },
         );
     };

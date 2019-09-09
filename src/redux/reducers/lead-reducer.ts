@@ -24,8 +24,9 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 status: 'done', // add some valid flag
                 isLoading: false,
-                paginatedLeadList: action.payload,
-                leadList: [...state.leadList, ...action.payload.data],
+                paginatedLeadList: action.payload.paginatedLeadList,
+                leadList: [...state.leadList, ...action.payload.paginatedLeadList.data],
+                flag: action.payload.flag,
             };
         case LOAD_LEAD_START:
             return {
@@ -38,7 +39,7 @@ export default function leadReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                paginatedLeadList: action.payload,
+                paginatedLeadList: action.payload.leads,
             };
         case LOAD_LEAD_FAIL:
             return {

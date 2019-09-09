@@ -1,14 +1,13 @@
 import { BoardResponse } from './../models/response/board-response';
 import { StateResponse } from './../models/response/state-response';
 import { HttpBaseService } from './http-base-service';
-import StorageService from '../database/storage-service';
 import { ResponseViewModel } from '../models/response/response-view-model';
-import { StorageConstants } from '../helpers/storage-constants';
 import { LeadResponse, OTPResponse } from '../models/response';
 import { PaginatedResponseModel } from '../models/response/paginated-response-model';
 import { LeadRequest } from '../models/request/lead-request';
 import { APIConstants } from '../helpers/api-constants';
 import { OTPRequest } from '../models/request';
+import { LeadReport } from '../models/response/lead-report-model';
 
 import axios from 'axios';
 
@@ -16,8 +15,12 @@ export class LeadService {
     //Paginated method
     public static fetchLeads = async (
         pgNo: number,
+        flag: string,
     ): Promise<ResponseViewModel<PaginatedResponseModel<LeadResponse>>> => {
-        const response = await HttpBaseService.get<LeadResponse>(APIConstants.USER_LEADS_URL + pgNo);
+        console.log('Service', flag);
+        const response = await HttpBaseService.get<LeadResponse>(
+            APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&flag=' + flag,
+        );
         if (response && response.data) {
             try {
                 console.log(response.data);
@@ -103,6 +106,16 @@ export class LeadService {
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
+        } else {
+            console.log('Failure');
+        }
+        return response;
+    };
+
+    public static fetchLeadReport = async (): Promise<ResponseViewModel<LeadReport>> => {
+        const response = await HttpBaseService._get<LeadReport>(APIConstants.LEAD_REPORT_URL);
+        if (response) {
+            console.log(response.data);
         } else {
             console.log('Failure');
         }

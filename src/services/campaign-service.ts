@@ -1,7 +1,5 @@
 import { HttpBaseService } from './http-base-service';
-import StorageService from '../database/storage-service';
 import { ResponseViewModel } from '../models/response/response-view-model';
-import { StorageConstants } from '../helpers/storage-constants';
 import { CampaignResponse } from '../models/response/campaign-response';
 import { PaginatedResponseModel } from '../models/response/paginated-response-model';
 import { APIConstants } from '../helpers/api-constants';

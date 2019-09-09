@@ -28,7 +28,7 @@ const DashboardStack = createStackNavigator(
             },
         },
         FilteredLeads: {
-            screen: FilteredLeads, // This should be filtered Lead list
+            screen: FilteredLeads,
         },
     },
     {

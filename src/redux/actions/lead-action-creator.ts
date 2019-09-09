@@ -7,6 +7,7 @@ import {
     ADD_OFFLINE_LEAD,
     FETCH_OFFLINE_LEAD,
 } from './action-types';
+import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 
 // The action creators
 export const createLeadAction = lead => {
@@ -16,7 +17,7 @@ export const createLeadAction = lead => {
     };
 };
 
-export const fetchLeadsAction = leads => {
+export const fetchLeadsAction = (leads: LeadFilterResponse) => {
     return {
         type: FETCH_LEAD,
         payload: leads,

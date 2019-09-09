@@ -13,6 +13,7 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import forgotPasswordReducer from '../reducers/forgot-password-reducer';
 import connectionStateReducer from '../reducers/connection-reducer';
 import metaDataReducer from '../reducers/meta-data-reducer';
+import leadReportReducer from '../reducers/lead-report-reducer';
 
 const rootReducer = combineReducers({
     leadReducer: leadReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
     forgotPasswordReducer: forgotPasswordReducer,
     connectionStateReducer: connectionStateReducer,
     metaDataReducer: metaDataReducer,
+    leadReportReducer: leadReportReducer,
 });
 
 const middleware = [thunk];
@@ -36,7 +38,7 @@ const persistConfig = {
     storage: AsyncStorage,
     stateReconciler: autoMergeLevel2,
     // Whitelist (Save Specific Reducers)
-    whitelist: ['userReducer', 'leadReducer', 'campaignReducer', 'metaDataReducer'],
+    whitelist: ['userReducer', 'leadReducer', 'campaignReducer', 'metaDataReducer', 'leadReportReducer'],
 };
 
 // Middleware: Redux Persist Persisted Reducer

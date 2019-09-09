@@ -13,4 +13,5 @@ export const initialState = {
     offlineLeadList: [],
     status: '',
     isLoading: false,
+    flag: '',
 };

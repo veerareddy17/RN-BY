@@ -10,9 +10,13 @@ import {
     fetchOfflineLeadsAction,
 } from './lead-action-creator';
 import { LeadResponse } from '../../models/response';
+import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 
 // GET method to fetch all captured leads
-export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+export const fetchAllLeadsApi = (
+    pageNumber: number,
+    flag: string,
+): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState) => {
         let isConnected = getState().connectionStateReducer.isConnected;
         if (!isConnected) {
@@ -23,9 +27,17 @@ export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getS
         if (pageNumber === 1) {
             dispatch(leadStartAction());
         }
-        const response = await LeadService.fetchLeads(pageNumber);
+        const response = await LeadService.fetchLeads(pageNumber, flag);
+        let leadsResponse = new LeadFilterResponse();
         if (response && response.data) {
-            dispatch(fetchLeadsAction(response.data));
+            let reducerData = getState().leadReducer;
+            if (reducerData.flag !== flag) {
+                reducerData.leadList = [];
+                reducerData.paginatedLeadList = [];
+            }
+            leadsResponse.paginatedLeadList = response.data;
+            leadsResponse.flag = flag;
+            dispatch(fetchLeadsAction(leadsResponse));
         } else {
             dispatch(leadFailureAction(response.errors));
         }
@@ -51,6 +63,7 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch, g
     };
 };
 
+//Used while offline
 export const transformRequestToResponse = (leadRequest: LeadRequest, store: any): LeadResponse => {
     let leadResponse = new LeadResponse();
     leadResponse = Object.assign(leadResponse, leadRequest);

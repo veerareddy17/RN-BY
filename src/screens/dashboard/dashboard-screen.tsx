@@ -30,10 +30,11 @@ import RBSheet from 'react-native-raw-bottom-sheet';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
 import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
-import { fetchCampaigns, selectedCampaign } from '../../redux/actions/campaign-actions';
+import { selectedCampaign } from '../../redux/actions/campaign-actions';
 import { withNavigation } from 'react-navigation';
 import { NetworkContext } from '../../provider/network-provider';
-import { fetchMetaData } from '../../redux/actions/meta-data-actions';
+import { fetchLeadReport } from '../../redux/actions/lead-report-action';
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -43,6 +44,8 @@ export interface Props {
     metaData: any;
 
     selectCampaign(campaignId: any): void;
+    fetchLeadReport(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    leadReportState: any;
 }
 
 export interface State {
@@ -66,13 +69,10 @@ class Dashboard extends React.Component<Props, State> {
         try {
             if (this.context.isConnected) {
                 this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-
                     this.checkToken();
-
                     const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
-                    console.log('selected camp', selectedCampaign);
                     this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
-                    console.log('campagin state', this.props.campaignState);
+                    await this.props.fetchLeadReport();
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaignId: selectedCampaign.id });
@@ -88,23 +88,21 @@ class Dashboard extends React.Component<Props, State> {
             error to be handled
             */
         }
-    }
+    };
 
     checkToken = async () => {
         const userToken = await StorageService.get<string>(StorageConstants.TOKEN_KEY);
-        console.log('userToke', userToken);
         if (userToken === null) {
-            console.log('inside success');
             this.logout();
         }
-    }
+    };
 
     componentWillUnmount() {
         if (this.focusListener) this.focusListener.remove();
     }
 
-    getLeads = () => {
-        this.props.navigation.navigate('LeadList'); // Can be set to 'FilteredLeads' screen
+    getLeads = (flag: string) => {
+        this.props.navigation.navigate('FilteredLeads', { flag: flag }); // Can be set to 'FilteredLeads' screen
     };
 
     logout = async () => {
@@ -160,23 +158,25 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 ) : (
-                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                            <Body>
-                                <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
-                                    Dashboard
+                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                        <Body>
+                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
+                                Dashboard
                             </Title>
-                            </Body>
-                            <Right>
-                                <Button transparent onPress={this.confirmLogout}>
-                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
-                                </Button>
-                            </Right>
-                        </Header>
-                    )}
+                        </Body>
+                        <Right>
+                            <Button transparent onPress={this.confirmLogout}>
+                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                            </Button>
+                        </Right>
+                    </Header>
+                )}
 
                 <Content style={{ backgroundColor: '#eee' }}>
                     <View style={styles.containerStyle}>
-                        <View style={styles.sliderContainerStyle}></View>
+                        <View style={styles.sliderContainerStyle}>
+                            <SpinnerOverlay visible={this.props.leadReportState.isLoading} />
+                        </View>
                     </View>
                     <Card
                         style={{ position: 'relative', top: -120, marginLeft: 20, marginRight: 20, marginBottom: 20 }}
@@ -213,7 +213,9 @@ class Dashboard extends React.Component<Props, State> {
                                         height: 95,
                                     }}
                                 >
-                                    <Text style={{ fontSize: 30, color: '#813588', fontWeight: 'bold' }}>20</Text>
+                                    <Text style={{ fontSize: 30, color: '#813588', fontWeight: 'bold' }}>
+                                        {this.props.leadReportState.leadReport.total}
+                                    </Text>
                                 </View>
                                 <Text style={{ fontSize: 16, color: '#813588', fontWeight: 'bold' }}>Total Leads</Text>
                             </View>
@@ -223,13 +225,15 @@ class Dashboard extends React.Component<Props, State> {
                                 <Button
                                     iconRight
                                     transparent
-                                    onPress={this.getLeads}
+                                    onPress={() => this.getLeads('today')}
                                     style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
                                 >
                                     <Text style={{ color: '#555', paddingLeft: 0, fontSize: 16, flex: 1 }}>
                                         Leads today
                                     </Text>
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>05</Text>
+                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>
+                                        {this.props.leadReportState.leadReport.today}
+                                    </Text>
                                     <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
                                 </Button>
                             </Item>
@@ -237,13 +241,15 @@ class Dashboard extends React.Component<Props, State> {
                                 <Button
                                     iconRight
                                     transparent
-                                    onPress={this.getLeads}
+                                    onPress={() => this.getLeads('week')}
                                     style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
                                 >
                                     <Text style={{ color: '#555', paddingLeft: 0, fontSize: 16, flex: 1 }}>
                                         Leads this week
                                     </Text>
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>15</Text>
+                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>
+                                        {this.props.leadReportState.leadReport.week}
+                                    </Text>
                                     <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
                                 </Button>
                             </Item>
@@ -251,7 +257,7 @@ class Dashboard extends React.Component<Props, State> {
                                 <Button
                                     iconRight
                                     transparent
-                                    onPress={this.getLeads}
+                                    onPress={() => this.getLeads('month')}
                                     style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
                                 >
                                     <Text
@@ -265,7 +271,9 @@ class Dashboard extends React.Component<Props, State> {
                                     >
                                         Leads this month
                                     </Text>
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>935</Text>
+                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>
+                                        {this.props.leadReportState.leadReport.month}
+                                    </Text>
                                     <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
                                 </Button>
                             </Item>
@@ -281,10 +289,10 @@ class Dashboard extends React.Component<Props, State> {
                                     <Spinner size={15} color="#813588" style={{ marginTop: -25 }} />
                                 </View>
                             ) : (
-                                    <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
-                                        {this.state.campaignName}
-                                    </Text>
-                                )}
+                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
+                                    {this.state.campaignName}
+                                </Text>
+                            )}
                             <Button
                                 small
                                 bordered
@@ -347,11 +355,13 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state: AppState) => ({
     userState: state.userReducer,
     campaignState: state.campaignReducer,
+    leadReportState: state.leadReportReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: bindActionCreators(logout, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
+    fetchLeadReport: bindActionCreators(fetchLeadReport, dispatch),
 });
 
 export default withNavigation(
