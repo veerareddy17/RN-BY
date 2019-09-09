@@ -18,6 +18,10 @@ import { LocationState } from '../../redux/init/location-initial-state';
 import { forgotPassword, initStateForgotPassword } from '../../redux/actions/forgot-password-action';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
 import RBSheet from 'react-native-raw-bottom-sheet';
+import { fetchCampaigns } from '../../redux/actions/campaign-actions';
+import { fetchMetaData } from '../../redux/actions/meta-data-actions';
+import StorageService from '../../database/storage-service';
+import { StorageConstants } from '../../helpers/storage-constants';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -26,6 +30,8 @@ export interface Props {
     token: string;
     locationState: LocationState;
     forgotPasswordState: any;
+    metaData: any;
+    campaignState: any;
     requestLoginApi(
         email: string,
         password: string,
@@ -35,6 +41,8 @@ export interface Props {
     captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<boolean>;
     forgotPassword(email: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     resetForgotPassword(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchMetaData(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
     error: any;
 }
@@ -70,8 +78,11 @@ class Login extends React.Component<Props, State> {
     };
 
     componentDidMount = async () => {
+        const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
         if (this.props.userState.user) {
-            this.props.navigation.navigate(this.props.userState.user.token ? 'App' : 'Auth');
+            this.props.navigation.navigate(this.props.userState.user.token && selectedCampaign === null ? 'Campaigns'
+                : this.props.userState.user.token && selectedCampaign != null ? 'App'
+                    : 'Auth');
         }
     };
 
@@ -104,10 +115,14 @@ class Login extends React.Component<Props, State> {
                 this.props.locationState.location.latitude,
                 this.props.locationState.location.longitude,
             );
+            await this.props.fetchMetaData();
+            await this.props.fetchCampaigns();
             this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
         } else {
+            console.log('no internet')
             Toast.show({
                 text: 'No Internet Connection',
+                duration: 5000,
                 type: 'danger',
             });
         }
@@ -138,79 +153,80 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                        <Form>
-                                            <Item floatingLabel style={loginStyle.userName}>
-                                                <Label style={{ marginLeft: 10 }}>Email</Label>
-                                                <Input
-                                                    keyboardType="email-address"
-                                                    onChangeText={handleChange('email')}
-                                                    onBlur={() => setFieldTouched('email')}
-                                                    style={{ marginLeft: 10 }}
-                                                    returnKeyType="next"
-                                                    blurOnSubmit={false}
-                                                    onSubmitEditing={() => this.focusTheField('password')}
-                                                    autoCapitalize="none"
-                                                />
-                                            </Item>
-                                            <Item floatingLabel style={loginStyle.password}>
-                                                <Label style={{ marginLeft: 10 }}>Password</Label>
-                                                <Input
-                                                    secureTextEntry={this.state.showPassword}
-                                                    value={values.password}
-                                                    onChangeText={handleChange('password')}
-                                                    onBlur={() => setFieldTouched('password')}
-                                                    style={{ marginLeft: 10 }}
-                                                    returnKeyType="done"
-                                                    getRef={input => {
-                                                        this.state.input['password'] = input;
-                                                    }}
-                                                    onSubmitEditing={() => this.handleSubmit(values)}
-                                                />
-                                                <Icon
-                                                    style={{ paddingTop: 0 }}
-                                                    active
-                                                    name={this.state.showPassword ? 'eye-off' : 'eye'}
-                                                    onPress={e => {
-                                                        e.preventDefault();
-                                                        this.setState({ showPassword: !this.state.showPassword });
-                                                    }}
-                                                />
-                                            </Item>
-                                            {errors.password || errors.email || this.props.userState.error ? (
-                                                <View>
-                                                    {errors.email ? (
-                                                        <Text style={loginStyle.error}>{errors.email}</Text>
-                                                    ) : errors.password ? (
-                                                        <Text style={loginStyle.error}>{errors.password}</Text>
-                                                    ) : this.props.userState.error ? (
-                                                        <Text style={loginStyle.error}>Invalid Email Id/Password</Text>
-                                                    ) : (
-                                                        <Text />
+                                            <Form>
+                                                <Item floatingLabel style={loginStyle.userName}>
+                                                    <Label style={{ marginLeft: 10 }}>Email</Label>
+                                                    <Input
+                                                        keyboardType="email-address"
+                                                        onChangeText={handleChange('email')}
+                                                        onBlur={() => setFieldTouched('email')}
+                                                        style={{ marginLeft: 10 }}
+                                                        returnKeyType="next"
+                                                        blurOnSubmit={false}
+                                                        onSubmitEditing={() => this.focusTheField('password')}
+                                                        autoCapitalize="none"
+                                                    />
+                                                </Item>
+                                                <Item floatingLabel style={loginStyle.password}>
+                                                    <Label style={{ marginLeft: 10 }}>Password</Label>
+                                                    <Input
+                                                        secureTextEntry={this.state.showPassword}
+                                                        value={values.password}
+                                                        onChangeText={handleChange('password')}
+                                                        onBlur={() => setFieldTouched('password')}
+                                                        style={{ marginLeft: 10 }}
+                                                        returnKeyType="done"
+                                                        getRef={input => {
+                                                            this.state.input['password'] = input;
+                                                        }}
+                                                        onSubmitEditing={() => this.handleSubmit(values)}
+                                                    />
+                                                    <Icon
+                                                        style={{ paddingTop: 0 }}
+                                                        active
+                                                        name={this.state.showPassword ? 'eye-off' : 'eye'}
+                                                        onPress={e => {
+                                                            e.preventDefault();
+                                                            this.setState({ showPassword: !this.state.showPassword });
+                                                        }}
+                                                    />
+                                                </Item>
+                                                {errors.password || errors.email || this.props.userState.error ? (
+                                                    <View>
+                                                        {!(this.context.isConnected) ? (<Text style={loginStyle.error}>No Internet Connection</Text>
+                                                        ) : errors.email ? (
+                                                            <Text style={loginStyle.error}>{errors.email}</Text>
+                                                        ) : errors.password ? (
+                                                            <Text style={loginStyle.error}>{errors.password}</Text>
+                                                        ) : this.props.userState.error ? (
+                                                            <Text style={loginStyle.error}>Invalid Email Id/Password</Text>
+                                                        ) : (
+                                                                            <Text />
+                                                                        )}
+                                                    </View>
+                                                ) : (
+                                                        <View />
                                                     )}
-                                                </View>
-                                            ) : (
-                                                <View />
-                                            )}
 
-                                            <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                <Text style={{ fontSize: 16 }}>Login</Text>
-                                            </Button>
-                                            {this.props.userState.isLoading ? (
-                                                <View>
-                                                    <Spinner />
-                                                </View>
-                                            ) : null}
+                                                <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
+                                                    <Text style={{ fontSize: 16 }}>Login</Text>
+                                                </Button>
+                                                {this.props.userState.isLoading || this.props.metaData.isLoading ? (
+                                                    <View>
+                                                        <Spinner />
+                                                    </View>
+                                                ) : null}
 
-                                            <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                <Text
-                                                    onPress={this.handlePress}
-                                                    style={{ color: '#fff', fontSize: 14 }}
-                                                >
-                                                    Forgot Password?
+                                                <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                                                    <Text
+                                                        onPress={this.handlePress}
+                                                        style={{ color: '#fff', fontSize: 14 }}
+                                                    >
+                                                        Forgot Password?
                                                 </Text>
-                                            </View>
-                                        </Form>
-                                    )}
+                                                </View>
+                                            </Form>
+                                        )}
                                 </Formik>
                             </View>
                             <RBSheet
@@ -251,11 +267,15 @@ const mapStateToProps = (state: AppState) => ({
     userState: state.userReducer,
     locationState: state.locationReducer,
     forgotPasswordState: state.forgotPasswordReducer,
+    campaignState: state.campaignReducer,
+    metaData: state.metaDataReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     requestLoginApi: bindActionCreators(authenticate, dispatch),
     captureLocation: bindActionCreators(captureLocation, dispatch),
+    fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
+    fetchMetaData: bindActionCreators(fetchMetaData, dispatch),
     forgotPassword: bindActionCreators(forgotPassword, dispatch),
     resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch),
 });

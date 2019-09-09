@@ -14,6 +14,7 @@ export const LOAD_LEAD_FAIL = 'LOAD_LEAD_FAIL';
 export const ADD_LEAD = 'ADD_LEAD';
 export const FETCH_LEAD = 'FETCH_LEAD';
 export const DELETE_LEAD = 'DELETE_LEAD';
+export const FETCH_COMPLETE = 'FETCH_COMPLETE';
 export const FETCH_BOARD = 'FETCH_BOARD';
 export const FETCH_CLASSES = 'FETCH_CLASSES';
 export const FETCH_STATES = 'FETCH_STATES';

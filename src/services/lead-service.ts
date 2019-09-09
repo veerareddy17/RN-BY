@@ -10,6 +10,8 @@ import { LeadRequest } from '../models/request/lead-request';
 import { APIConstants } from '../helpers/api-constants';
 import { OTPRequest } from '../models/request';
 
+import axios from 'axios';
+
 export class LeadService {
     //Paginated method
     public static fetchLeads = async (
@@ -64,7 +66,8 @@ export class LeadService {
         const response = await HttpBaseService._get<BoardResponse>(APIConstants.BOARDS_URL);
         if (response && response.data) {
             try {
-                // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
+                console.log('response in service', response.data);
+                return response.data;
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -78,7 +81,8 @@ export class LeadService {
         const response = await HttpBaseService._get<BoardResponse>(APIConstants.CLASSES_URL);
         if (response && response.data) {
             try {
-                // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
+                console.log('response in service', response.data);
+                return response.data;
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }
@@ -90,9 +94,12 @@ export class LeadService {
 
     public static fetchStateByCountry = async (countryId: number): Promise<ResponseViewModel<StateResponse>> => {
         const response = await HttpBaseService._get<StateResponse>(`/meta/country/${countryId}/states`);
+        //const response = await axios.get<ResponseViewModel<StateResponse>>(`localhost:8080/meta/country/${countryId}/states`);
+        console.log('response fetchStateByCountry', response);
         if (response && response.data) {
             try {
-                // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
+                console.log('response in service', response.data);
+                return response.data;
             } catch (error) {
                 console.log('Error in storing asyncstorage', error);
             }

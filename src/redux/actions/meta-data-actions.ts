@@ -3,7 +3,13 @@ import { BoardResponse } from './../../models/response/board-response';
 import { ClassesResponse } from './../../models/response/classes-response';
 import { Dispatch } from 'redux';
 import { StateResponse } from './../../models/response/state-response';
-import { FETCH_BOARD, FETCH_CLASSES, FETCH_STATES, META_DATA_ERROR } from './action-types';
+import { FETCH_BOARD, FETCH_CLASSES, FETCH_STATES, META_DATA_ERROR, FETCH_COMPLETE } from './action-types';
+
+export const fetchActionComplete = () => {
+    return {
+        type: FETCH_COMPLETE,
+    };
+};
 
 export const fetchBoardSuccessAction = (boardResponse: BoardResponse) => {
     return {
@@ -36,12 +42,17 @@ export const metaDataFailureAction = error => {
 export const fetchMetaData = () => async (dispatch: Dispatch) => {
     console.log('fetch meta data');
     try {
+
         const boardResp = await LeadService.fetchBoards();
-        dispatch(fetchBoardSuccessAction(boardResp.data));
+        console.log('boardResp', boardResp);
+        dispatch(fetchBoardSuccessAction(boardResp));
         const classesResp = await LeadService.fetchClasses();
-        dispatch(fetchClassesSuccessAction(classesResp.data));
+        console.log('classesResp', classesResp);
+        dispatch(fetchClassesSuccessAction(classesResp));
         const stateResp = await LeadService.fetchStateByCountry(1);
-        dispatch(fetchStatesSuccessAction(stateResp.data));
+        console.log('stateResp', stateResp);
+        dispatch(fetchStatesSuccessAction(stateResp));
+        dispatch(fetchActionComplete());
     } catch (error) {
         console.log(error);
         dispatch(metaDataFailureAction(error));

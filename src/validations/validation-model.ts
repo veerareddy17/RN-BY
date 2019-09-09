@@ -69,6 +69,7 @@ export const leadValidation =
             .required(),
         pincode: yup
             .string()
+            .min(6)
             .max(6)
             .label('Pin code')
             .required(),
