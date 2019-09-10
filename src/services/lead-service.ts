@@ -9,28 +9,15 @@ import { APIConstants } from '../helpers/api-constants';
 import { OTPRequest } from '../models/request';
 import { LeadReport } from '../models/response/lead-report-model';
 
-import axios from 'axios';
-
 export class LeadService {
     //Paginated method
     public static fetchLeads = async (
         pgNo: number,
         flag: string,
     ): Promise<ResponseViewModel<PaginatedResponseModel<LeadResponse>>> => {
-        console.log('Service', flag);
         const response = await HttpBaseService.get<LeadResponse>(
             APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&flag=' + flag,
         );
-        if (response && response.data) {
-            try {
-                console.log(response.data);
-                // await StorageService.store(StorageConstants.USER_LEADS, response.data.data);
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
-        } else {
-            console.log('Failure');
-        }
         return response;
     };
 
@@ -97,15 +84,9 @@ export class LeadService {
 
     public static fetchStateByCountry = async (countryId: number): Promise<ResponseViewModel<StateResponse>> => {
         const response = await HttpBaseService._get<StateResponse>(`/meta/country/${countryId}/states`);
-        //const response = await axios.get<ResponseViewModel<StateResponse>>(`localhost:8080/meta/country/${countryId}/states`);
-        console.log('response fetchStateByCountry', response);
         if (response && response.data) {
-            try {
-                console.log('response in service', response.data);
-                return response.data;
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
+            console.log('response in service', response.data);
+            return response.data;
         } else {
             console.log('Failure');
         }
@@ -121,4 +102,9 @@ export class LeadService {
         }
         return response;
     };
+
+    // public static syncLeads = async (leads: LeadRequest[]): Promise<ResponseViewModel<LeadResponse>> => {
+    // response = await HttpBaseService.post<LeadRequest[], LeadResponse>(APIConstants.LEAD_OFFLINE_SYNC, leads);
+    //     return response;
+    // };
 }

@@ -85,3 +85,18 @@ export const getSelectedClass = (classes_id: string, store: any) => {
 export const getSelectedState = (state_id: string, store: any) => {
     return store.metaDataReducer.stateResponse.find(state => state.id == Number(state_id));
 };
+
+export const syncOfflineLeadsApi = (): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState) => {
+        let isConnected = getState().connectionStateReducer.isConnected;
+        if (isConnected) {
+            let leadsToSync = getState().leadReducer.offlineLeadList;
+            // let response = await LeadService.syncLeads(leadsToSync);
+            // if (response && response.data) {
+            //     dispatch(syncOfflineLeadsAction(response.data));
+            // } else {
+            //     dispatch(leadFailureAction(response.errors));
+            // }
+        }
+    };
+};
