@@ -9,6 +9,7 @@ import {
 import StorageService from '../../database/storage-service';
 import { CampaignService } from '../../services/campaign-service';
 import { StorageConstants } from '../../helpers/storage-constants';
+import { MetaResponse } from '../../models/response/meta-response';
 
 export const fetchCampaignsAction = campaigns => {
     return {
@@ -36,14 +37,21 @@ export const campaignFailureAction = error => {
     };
 };
 
-export const selectedCampaignActions = campaignSelectedId => {
+export const selectedCampaignAction = (campaignSelected: MetaResponse) => {
     return {
         type: CAMPAIGN_SELECTED,
+        payload: campaignSelected,
     };
 };
 
-export const fetchCampaigns = (): ((dispatch: Dispatch) => Promise<void>) => {
-    return async (dispatch: Dispatch) => {
+export const fetchCampaigns = (): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState: any) => {
+        let isConnected = getState().connectionStateReducer.isConnected;
+        if (!isConnected) {
+            let response = getState().campaignReducer.campaignList;
+            dispatch(fetchCampaignsAction(response));
+            return;
+        }
         dispatch(campaignStartAction());
         const response = await CampaignService.fetchCampaigns(1);
         if (response && response.data) {
@@ -55,11 +63,14 @@ export const fetchCampaigns = (): ((dispatch: Dispatch) => Promise<void>) => {
 };
 
 export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Dispatch) => {
-    console.log('inside campaign action', selectedCampaign);
     dispatch(campaignStartAction());
     try {
         await StorageService.store(StorageConstants.SELECTED_CAMPAIGN, selectedCampaign);
-        dispatch(campaignSuccessAction());
+        let selectedCamp = new MetaResponse();
+        selectedCamp.id = selectedCampaign.id;
+        selectedCamp.name = selectedCampaign.name;
+        dispatch(selectedCampaignAction(selectedCamp));
+        // dispatch(campaignSuccessAction());
     } catch (error) {
         console.log(error);
         dispatch(campaignFailureAction(error));

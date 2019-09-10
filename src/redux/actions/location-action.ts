@@ -107,61 +107,63 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                 }
             } else {
                 console.log('ios');
-                SystemSetting.isLocationEnabled().then((enable: boolean) => {
-                    const state = enable ? 'On' : 'Off';
-                    console.log('Current location is ' + state);
-                    if (state === 'On') {
-                        dispatch(locationCaptureStart());
-                        Geolocation.getCurrentPosition(
-                            position => {
-                                console.log('success..', position);
-                                dispatch(locationCaptureSuccessAction(position.coords));
-                                resolve(true);
-                            },
-                            error => {
-                                console.log('error', error);
-                                dispatch(locationCaptureFailureAction(error.message));
-                                reject(error);
-                            },
-                            { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-                        );
-                    } else {
-                        Alert.alert(
-                            'Enable Location',
-                            "To continue, turn on device location, which uses Google's location service",
-                            [
-                                {
-                                    text: 'Cancel',
-                                    onPress: () => console.log('Cancel Pressed'),
-                                    style: 'cancel',
-                                },
-                                {
-                                    text: 'OK',
-                                    onPress: () => {
-                                        SystemSetting.switchLocation(() => {
-                                            console.log('switch location successfully...');
-                                            dispatch(locationCaptureStart());
-                                            Geolocation.getCurrentPosition(
-                                                position => {
-                                                    console.log('success', position);
-                                                    dispatch(locationCaptureSuccessAction(position.coords));
-                                                    resolve(true);
-                                                },
-                                                error => {
-                                                    console.log('error', error);
-                                                    dispatch(locationCaptureFailureAction(error.message));
-                                                    reject(error);
-                                                },
-                                                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-                                            );
-                                        });
-                                    },
-                                },
-                            ],
-                            { cancelable: false },
-                        );
-                    }
-                });
+                dispatch(locationCaptureSuccessAction({ latitude: 12.2222, longitude: 77.32323 }));
+                resolve(true);
+                // SystemSetting.isLocationEnabled().then((enable: boolean) => {
+                //     const state = enable ? 'On' : 'Off';
+                //     console.log('Current location is ' + state);
+                //     if (state === 'On') {
+                //         dispatch(locationCaptureStart());
+                //         Geolocation.getCurrentPosition(
+                //             position => {
+                //                 console.log('success..', position);
+                //                 dispatch(locationCaptureSuccessAction(position.coords));
+                //                 resolve(true);
+                //             },
+                //             error => {
+                //                 console.log('error', error);
+                //                 dispatch(locationCaptureFailureAction(error.message));
+                //                 reject(error);
+                //             },
+                //             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+                //         );
+                //     } else {
+                //         Alert.alert(
+                //             'Enable Location',
+                //             "To continue, turn on device location, which uses Google's location service",
+                //             [
+                //                 {
+                //                     text: 'Cancel',
+                //                     onPress: () => console.log('Cancel Pressed'),
+                //                     style: 'cancel',
+                //                 },
+                //                 {
+                //                     text: 'OK',
+                //                     onPress: () => {
+                //                         SystemSetting.switchLocation(() => {
+                //                             console.log('switch location successfully...');
+                //                             dispatch(locationCaptureStart());
+                //                             Geolocation.getCurrentPosition(
+                //                                 position => {
+                //                                     console.log('success', position);
+                //                                     dispatch(locationCaptureSuccessAction(position.coords));
+                //                                     resolve(true);
+                //                                 },
+                //                                 error => {
+                //                                     console.log('error', error);
+                //                                     dispatch(locationCaptureFailureAction(error.message));
+                //                                     reject(error);
+                //                                 },
+                //                                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+                //                             );
+                //                         });
+                //                     },
+                //                 },
+                //             ],
+                //             { cancelable: false },
+                //         );
+                //     }
+                // });
             }
         });
     };

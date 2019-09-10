@@ -70,13 +70,15 @@ class Dashboard extends React.Component<Props, State> {
             if (this.context.isConnected) {
                 this.focusListener = this.props.navigation.addListener('didFocus', async () => {
                     this.checkToken();
-                    const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+                    // const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+                    // this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
+                    const selectedCampaign = this.props.campaignState.selectedCampaign;
                     this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
-                    await this.props.fetchLeadReport();
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaignId: selectedCampaign.id });
                     this.setState({ campaignName: selectedCampaign.name });
+                    await this.props.fetchLeadReport();
                 });
             } else {
                 /*
@@ -91,7 +93,8 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     checkToken = async () => {
-        const userToken = await StorageService.get<string>(StorageConstants.TOKEN_KEY);
+        // const userToken = await StorageService.get<string>(StorageConstants.TOKEN_KEY);
+        const userToken = this.props.userState.user.token;
         if (userToken === null) {
             this.logout();
         }
@@ -107,10 +110,7 @@ class Dashboard extends React.Component<Props, State> {
 
     logout = async () => {
         await this.props.logout();
-        if (this.props.userState.user == '') {
-            // TODO: Need to pop all screens before navigating to login. Look for popToTop() method
-            this.props.navigation.navigate('Auth');
-        }
+        this.props.navigation.navigate('Auth');
     };
 
     confirmLogout = () => {
@@ -134,6 +134,7 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     onPressCampaign = (index: number, campaign: Object) => {
+        console.log('DB::', campaign);
         this.props.selectCampaign(campaign);
         this.setState({
             ...this.state,
@@ -152,7 +153,7 @@ class Dashboard extends React.Component<Props, State> {
                             <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Dashboard</Title>
                         </Body>
                         <Right>
-                            <Button transparent onPress={this.logout}>
+                            <Button transparent onPress={this.confirmLogout}>
                                 <Icon name="ios-log-out" style={{ color: 'white' }} />
                             </Button>
                         </Right>
@@ -198,7 +199,7 @@ class Dashboard extends React.Component<Props, State> {
                                 }}
                             >
                                 <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold', marginBottom: 10 }}>
-                                    Hi Praveen
+                                    Hi {this.props.userState.user.name}
                                 </Text>
                                 <View
                                     style={{
@@ -290,7 +291,7 @@ class Dashboard extends React.Component<Props, State> {
                                 </View>
                             ) : (
                                 <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
-                                    {this.state.campaignName}
+                                    {this.props.campaignState.selectedCampaign.name}
                                 </Text>
                             )}
                             <Button

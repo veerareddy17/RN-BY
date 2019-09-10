@@ -36,38 +36,49 @@ export const logoutAction = () => {
     };
 };
 
-export const authenticate = (username: string, password: string, latitude: number, longitude: number): ((dispatch: Dispatch) => Promise<void>) => {
-    return async (dispatch: Dispatch) => {
-        dispatch(requestAction());
-        console.log('in authenticate')
+export const authenticate = (
+    username: string,
+    password: string,
+    latitude: number,
+    longitude: number,
+): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState: any) => {
         const authRequest = new AuthenticationRequest(username, password, new Location(latitude, longitude));
-        console.log('auth request ==>', authRequest);
         try {
+            let isConnected = getState().connectionStateReducer.isConnected;
+            let storedUser = getState().userReducer.user;
+            if (!isConnected) {
+                if (username == storedUser.email && password === storedUser.offline_pin) {
+                    dispatch(successAction(storedUser));
+                } else {
+                    dispatch(failureAction(['Invalid Username/ PIN']));
+                }
+                return;
+            }
+            dispatch(requestAction());
             const response = await AuthenticationService.authenticate(authRequest);
-        console.log(response.data);
             if (response.data !== null) {
                 dispatch(successAction(response.data));
             } else {
                 dispatch(failureAction(response.errors));
             }
-        } catch(e) {
-            console.log('error:', e.message);
-            dispatch(failureAction(e.message));
+        } catch (e) {
+            // dispatch(failureAction(e.message));
             Toast.show({
                 text: e.message,
                 buttonText: 'Ok',
                 type: 'danger',
             });
         }
-       
     };
 };
 
-export const logout = (): ((dispatch: Dispatch) => Promise<void>) => {
-    return async (dispatch: Dispatch) => {
+export const logout = (): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState: any) => {
         try {
+            let storedUser = getState().userReducer.user;
+            storedUser.token = '';
             dispatch(logoutAction());
-            await StorageService.removeKey(StorageConstants.TOKEN_KEY);
         } catch (error) {
             console.log('Logout action', error);
         }
