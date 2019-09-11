@@ -8,6 +8,8 @@ import { LeadRequest } from '../models/request/lead-request';
 import { APIConstants } from '../helpers/api-constants';
 import { OTPRequest } from '../models/request';
 import { LeadReport } from '../models/response/lead-report-model';
+import { SyncLeadRequest } from '../models/request/sync-leads-request';
+import { StatusResponse } from '../models/response/status-response';
 
 export class LeadService {
     //Paginated method
@@ -103,8 +105,11 @@ export class LeadService {
         return response;
     };
 
-    // public static syncLeads = async (leads: LeadRequest[]): Promise<ResponseViewModel<LeadResponse>> => {
-    // response = await HttpBaseService.post<LeadRequest[], LeadResponse>(APIConstants.LEAD_OFFLINE_SYNC, leads);
-    //     return response;
-    // };
+    public static syncLeads = async (leads: SyncLeadRequest): Promise<ResponseViewModel<StatusResponse>> => {
+        let response = await HttpBaseService.post<SyncLeadRequest, StatusResponse>(
+            APIConstants.LEAD_OFFLINE_SYNC,
+            leads,
+        );
+        return response;
+    };
 }

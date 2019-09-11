@@ -7,6 +7,7 @@ import {
     ADD_OFFLINE_LEAD,
     FETCH_OFFLINE_LEAD,
     SYNC_OFFLINE_LEADS,
+    DELETE_SYNCED_LEADS,
 } from './action-types';
 import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 import { LeadRequest } from '../../models/request';
@@ -52,16 +53,22 @@ export const createOfflineLeadAction = lead => {
     };
 };
 
-export const fetchOfflineLeadsAction = leads => {
+export const fetchOfflineLeadsAction = () => {
     return {
         type: FETCH_OFFLINE_LEAD,
-        payload: leads,
     };
 };
 
-export const syncOfflineLeadsAction = (status: string) => {
+export const syncOfflineLeadsAction = (status: boolean) => {
     return {
         type: SYNC_OFFLINE_LEADS,
         payload: status,
+    };
+};
+
+export const deleteOfflineLeadsAction = leads => {
+    return {
+        type: DELETE_SYNCED_LEADS,
+        payload: leads,
     };
 };

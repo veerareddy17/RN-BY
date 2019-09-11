@@ -13,15 +13,12 @@ import { authenticate } from '../../redux/actions/user-actions';
 import { AppState } from '../../redux/store';
 import { loginValidation } from '../../validations/validation-model';
 import { captureLocation } from '../../redux/actions/location-action';
-import { Error } from '../error/error';
 import { LocationState } from '../../redux/init/location-initial-state';
 import { forgotPassword, initStateForgotPassword } from '../../redux/actions/forgot-password-action';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { fetchMetaData } from '../../redux/actions/meta-data-actions';
-import StorageService from '../../database/storage-service';
-import { StorageConstants } from '../../helpers/storage-constants';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;

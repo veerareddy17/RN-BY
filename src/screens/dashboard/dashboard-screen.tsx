@@ -35,17 +35,18 @@ import { withNavigation } from 'react-navigation';
 import { NetworkContext } from '../../provider/network-provider';
 import { fetchLeadReport } from '../../redux/actions/lead-report-action';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
-
+import { syncOfflineLeads } from '../../redux/actions/lead-actions';
 export interface Props {
     navigation: NavigationScreenProp<any>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
     campaignState: any;
     metaData: any;
+    leadReportState: any;
 
     selectCampaign(campaignId: any): void;
     fetchLeadReport(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    leadReportState: any;
+    syncOfflineLeads(): (dispatch: Dispatch, getState: any) => Promise<void>;
 }
 
 export interface State {
@@ -134,13 +135,17 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     onPressCampaign = (index: number, campaign: Object) => {
-        console.log('DB::', campaign);
         this.props.selectCampaign(campaign);
         this.setState({
             ...this.state,
             campaignName: campaign.name,
             campaignId: campaign.id,
         });
+    };
+
+    sync = () => {
+        console.log('In Sync DB');
+        this.props.syncOfflineLeads();
     };
 
     render() {
@@ -278,6 +283,28 @@ class Dashboard extends React.Component<Props, State> {
                                     <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
                                 </Button>
                             </Item>
+                            <Item style={{ borderBottomWidth: 0 }}>
+                                <Button
+                                    iconRight
+                                    transparent
+                                    onPress={() => this.sync()}
+                                    style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
+                                >
+                                    <Text
+                                        style={{
+                                            color: '#555',
+                                            paddingLeft: 0,
+                                            fontSize: 16,
+                                            flex: 1,
+                                            textTransform: 'none',
+                                        }}
+                                    >
+                                        Sync Offline leads
+                                    </Text>
+
+                                    <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
+                                </Button>
+                            </Item>
                         </CardItem>
                     </Card>
                     <Card style={{ position: 'relative', top: -120, marginLeft: 20, marginRight: 20 }}>
@@ -363,6 +390,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: bindActionCreators(logout, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
     fetchLeadReport: bindActionCreators(fetchLeadReport, dispatch),
+    syncOfflineLeads: bindActionCreators(syncOfflineLeads, dispatch),
 });
 
 export default withNavigation(
