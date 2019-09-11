@@ -158,19 +158,19 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 ) : (
-                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
-                                Dashboard
+                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                            <Body>
+                                <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
+                                    Dashboard
                             </Title>
-                        </Body>
-                        <Right>
-                            <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
-                            </Button>
-                        </Right>
-                    </Header>
-                )}
+                            </Body>
+                            <Right>
+                                <Button transparent onPress={this.confirmLogout}>
+                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                </Button>
+                            </Right>
+                        </Header>
+                    )}
 
                 <Content style={{ backgroundColor: '#eee' }}>
                     <View style={styles.containerStyle}>
@@ -289,10 +289,10 @@ class Dashboard extends React.Component<Props, State> {
                                     <Spinner size={15} color="#813588" style={{ marginTop: -25 }} />
                                 </View>
                             ) : (
-                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
-                                    {this.state.campaignName}
-                                </Text>
-                            )}
+                                    <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
+                                        {this.state.campaignName}
+                                    </Text>
+                                )}
                             <Button
                                 small
                                 bordered

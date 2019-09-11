@@ -1,4 +1,4 @@
-import { Formik } from 'formik';
+import { Formik, FieldArray } from 'formik';
 
 import * as React from 'react';
 import { Component } from 'react';
@@ -51,6 +51,7 @@ import { Error } from '../error/error';
 import { submitOTP, verifyOTP, otpInitAction } from '../../redux/actions/otp-actions';
 import { LeadRequest } from '../../models/request';
 import { withNavigation } from 'react-navigation';
+import { SiblingRequest } from '../../models/request/lead-request';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -93,6 +94,7 @@ export interface CreateLeadState {
     isOTPVerified: boolean;
     location: { latitude: number; longitude: number };
     sync_status: boolean;
+    siblings: Array<SiblingRequest>;
 }
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
@@ -196,6 +198,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             isOTPVerified: false,
             location: { latitude: 0, longitude: 0 },
             sync_status: false,
+            siblings: Array<SiblingRequest>(),
         };
     }
 
@@ -213,8 +216,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             state_id: values.state,
             city: values.city,
             pin_code: values.pincode,
+            siblings: values.siblings
         });
         try {
+
             await this.props.captureLocation();
             let locObj = {
                 latitude: this.props.locationState.location.latitude,
@@ -227,6 +232,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             let req = this.state;
 
             this.setState({ leadRequest: req });
+            console.log('sibling values in lead req', this.state.leadRequest)
             await this.verifyOTP();
 
             // await this.props.createLead(this.state.leadRequest);
@@ -276,11 +282,16 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                     state: '',
                     city: '',
                     pincode: '',
+                    siblings: Array<SiblingRequest>(),
                 }}
-                onSubmit={values => this.handleSubmit(values)}
+                onSubmit={values => {
+                    this.handleSubmit(values)
+                }
+                }
                 validationSchema={leadValidation}
             >
-                {({ values, handleChange, errors, setFieldTouched, touched, handleBlur, isValid, handleSubmit }) => (
+                {({ values, handleChange, errors, setFieldTouched, touched, handleBlur, isValid, handleSubmit, setFieldValue }) => (
+
                     <Container>
                         <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                             <Left>
@@ -445,7 +456,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     >
                                                         School Name*
                                                     </FloatingLabel>
-                                                    <Error error={errors.school_name} touched={touched.school_name} />
                                                 </View>
                                                 <View style={[leadStyle.marginLeft, style.flexQuater]}>
                                                     <View
@@ -492,8 +502,137 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             </View>
                                                         </Item>
                                                     </View>
+                                                </View>
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    flex: 1,
+                                                    marginBottom: 10,
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                }}
+                                            >
+                                                <View style={[style.felxHalf]}>
+                                                    <Error error={errors.school_name} touched={touched.school_name} />
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
                                                     <Error error={errors.classes_id} touched={touched.classes_id} />
                                                 </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', }}>
+                                                <FieldArray
+                                                    name="siblings"
+                                                    render={arrayHelpers => (
+                                                        <View style={{ flex: 1 }}>
+                                                            {values.siblings.length > 0 ? <Text style={{ fontWeight: 'bold', color: '#555', paddingTop: 5, paddingBottom: 5 }}>Sibling Details</Text> : null}
+                                                            {values.siblings.map((sibling, index) => (
+                                                                <View key={index} style={{ flex: 1, marginBottom: 10 }}>
+                                                                    <View style={{ flex: 1 }}>
+                                                                        <FloatingLabel
+                                                                            value={sibling.name}
+                                                                            labelStyle={style.labelInput}
+                                                                            inputStyle={style.input}
+                                                                            style={[
+                                                                                style.formInput,
+                                                                                {
+                                                                                    borderColor:
+                                                                                        errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index]
+                                                                                            && errors.siblings[index]!.name && touched.siblings[index]!.name
+                                                                                            ? '#ff0000'
+                                                                                            : '#333',
+                                                                                },
+                                                                            ]}
+                                                                            onChangeText={e => {
+                                                                                handleChange(`siblings[${index}}.name`)
+                                                                                setFieldValue(
+                                                                                    `siblings.${index}.name`,
+                                                                                    e,
+                                                                                );
+
+                                                                            }}
+                                                                            onBlur={() => setFieldTouched(
+                                                                                `siblings[${index}].name`,
+                                                                            )}
+                                                                        >
+                                                                            Sibling Name
+                                                    </FloatingLabel>
+                                                                        {
+                                                                            errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index] ?
+                                                                                <Error error={errors.siblings[index]!.name} touched={touched.siblings[index]!.name} />
+                                                                                : null
+                                                                        }
+
+                                                                    </View>
+                                                                    <View>
+                                                                        <View
+                                                                            style={[
+                                                                                leadStyle.buttonPickerStyle,
+                                                                                {
+                                                                                    flex: 1,
+                                                                                    flexDirection: 'row',
+                                                                                    borderColor:
+                                                                                        errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index]
+                                                                                            && errors.siblings[index]!.classes_id && touched.siblings[index]!.classes_id ? '#ff0000' : '#333',
+                                                                                },
+                                                                            ]}
+                                                                        >
+                                                                            <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                                                                <View style={{ flex: 1 }}>
+                                                                                    <Label
+                                                                                        style={{
+                                                                                            fontSize: 11,
+                                                                                            color: '#555',
+                                                                                            marginTop: 10,
+                                                                                            marginLeft: 10,
+                                                                                        }}
+                                                                                    >
+                                                                                        Class
+                                                        </Label>
+                                                                                    <Picker
+                                                                                        mode="dropdown"
+                                                                                        iosIcon={<Icon name="arrow-down" />}
+                                                                                        style={{
+                                                                                            fontSize: 15,
+                                                                                            height: 30,
+                                                                                        }}
+                                                                                        placeholder="Select"
+                                                                                        placeholderStyle={{ color: '#bfc6ea' }}
+                                                                                        placeholderIconColor="#007aff"
+                                                                                        selectedValue={values.siblings[index].classes_id}
+                                                                                        onValueChange={e => {
+                                                                                            setFieldValue(
+                                                                                                `siblings.${index}.classes_id`,
+                                                                                                e,
+                                                                                            );
+                                                                                            setFieldTouched(
+                                                                                                `siblings.${index}.classes_id`,
+                                                                                            );
+                                                                                        }}
+                                                                                    >
+                                                                                        <Picker.Item label="Select" color="#ccc" value="" />
+                                                                                        {this.updateClassDropdown()}
+                                                                                    </Picker>
+                                                                                </View>
+                                                                            </Item>
+                                                                        </View>
+                                                                        {
+                                                                            errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index] ?
+                                                                                <Error error={errors.siblings[index]!.classes_id} touched={touched.siblings[index]!.classes_id} />
+                                                                                : null
+                                                                        }
+                                                                    </View>
+                                                                    <Button iconLeft danger bordered style={{ justifyContent: 'center', marginTop: 5 }}
+                                                                        onPress={() => arrayHelpers.remove(index)}
+                                                                    ><Icon name='trash' /><Text>Remove</Text></Button>
+                                                                </View>
+                                                            ))}
+                                                            <Button bordered style={{ justifyContent: 'center', marginTop: 5 }}
+                                                                onPress={() => arrayHelpers.push({ name: '', classes_id: '' })}
+                                                                disabled={values.siblings.length > 0 && errors.siblings ? true : false}
+                                                            ><Text>{values.siblings.length > 0 ? 'Add More' : 'Add Sibling Data'}</Text></Button>
+                                                        </View>
+                                                    )}></FieldArray>
                                             </View>
                                         </Body>
                                     </CardItem>

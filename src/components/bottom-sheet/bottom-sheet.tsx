@@ -23,11 +23,11 @@ export interface Props {
     title: String;
     actionType?: String;
     type: String;
-    close: void;
-    onChangeText?: void;
+    close: Function;
+    onChangeText?: Function;
     onPress?: void;
     submit?: Function;
-    currentcampaign: string;
+    currentcampaign?: string;
     currentState: any;
     keyBoardStyle?: string;
     resend?: Function;
@@ -59,7 +59,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                     <KeyboardAwareScrollView style={{ width: '100%' }}>
                         {this.props.data.map((item, index) => {
                             return (
-                                <View>
+                                <View key={index}>
                                     <View
                                         key={index}
                                         style={{
