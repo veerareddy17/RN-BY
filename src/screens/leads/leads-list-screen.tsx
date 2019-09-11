@@ -74,9 +74,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
 
     logout = async () => {
         await this.props.logout();
-        if (this.props.userState.user == '') {
-            this.props.navigation.navigate('Auth');
-        }
+        this.props.navigation.navigate('Auth');
     };
 
     confirmLogout = () => {

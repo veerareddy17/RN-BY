@@ -39,6 +39,7 @@ export default function campaignReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
+                selectedCampaign: action.payload,
             };
         default:
             return state;

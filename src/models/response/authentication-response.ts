@@ -1,6 +1,8 @@
 export class AuthenticationResponse {
-    public id: string;
-    public name: string;
-    public role: string;
-    public token: string;
+    public id = '';
+    public name = '';
+    public role = '';
+    public token = '';
+    public email = '';
+    public offline_pin = '';
 }

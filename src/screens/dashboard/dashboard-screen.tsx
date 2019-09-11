@@ -69,9 +69,8 @@ class Dashboard extends React.Component<Props, State> {
                     if (this.props.userState.user.token === '') {
                         this.props.navigation.navigate('Auth');
                     }
-                    const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+                    const selectedCampaign = this.props.campaignState.selectedCampaign;
                     this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
-                    await this.props.fetchLeadReport();
                     if (this.props.errorState.showAlertError) {
                         AlertError.alertErr(this.props.errorState.error);
                     } else if (this.props.errorState.showToastError) {
@@ -81,6 +80,7 @@ class Dashboard extends React.Component<Props, State> {
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaignId: selectedCampaign.id });
                     this.setState({ campaignName: selectedCampaign.name });
+                    await this.props.fetchLeadReport();
                 });
             } else {
                 /*
@@ -93,6 +93,7 @@ class Dashboard extends React.Component<Props, State> {
             */
         }
     };
+
 
     componentWillUnmount() {
         if (this.focusListener) this.focusListener.remove();
@@ -128,6 +129,7 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     onPressCampaign = (index: number, campaign: Object) => {
+        console.log('DB::', campaign);
         this.props.selectCampaign(campaign);
         this.setState({
             ...this.state,
@@ -146,7 +148,7 @@ class Dashboard extends React.Component<Props, State> {
                             <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Dashboard</Title>
                         </Body>
                         <Right>
-                            <Button transparent onPress={this.logout}>
+                            <Button transparent onPress={this.confirmLogout}>
                                 <Icon name="ios-log-out" style={{ color: 'white' }} />
                             </Button>
                         </Right>
@@ -192,7 +194,7 @@ class Dashboard extends React.Component<Props, State> {
                                 }}
                             >
                                 <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold', marginBottom: 10 }}>
-                                    Hi Praveen
+                                    Hi {this.props.userState.user.name}
                                 </Text>
                                 <View
                                     style={{
@@ -284,7 +286,7 @@ class Dashboard extends React.Component<Props, State> {
                                 </View>
                             ) : (
                                     <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
-                                        {this.state.campaignName}
+                                    {this.props.campaignState.selectedCampaign.name}
                                     </Text>
                                 )}
                             <Button

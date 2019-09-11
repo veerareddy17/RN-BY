@@ -80,12 +80,15 @@ class Login extends React.Component<Props, State> {
     };
 
     componentDidMount = async () => {
-        const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
-        if (this.props.userState.user) {
-            this.props.navigation.navigate(this.props.userState.user.token && selectedCampaign === null ? 'Campaigns'
-                : this.props.userState.user.token && selectedCampaign != null ? 'App'
-                    : 'Auth');
+        // const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
+        const selectedCampaign = this.props.campaignState.selectedCampaign;
+        if (this.context.isConnected) {
+            if (this.props.userState.user.token) {
+                this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
+                return;
+            }
         }
+        this.props.navigation.navigate('Auth');
     };
 
     handlePress = () => {
@@ -134,12 +137,13 @@ class Login extends React.Component<Props, State> {
             }
 
         } else {
-            console.log('no internet')
-            Toast.show({
-                text: 'No Internet Connection',
-                duration: 5000,
-                type: 'danger',
-            });
+            await this.props.requestLoginApi(
+                values.email,
+                values.password,
+                this.props.locationState.location.latitude,
+                this.props.locationState.location.longitude,
+            );
+            this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
         }
     };
     render() {
@@ -168,82 +172,83 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                            <Form>
-                                                <Item floatingLabel style={loginStyle.userName}>
-                                                    <Label style={{ marginLeft: 10 }}>Email</Label>
-                                                    <Input
-                                                        keyboardType="email-address"
-                                                        onChangeText={handleChange('email')}
-                                                        onBlur={() => setFieldTouched('email')}
-                                                        style={{ marginLeft: 10 }}
-                                                        returnKeyType="next"
-                                                        blurOnSubmit={false}
-                                                        onSubmitEditing={() => this.focusTheField('password')}
-                                                        autoCapitalize="none"
-                                                    />
-                                                </Item>
-                                                <Item floatingLabel style={loginStyle.password}>
-                                                    <Label style={{ marginLeft: 10 }}>Password</Label>
-                                                    <Input
-                                                        secureTextEntry={this.state.showPassword}
-                                                        value={values.password}
-                                                        onChangeText={handleChange('password')}
-                                                        onBlur={() => setFieldTouched('password')}
-                                                        style={{ marginLeft: 10 }}
-                                                        returnKeyType="done"
-                                                        getRef={input => {
-                                                            this.state.input['password'] = input;
-                                                        }}
-                                                        onSubmitEditing={() => this.handleSubmit(values)}
-                                                    />
-                                                    <Icon
-                                                        style={{ paddingTop: 0 }}
-                                                        active
-                                                        name={this.state.showPassword ? 'eye-off' : 'eye'}
-                                                        onPress={e => {
-                                                            e.preventDefault();
-                                                            this.setState({ showPassword: !this.state.showPassword });
-                                                        }}
-                                                    />
-                                                </Item>
-                                                {errors.password || errors.email || this.props.userState.error ? (
-                                                    <View>
-                                                        {!(this.context.isConnected) ? (<Text style={loginStyle.error}>No Internet Connection</Text>
-                                                        ) : errors.email ? (
-                                                            <Text style={loginStyle.error}>{errors.email}</Text>
-                                                        ) : errors.password ? (
-                                                            <Text style={loginStyle.error}>{errors.password}</Text>
+                                        <Form>
+                                            <Item floatingLabel style={loginStyle.userName}>
+                                                <Label style={{ marginLeft: 10 }}>Email</Label>
+                                                <Input
+                                                    keyboardType="email-address"
+                                                    onChangeText={handleChange('email')}
+                                                    onBlur={() => setFieldTouched('email')}
+                                                    style={{ marginLeft: 10 }}
+                                                    returnKeyType="next"
+                                                    blurOnSubmit={false}
+                                                    onSubmitEditing={() => this.focusTheField('password')}
+                                                    autoCapitalize="none"
+                                                />
+                                            </Item>
+                                            <Item floatingLabel style={loginStyle.password}>
+                                                <Label style={{ marginLeft: 10 }}>Password</Label>
+                                                <Input
+                                                    secureTextEntry={this.state.showPassword}
+                                                    value={values.password}
+                                                    onChangeText={handleChange('password')}
+                                                    onBlur={() => setFieldTouched('password')}
+                                                    style={{ marginLeft: 10 }}
+                                                    returnKeyType="done"
+                                                    getRef={input => {
+                                                        this.state.input['password'] = input;
+                                                    }}
+                                                    onSubmitEditing={() => this.handleSubmit(values)}
+                                                />
+                                                <Icon
+                                                    style={{ paddingTop: 0 }}
+                                                    active
+                                                    name={this.state.showPassword ? 'eye-off' : 'eye'}
+                                                    onPress={e => {
+                                                        e.preventDefault();
+                                                        this.setState({ showPassword: !this.state.showPassword });
+                                                    }}
+                                                />
+                                            </Item>
+                                            {errors.password || errors.email || this.props.userState.error ? (
+                                                <View>
+                                                    {!this.context.isConnected ? (
+                                                        <Text style={loginStyle.error}>No Internet Connection</Text>
+                                                    ) : errors.email ? (
+                                                        <Text style={loginStyle.error}>{errors.email}</Text>
+                                                    ) : errors.password ? (
+                                                        <Text style={loginStyle.error}>{errors.password}</Text>
                                                         ) : this.props.userState.error ?
                                                                         (this.props.errorState.showAlertError ?
                                                                             <Text style={loginStyle.error}>{this.props.userState.error[0].message}</Text>
                                                                             : <Text />
                                                                         ) : (
-                                                                            <Text />
-                                                                        )}
-                                                    </View>
-                                                ) : (
-                                                        <View />
+                                                        <Text />
                                                     )}
-
-                                                <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                    <Text style={{ fontSize: 16 }}>Login</Text>
-                                                </Button>
-                                                {this.props.userState.isLoading || this.props.metaData.isLoading ? (
-                                                    <View>
-                                                        <Spinner />
-                                                    </View>
-                                                ) : null}
-
-                                                <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                    <Text
-                                                        onPress={this.handlePress}
-                                                        style={{ color: '#fff', fontSize: 14 }}
-                                                    >
-                                                        Forgot Password?
-                                                </Text>
                                                 </View>
-                                            </Form>
-                                        )}
+                                            ) : (
+                                                <View />
+                                            )}
+
+                                            <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
+                                                <Text style={{ fontSize: 16 }}>Login</Text>
+                                            </Button>
+                                            {this.props.userState.isLoading || this.props.metaData.isLoading ? (
+                                                <View>
+                                                    <Spinner />
+                                                </View>
+                                            ) : null}
+
+                                            <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                                                <Text
+                                                    onPress={this.handlePress}
+                                                    style={{ color: '#fff', fontSize: 14 }}
+                                                >
+                                                    Forgot Password?
+                                                </Text>
+                                            </View>
+                                        </Form>
+                                    )}
                                 </Formik>
                             </View>
                             <RBSheet
