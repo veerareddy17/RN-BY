@@ -19,6 +19,7 @@ export class LeadRequest {
     public campaign_id = '';
     public location: Location;
     public sync_status = false;
+    public created_at = '';
 }
 
 export class SiblingRequest {

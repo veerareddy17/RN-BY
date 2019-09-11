@@ -7,6 +7,8 @@ import {
     OTP_SENT,
     ADD_OFFLINE_LEAD,
     FETCH_OFFLINE_LEAD,
+    SYNC_OFFLINE_LEADS,
+    DELETE_SYNCED_LEADS,
 } from '../actions/action-types';
 import { initialState } from '../init/lead-initial-state';
 
@@ -67,7 +69,19 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 status: 'done',
                 isLoading: false,
-                offlineLeadList: [...state.offlineLeadList, ...action.payload],
+                offlineLeadList: state.offlineLeadList,
+            };
+        case SYNC_OFFLINE_LEADS:
+            return {
+                ...state,
+                isLoading: false,
+                status: action.payload,
+            };
+        case DELETE_SYNCED_LEADS:
+            return {
+                ...state,
+                isLoading: false,
+                offlineLeadList: [state.offlineLeadList, ...action.payload],
             };
         default:
             return state;

@@ -8,14 +8,14 @@ import { LeadRequest } from '../models/request/lead-request';
 import { APIConstants } from '../helpers/api-constants';
 import { OTPRequest } from '../models/request';
 import { LeadReport } from '../models/response/lead-report-model';
-
+import { SyncLeadRequest } from '../models/request/sync-leads-request';
+import { StatusResponse } from '../models/response/status-response';
 export class LeadService {
     //Paginated method
     public static fetchLeads = async (
         pgNo: number,
         flag: string,
     ): Promise<ResponseViewModel<PaginatedResponseModel<LeadResponse>>> => {
-        console.log('Service', flag);
         const response = await HttpBaseService.get<LeadResponse>(
             APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&flag=' + flag,
         );
@@ -47,11 +47,25 @@ export class LeadService {
 
     public static fetchStateByCountry = async (countryId: number): Promise<ResponseViewModel<StateResponse>> => {
         const response = await HttpBaseService._get<StateResponse>(`/meta/country/${countryId}/states`);
+	if (response && response.data) {
+            console.log('response in service', response.data);
+            return response.data;
+        } else {
+            console.log('Failure');
+        }
         return response;
     };
 
     public static fetchLeadReport = async (): Promise<ResponseViewModel<LeadReport>> => {
         const response = await HttpBaseService._get<LeadReport>(APIConstants.LEAD_REPORT_URL);
+        return response;
+    };
+
+    public static syncLeads = async (leads: SyncLeadRequest): Promise<ResponseViewModel<StatusResponse>> => {
+        let response = await HttpBaseService.post<SyncLeadRequest, StatusResponse>(
+            APIConstants.LEAD_OFFLINE_SYNC,
+            leads,
+        );
         return response;
     };
 }

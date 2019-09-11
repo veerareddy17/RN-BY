@@ -19,8 +19,6 @@ import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { fetchMetaData } from '../../redux/actions/meta-data-actions';
-import StorageService from '../../database/storage-service';
-import { StorageConstants } from '../../helpers/storage-constants';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 

@@ -267,10 +267,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.setState({ sync_status: this.context.isConnected ? true : false });
                 let req = this.state;
                 this.setState({ leadRequest: req });
-                console.log('sibling values in lead req', this.state.leadRequest)
-                await this.verifyOTP();
+            // await this.verifyOTP();
 
-            }
+            await this.props.createLead(this.state.leadRequest);
+            this.props.navigation.navigate('LeadList');
         } catch (error) {
             {
                 /*
@@ -356,10 +356,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
                                         </View>
                                     ) : (
-                                            <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
-                                                {this.state.campaignName}
-                                            </Text>
-                                        )}
+                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
+                                            {this.state.campaignName}
+                                        </Text>
+                                    )}
                                 </View>
                                 <Button
                                     onPress={() => {
@@ -873,8 +873,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                         setFieldTouched('state', true);
                                                                     }}
                                                                 >
-                                                                    {values.country ? this.updateStatesDropdown() :
-                                                                        <Picker.Item label="Select" color="#ccc" value="" />}
+                                                                    {values.country ? (
+                                                                        this.updateStatesDropdown()
+                                                                    ) : (
+                                                                        <Picker.Item
+                                                                            label="Select"
+                                                                            color="#ccc"
+                                                                            value=""
+                                                                        />
+                                                                    )}
                                                                 </Picker>
                                                             </View>
                                                         </Item>
