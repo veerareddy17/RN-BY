@@ -267,9 +267,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.setState({ sync_status: this.context.isConnected ? true : false });
                 let req = this.state;
                 this.setState({ leadRequest: req });
-                console.log('sibling values in lead req', this.state.leadRequest)
                 await this.verifyOTP();
-
             }
         } catch (error) {
             {

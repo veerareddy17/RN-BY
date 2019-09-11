@@ -72,13 +72,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         }
     };
 
-    logout = async () => {
-        await this.props.logout();
-        if (this.props.userState.user == '') {
-            this.props.navigation.navigate('Auth');
-        }
-    };
-
     confirmLogout = () => {
         Alert.alert(
             'Confirm Logout',
@@ -161,19 +154,19 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         </Right>
                     </Header>
                 ) : (
-                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                            <Body>
-                                <Title style={{ color: 'white', fontWeight: 'bold', marginLeft: 10, fontSize: 18 }}>
-                                    Leads
+                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                        <Body>
+                            <Title style={{ color: 'white', fontWeight: 'bold', marginLeft: 10, fontSize: 18 }}>
+                                Leads
                             </Title>
-                            </Body>
-                            <Right>
-                                <Button transparent onPress={this.confirmLogout}>
-                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
-                                </Button>
-                            </Right>
-                        </Header>
-                    )}
+                        </Body>
+                        <Right>
+                            <Button transparent onPress={this.confirmLogout}>
+                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                            </Button>
+                        </Right>
+                    </Header>
+                )}
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
                     <View style={{ flex: 1 }}>
                         {this.context.isConnected ? (
@@ -182,26 +175,26 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     <Loader />
                                 </View>
                             ) : (
-                                    <View style={{ flex: 1 }}>
-                                        <FlatList
-                                            data={this.props.leadState.leadList}
-                                            renderItem={({ item, index }) => this.renderItem(item)}
-                                            keyExtractor={(item, index) => `${item.id}+${index}`}
-                                            ListFooterComponent={this.renderFooter}
-                                            onEndReached={this.fetchMore}
-                                            onEndReachedThreshold={0.1}
-                                        />
-                                    </View>
-                                )
-                        ) : (
                                 <View style={{ flex: 1 }}>
                                     <FlatList
-                                        data={this.props.leadState.offlineLeadList}
+                                        data={this.props.leadState.leadList}
                                         renderItem={({ item, index }) => this.renderItem(item)}
                                         keyExtractor={(item, index) => `${item.id}+${index}`}
+                                        ListFooterComponent={this.renderFooter}
+                                        onEndReached={this.fetchMore}
+                                        onEndReachedThreshold={0.1}
                                     />
                                 </View>
-                            )}
+                            )
+                        ) : (
+                            <View style={{ flex: 1 }}>
+                                <FlatList
+                                    data={this.props.leadState.offlineLeadList}
+                                    renderItem={({ item, index }) => this.renderItem(item)}
+                                    keyExtractor={(item, index) => `${item.id}+${index}`}
+                                />
+                            </View>
+                        )}
                     </View>
                 </Content>
             </Container>
