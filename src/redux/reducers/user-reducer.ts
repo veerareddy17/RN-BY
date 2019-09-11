@@ -7,7 +7,6 @@ export default function userReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: true,
-                user: '',
                 error: '',
             };
         case LOGIN_SUCCESS:
@@ -15,22 +14,21 @@ export default function userReducer(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 user: action.payload,
+                error: '',
             };
         case LOGIN_FAILURE:
             return {
                 ...state,
                 isLoading: false,
-                user: '',
                 error: action.payload,
             };
         case LOGOUT:
             return {
                 ...state,
                 isLoading: false,
-                user: '',
                 error: '',
             };
         default:
             return state;
     }
-}
+} 

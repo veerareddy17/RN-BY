@@ -15,8 +15,13 @@ export class LeadRequest {
     public city = '';
     public pin_code = 0;
     public comments = '';
-    public siblings = null;
+    public siblings = Array<SiblingRequest>();
     public campaign_id = '';
     public location: Location;
     public sync_status = false;
+}
+
+export class SiblingRequest {
+    public name = '';
+    public classes_id = '';
 }

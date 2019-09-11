@@ -39,6 +39,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
 
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
+            if (this.props.userState.user.token === '') {
+                this.props.navigation.navigate('Auth');
+            }
             let selectedFlag = this.props.navigation.getParam('flag', '');
             this.setState({
                 pageNumber:
@@ -51,6 +54,11 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         });
     }
 
+    logout = async () => {
+        await this.props.logout();
+        this.props.navigation.navigate('Auth');
+    };
+
     componentWillUnmount() {
         if (this.focusLeadListener) this.focusLeadListener.remove();
     }
@@ -61,13 +69,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             this.setState({ loadingMore: false });
         } catch (error) {
             /* show server error here*/
-        }
-    };
-
-    logout = async () => {
-        await this.props.logout();
-        if (this.props.userState.user == '') {
-            this.props.navigation.navigate('Auth');
         }
     };
 

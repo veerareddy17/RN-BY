@@ -1,3 +1,5 @@
+import { ErrorResponse } from './../../models/response/error-response';
+import { serverErrorCallAction, errorCallResetAction } from './error-actions';
 import { LeadService } from './../../services/lead-service';
 import { BoardResponse } from './../../models/response/board-response';
 import { ClassesResponse } from './../../models/response/classes-response';
@@ -40,20 +42,27 @@ export const metaDataFailureAction = error => {
 };
 
 export const fetchMetaData = () => async (dispatch: Dispatch) => {
+    console.log('fetch meta data');
+    dispatch(errorCallResetAction())
     try {
-
         const boardResp = await LeadService.fetchBoards();
-        console.log('boardResp', boardResp);
-        dispatch(fetchBoardSuccessAction(boardResp));
+        if (boardResp && boardResp.data) {
+            dispatch(fetchBoardSuccessAction(boardResp.data));
+        }
         const classesResp = await LeadService.fetchClasses();
-        console.log('classesResp', classesResp);
-        dispatch(fetchClassesSuccessAction(classesResp));
+        if (classesResp && classesResp.data) {
+            dispatch(fetchClassesSuccessAction(classesResp.data));
+        }
         const stateResp = await LeadService.fetchStateByCountry(1);
-        console.log('stateResp', stateResp);
-        dispatch(fetchStatesSuccessAction(stateResp));
+        if (stateResp && stateResp.data) {
+            dispatch(fetchStatesSuccessAction(stateResp.data));
+        }
         dispatch(fetchActionComplete());
-    } catch (error) {
-        console.log(error);
-        dispatch(metaDataFailureAction(error));
+    } catch (e) {
+        console.log(e);
+        let errors = Array<ErrorResponse>();
+        errors.push(new ErrorResponse('Server', e.message))
+        dispatch(serverErrorCallAction(errors));
+        dispatch(metaDataFailureAction(e));
     }
 };

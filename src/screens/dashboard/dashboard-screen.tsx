@@ -10,18 +10,13 @@ import {
     Left,
     Body,
     Right,
-    Footer,
-    FooterTab,
     Card,
     CardItem,
-    List,
-    ListItem,
     Item,
     Spinner,
 } from 'native-base';
 import { NavigationScreenProp } from 'react-navigation';
-import images from '../../assets';
-import { Image, View, Platform, Dimensions, StyleSheet, Alert } from 'react-native';
+import { View, Platform, Dimensions, StyleSheet, Alert } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { logout } from '../../redux/actions/user-actions';
@@ -35,6 +30,8 @@ import { withNavigation } from 'react-navigation';
 import { NetworkContext } from '../../provider/network-provider';
 import { fetchLeadReport } from '../../redux/actions/lead-report-action';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
+import { AlertError } from '../error/alert-error';
+import { ToastError } from '../error/toast-error';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -42,7 +39,7 @@ export interface Props {
     userState: any;
     campaignState: any;
     metaData: any;
-
+    errorState: any;
     selectCampaign(campaignId: any): void;
     fetchLeadReport(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     leadReportState: any;
@@ -69,10 +66,17 @@ class Dashboard extends React.Component<Props, State> {
         try {
             if (this.context.isConnected) {
                 this.focusListener = this.props.navigation.addListener('didFocus', async () => {
-                    this.checkToken();
+                    if (this.props.userState.user.token === '') {
+                        this.props.navigation.navigate('Auth');
+                    }
                     const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
                     this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
                     await this.props.fetchLeadReport();
+                    if (this.props.errorState.showAlertError) {
+                        AlertError.alertErr(this.props.errorState.error);
+                    } else if (this.props.errorState.showToastError) {
+                        ToastError.toastErr(this.props.errorState.error);
+                    }
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
                     this.setState({ campaignId: selectedCampaign.id });
@@ -90,13 +94,6 @@ class Dashboard extends React.Component<Props, State> {
         }
     };
 
-    checkToken = async () => {
-        const userToken = await StorageService.get<string>(StorageConstants.TOKEN_KEY);
-        if (userToken === null) {
-            this.logout();
-        }
-    };
-
     componentWillUnmount() {
         if (this.focusListener) this.focusListener.remove();
     }
@@ -107,10 +104,7 @@ class Dashboard extends React.Component<Props, State> {
 
     logout = async () => {
         await this.props.logout();
-        if (this.props.userState.user == '') {
-            // TODO: Need to pop all screens before navigating to login. Look for popToTop() method
-            this.props.navigation.navigate('Auth');
-        }
+        this.props.navigation.navigate('Auth');
     };
 
     confirmLogout = () => {
@@ -198,7 +192,7 @@ class Dashboard extends React.Component<Props, State> {
                                 }}
                             >
                                 <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold', marginBottom: 10 }}>
-                                    Hi Praveen
+                                    Hi {this.props.userState.user.name}
                                 </Text>
                                 <View
                                     style={{
@@ -355,6 +349,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state: AppState) => ({
     userState: state.userReducer,
     campaignState: state.campaignReducer,
+    errorState: state.errorReducer,
     leadReportState: state.leadReportReducer,
 });
 

@@ -1,3 +1,5 @@
+import { ErrorResponse } from './../../models/response/error-response';
+import { errorCallResetAction, errorCallAction, serverErrorCallAction } from './error-actions';
 import { SMSService } from './../../services/sendSMS-service';
 import { OTP_SENT, LOAD_OTP_START, LOAD_OTP_FAIL, LOAD_OTP_INIT } from './action-types';
 import { OTPRequest } from './../../models/request/otp-request';
@@ -36,6 +38,7 @@ export const otpSuccessAction = successData => {
 };
 
 export const verifyOTP = (phone: string, connection: boolean) => async (dispatch: Dispatch) => {
+    dispatch(errorCallResetAction())
     dispatch(otpStartAction());
     let OTP = await generateOTP();
     console.log('OTP generated - ', OTP);
@@ -44,14 +47,10 @@ export const verifyOTP = (phone: string, connection: boolean) => async (dispatch
     try {
         if (connection) {
             let response = await LeadService.verifyOTP(otpRequest);
-            console.log(response.data);
             if (response && response.data) {
-                try {
-                    dispatch(otpSuccessAction(response.data));
-                } catch (error) {
-                    console.log('Error in storing asyncstorage', error);
-                }
+                dispatch(otpSuccessAction(response.data));
             } else {
+                dispatch(serverErrorCallAction(response.errors))
                 dispatch(otpFailureAction(response.errors));
             }
         } else {
@@ -85,7 +84,11 @@ export const verifyOTP = (phone: string, connection: boolean) => async (dispatch
         }
     } catch (error) {
         // Error
-        console.log(error);
+        console.log(e);
+        let errors = Array<ErrorResponse>();
+        errors.push(new ErrorResponse('Server', e.message))
+        dispatch(serverErrorCallAction(errors));
+        dispatch(otpFailureAction('Some error occured'));
     }
 };
 

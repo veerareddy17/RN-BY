@@ -13,6 +13,7 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import forgotPasswordReducer from '../reducers/forgot-password-reducer';
 import connectionStateReducer from '../reducers/connection-reducer';
 import metaDataReducer from '../reducers/meta-data-reducer';
+import errorReducer from '../reducers/error-reducer';
 import leadReportReducer from '../reducers/lead-report-reducer';
 
 const rootReducer = combineReducers({
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
     forgotPasswordReducer: forgotPasswordReducer,
     connectionStateReducer: connectionStateReducer,
     metaDataReducer: metaDataReducer,
+    errorReducer: errorReducer,
     leadReportReducer: leadReportReducer,
 });
 
