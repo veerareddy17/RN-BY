@@ -1,9 +1,11 @@
+import { ErrorResponse } from './../../models/response/error-response';
 import { Dispatch } from 'redux';
 import { LOCATION_CAPTURE_SUCCESS, LOCATION_CAPTURE_FAILURE, LOCATION_CAPTURE_START } from './action-types';
 import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import SystemSetting from 'react-native-system-setting';
 import { Location } from '../init/location-initial-state';
+import { errorCallResetAction, serverErrorCallAction } from './error-actions';
 
 export const locationCaptureStart = () => {
     return {
@@ -45,6 +47,7 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                         const state = enable ? 'On' : 'Off';
                         console.log('Current location is ' + state);
                         if (state === 'On') {
+                            dispatch(errorCallResetAction());
                             dispatch(locationCaptureStart());
                             Geolocation.getCurrentPosition(
                                 position => {
@@ -55,6 +58,9 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                 error => {
                                     console.log('error', error);
                                     dispatch(locationCaptureFailureAction(error.message));
+                                    let errors = Array<ErrorResponse>();
+                                    errors.push(new ErrorResponse('Server', error.message))
+                                    dispatch(serverErrorCallAction(errors));
                                     reject(error);
                                 },
                                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
@@ -74,22 +80,20 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                         onPress: () => {
                                             SystemSetting.switchLocation(() => {
                                                 console.log('switch location successfully...');
+                                                dispatch(errorCallResetAction());
                                                 dispatch(locationCaptureStart());
                                                 Geolocation.getCurrentPosition(
                                                     position => {
                                                         console.log('success', position);
                                                         dispatch(locationCaptureSuccessAction(position.coords));
-                                                        dispatch(
-                                                            locationCaptureSuccessAction({
-                                                                latitude: 12.234244,
-                                                                longitude: 77.3232332,
-                                                            }),
-                                                        );
                                                         resolve(true);
                                                     },
                                                     error => {
                                                         console.log('error', error);
                                                         dispatch(locationCaptureFailureAction(error.message));
+                                                        let errors = Array<ErrorResponse>();
+                                                        errors.push(new ErrorResponse('Server', error.message));
+                                                        dispatch(serverErrorCallAction(errors));
                                                         reject(error);
                                                     },
                                                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
@@ -111,6 +115,7 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                     const state = enable ? 'On' : 'Off';
                     console.log('Current location is ' + state);
                     if (state === 'On') {
+                        dispatch(errorCallResetAction());
                         dispatch(locationCaptureStart());
                         Geolocation.getCurrentPosition(
                             position => {
@@ -121,6 +126,9 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                             error => {
                                 console.log('error', error);
                                 dispatch(locationCaptureFailureAction(error.message));
+                                let errors = Array<ErrorResponse>();
+                                errors.push(new ErrorResponse('Server', error.message));
+                                dispatch(serverErrorCallAction(errors));
                                 reject(error);
                             },
                             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
@@ -150,6 +158,9 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                                 error => {
                                                     console.log('error', error);
                                                     dispatch(locationCaptureFailureAction(error.message));
+                                                    let errors = Array<ErrorResponse>();
+                                                    errors.push(new ErrorResponse('Server', error.message));
+                                                    dispatch(serverErrorCallAction(errors));
                                                     reject(error);
                                                 },
                                                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },

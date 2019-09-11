@@ -7,7 +7,6 @@ export default function metaDataReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-
             };
         case FETCH_BOARD:
             return {
@@ -36,4 +35,4 @@ export default function metaDataReducer(state = initialState, action) {
         default:
             return state;
     }
-}
+} 

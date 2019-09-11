@@ -13,7 +13,6 @@ import { authenticate } from '../../redux/actions/user-actions';
 import { AppState } from '../../redux/store';
 import { loginValidation } from '../../validations/validation-model';
 import { captureLocation } from '../../redux/actions/location-action';
-import { Error } from '../error/error';
 import { LocationState } from '../../redux/init/location-initial-state';
 import { forgotPassword, initStateForgotPassword } from '../../redux/actions/forgot-password-action';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
@@ -22,6 +21,8 @@ import { fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { fetchMetaData } from '../../redux/actions/meta-data-actions';
 import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
+import { AlertError } from '../error/alert-error';
+import { ToastError } from '../error/toast-error';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -32,6 +33,7 @@ export interface Props {
     forgotPasswordState: any;
     metaData: any;
     campaignState: any;
+    errorState: any;
     requestLoginApi(
         email: string,
         password: string,
@@ -115,9 +117,22 @@ class Login extends React.Component<Props, State> {
                 this.props.locationState.location.latitude,
                 this.props.locationState.location.longitude,
             );
-            await this.props.fetchMetaData();
-            await this.props.fetchCampaigns();
-            this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(this.props.errorState.error);
+            } if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+            } if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+                await this.props.fetchMetaData();
+                await this.props.fetchCampaigns();
+                if (this.props.errorState.showAlertError) {
+                    AlertError.alertErr(this.props.errorState.error);
+                } if (this.props.errorState.showToastError) {
+                    ToastError.toastErr(this.props.errorState.error);
+                } if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+                    this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
+                }
+            }
+
         } else {
             console.log('no internet')
             Toast.show({
@@ -198,9 +213,11 @@ class Login extends React.Component<Props, State> {
                                                             <Text style={loginStyle.error}>{errors.email}</Text>
                                                         ) : errors.password ? (
                                                             <Text style={loginStyle.error}>{errors.password}</Text>
-                                                        ) : this.props.userState.error ? (
-                                                            <Text style={loginStyle.error}>Invalid Email Id/Password</Text>
-                                                        ) : (
+                                                        ) : this.props.userState.error ?
+                                                                        (this.props.errorState.showAlertError ?
+                                                                            <Text style={loginStyle.error}>{this.props.userState.error[0].message}</Text>
+                                                                            : <Text />
+                                                                        ) : (
                                                                             <Text />
                                                                         )}
                                                     </View>
@@ -269,6 +286,7 @@ const mapStateToProps = (state: AppState) => ({
     forgotPasswordState: state.forgotPasswordReducer,
     campaignState: state.campaignReducer,
     metaData: state.metaDataReducer,
+    errorState: state.errorReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
@@ -278,6 +296,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchMetaData: bindActionCreators(fetchMetaData, dispatch),
     forgotPassword: bindActionCreators(forgotPassword, dispatch),
     resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch),
+
 });
 
 export default connect(

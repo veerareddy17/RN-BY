@@ -1,3 +1,5 @@
+import { ErrorResponse } from './../../models/response/error-response';
+import { errorCallResetAction, errorCallAction, serverErrorCallAction } from './error-actions';
 import { Dispatch } from 'redux';
 import { LeadService } from '../../services/lead-service';
 import { LeadRequest } from '../../models/request';
@@ -18,28 +20,36 @@ export const fetchAllLeadsApi = (
     flag: string,
 ): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState) => {
-        let isConnected = getState().connectionStateReducer.isConnected;
-        if (!isConnected) {
-            let response = getState().leadReducer.offlineLeadList;
-            dispatch(fetchOfflineLeadsAction(response));
-            return;
-        }
-        if (pageNumber === 1) {
-            dispatch(leadStartAction());
-        }
-        const response = await LeadService.fetchLeads(pageNumber, flag);
-        let leadsResponse = new LeadFilterResponse();
-        if (response && response.data) {
-            let reducerData = getState().leadReducer;
-            if (reducerData.flag !== flag) {
-                reducerData.leadList = [];
-                reducerData.paginatedLeadList = [];
+        try {
+            let isConnected = getState().connectionStateReducer.isConnected;
+            if (!isConnected) {
+                let response = getState().leadReducer.offlineLeadList;
+                dispatch(fetchOfflineLeadsAction(response));
+                return;
             }
-            leadsResponse.paginatedLeadList = response.data;
-            leadsResponse.flag = flag;
-            dispatch(fetchLeadsAction(leadsResponse));
-        } else {
-            dispatch(leadFailureAction(response.errors));
+            dispatch(errorCallResetAction());
+            if (pageNumber === 1) {
+                dispatch(leadStartAction());
+            }
+            const response = await LeadService.fetchLeads(pageNumber, flag);
+            let leadsResponse = new LeadFilterResponse();
+            if (response && response.data) {
+                let reducerData = getState().leadReducer;
+                if (reducerData.flag !== flag) {
+                    reducerData.leadList = [];
+                    reducerData.paginatedLeadList = [];
+                }
+                leadsResponse.paginatedLeadList = response.data;
+                leadsResponse.flag = flag;
+                dispatch(fetchLeadsAction(leadsResponse));
+            } else {
+                dispatch(leadFailureAction(response.errors));
+                dispatch(serverErrorCallAction(response.errors));
+            }
+        } catch (e) {
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message));
+            dispatch(serverErrorCallAction(errors));
         }
     };
 };
@@ -47,19 +57,29 @@ export const fetchAllLeadsApi = (
 // POST method to create Lead
 export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState) => {
-        let isConnected = getState().connectionStateReducer.isConnected;
-        if (!isConnected) {
-            let response = transformRequestToResponse(leadRequest, getState());
-            dispatch(createOfflineLeadAction(response));
-            return;
+        try {
+            dispatch(errorCallResetAction());
+            let isConnected = getState().connectionStateReducer.isConnected;
+            if (!isConnected) {
+                let response = transformRequestToResponse(leadRequest, getState());
+                dispatch(createOfflineLeadAction(response));
+                return;
+            }
+            dispatch(leadStartAction());
+            let response = await LeadService.createLead(leadRequest);
+            if (response && response.data) {
+                dispatch(createLeadAction(response.data));
+            } else {
+                dispatch(errorCallAction(response.errors))
+                dispatch(leadFailureAction(response.errors));
+            }
+        } catch (e) {
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message))
+            dispatch(serverErrorCallAction(errors));
+            dispatch(leadFailureAction(e.message));
         }
-        dispatch(leadStartAction());
-        let response = await LeadService.createLead(leadRequest);
-        if (response && response.data) {
-            dispatch(createLeadAction(response.data));
-        } else {
-            dispatch(leadFailureAction(response.errors));
-        }
+
     };
 };
 

@@ -1,4 +1,5 @@
+import { ErrorResponse } from './error-response';
 export class ResponseViewModel<T> {
-    errors: string[] = [];
+    errors: ErrorResponse[] = [];
     data: T | null = null;
 }

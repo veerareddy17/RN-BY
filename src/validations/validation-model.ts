@@ -67,8 +67,8 @@ export const leadValidation = yup.object().shape({
         .required(),
     pincode: yup
         .string()
-        .min(6)
         .max(6)
+            .min(6)
         .label('Pin code')
         .required(),
     siblings: yup.array().of(

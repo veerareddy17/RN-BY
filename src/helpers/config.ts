@@ -1,7 +1,7 @@
 export default {
     api: {
-        baseURL: 'http://byjus-crm-qa.us-east-2.elasticbeanstalk.com/api',
-        // baseURL: 'https://afd5c708.ngrok.io/api',
+        baseURL: 'https://crm-byjus.goave.ga/api',
+        //baseURL: 'https://8d47fe1d.ngrok.io/api',
     },
     otp: {
         length: 4,

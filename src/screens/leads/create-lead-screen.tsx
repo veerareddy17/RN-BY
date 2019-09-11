@@ -16,17 +16,15 @@ import {
     Card,
     CardItem,
     Label,
-    Input,
     Icon,
     Textarea,
     Item,
     Left,
     Footer,
     FooterTab,
-    Row,
-    Grid,
     ListItem,
     Spinner,
+    Toast,
 } from 'native-base';
 
 import { connect } from 'react-redux';
@@ -51,7 +49,11 @@ import { Error } from '../error/error';
 import { submitOTP, verifyOTP, otpInitAction } from '../../redux/actions/otp-actions';
 import { LeadRequest } from '../../models/request';
 import { withNavigation } from 'react-navigation';
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { SiblingRequest } from '../../models/request/lead-request';
+import { AlertError } from '../error/alert-error';
+import { ToastError } from '../error/toast-error';
+import { logout } from '../../redux/actions/user-actions';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -60,6 +62,9 @@ export interface CreateLeadProps {
     locationState: any;
     otpState: any;
     metaData: any;
+    errorState: any;
+    userState: any;
+    logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     generateAndVerifyOTP(phone: string, connection: boolean): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -104,6 +109,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             this.focusListener = this.props.navigation.addListener('didFocus', async () => {
                 // The screen is focused call any action
                 if (this.context.isConnected) {
+                    if (this.props.userState.user.token === '') {
+                        this.props.navigation.navigate('Auth');
+                    }
                     const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
                     const compaignList = this.props.campaignState.campaignList;
                     this.setState({ campaignList: compaignList });
@@ -121,6 +129,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             */
         }
     }
+
+    // logout = async () => {
+    //     await this.props.logout();
+
+    // };
 
     updateClassDropdown = () => {
         const all_items = this.props.metaData.classesResponse.map((_class, i) => {
@@ -157,7 +170,19 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         if (!this.props.otpState.error) {
             await this.RBSheetOtp.close();
             await this.props.createLead(this.state.leadRequest);
-            this.props.navigation.navigate('LeadList');
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(this.props.errorState.error);
+            } else if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+            } else if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+                Toast.show({
+                    text: 'Lead Created Successfully',
+                    buttonText: 'Ok',
+                    duration: 5000,
+                    type: 'success',
+                });
+                this.props.navigation.navigate('LeadList');
+            }
         }
     };
 
@@ -167,9 +192,17 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
     verifyOTP = async () => {
         await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
-        if (this.props.otpState.otp.success) {
-            await this.RBSheetOtp.open();
+        <SpinnerOverlay visible={this.props.otpState.isLoading} />
+        if (this.props.errorState.showAlertError) {
+            AlertError.alertErr(this.props.errorState.error);
+        } if (this.props.errorState.showToastError) {
+            ToastError.toastErr(this.props.errorState.error);
+        } else {
+            if (this.props.otpState.otp.success) {
+                await this.RBSheetOtp.open();
+            }
         }
+
     };
 
     constructor(props: CreateLeadProps) {
@@ -221,22 +254,23 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         try {
 
             await this.props.captureLocation();
-            let locObj = {
-                latitude: this.props.locationState.location.latitude,
-                longitude: this.props.locationState.location.longitude,
-            };
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(this.props.errorState.error);
+            } if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+            } else {
+                let locObj = {
+                    latitude: this.props.locationState.location.latitude,
+                    longitude: this.props.locationState.location.longitude,
+                };
+                this.setState({ location: locObj });
+                this.setState({ sync_status: this.context.isConnected ? true : false });
+                let req = this.state;
+                this.setState({ leadRequest: req });
+                console.log('sibling values in lead req', this.state.leadRequest)
+                await this.verifyOTP();
 
-            this.setState({ location: locObj });
-            this.setState({ sync_status: this.context.isConnected ? true : false });
-
-            let req = this.state;
-
-            this.setState({ leadRequest: req });
-            console.log('sibling values in lead req', this.state.leadRequest)
-            await this.verifyOTP();
-
-            // await this.props.createLead(this.state.leadRequest);
-            // this.props.navigation.navigate('LeadList');
+            }
         } catch (error) {
             {
                 /*
@@ -676,7 +710,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         inputStyle={style.input}
                                                         style={[
                                                             style.formInput,
-                                                            { borderColor: touched.phone && errors.phone ? '#ff0000' : '#333' },
+                                                            {
+                                                                borderColor:
+                                                                    touched.phone && errors.phone ? '#ff0000' : '#333',
+                                                            },
                                                         ]}
                                                         onChangeText={handleChange('phone')}
                                                         onBlur={() => setFieldTouched('phone')}
@@ -836,7 +873,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                         setFieldTouched('state', true);
                                                                     }}
                                                                 >
-                                                                    {/* <Picker.Item label="Select" color="#ccc" value="" /> */}
                                                                     {values.country ? this.updateStatesDropdown() :
                                                                         <Picker.Item label="Select" color="#ccc" value="" />}
                                                                 </Picker>
@@ -970,14 +1006,17 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 }
 
 const mapStateToProps = (state: AppState) => ({
+    userState: state.userReducer,
     campaignState: state.campaignReducer,
     leadState: state.leadReducer,
     locationState: state.locationReducer,
     otpState: state.otpReducer,
     metaData: state.metaDataReducer,
+    errorState: state.errorReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
+    logout: bindActionCreators(logout, dispatch),
     createLead: bindActionCreators(createLeadApi, dispatch),
     fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
     generateAndVerifyOTP: bindActionCreators(verifyOTP, dispatch),

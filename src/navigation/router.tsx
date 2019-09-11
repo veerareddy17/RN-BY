@@ -112,7 +112,7 @@ const AppContainer = createAppContainer(
             App: TabStack,
         },
         {
-            initialRouteName: 'Auth',
+            initialRouteName: 'AuthLoading',
         },
     ),
 );
