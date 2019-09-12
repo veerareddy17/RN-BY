@@ -14,7 +14,6 @@ export const locationCaptureStart = () => {
 };
 
 export const locationCaptureSuccessAction = (location: Location) => {
-    console.log('from action', location);
     return {
         type: LOCATION_CAPTURE_SUCCESS,
         payload: location,
@@ -22,7 +21,6 @@ export const locationCaptureSuccessAction = (location: Location) => {
 };
 
 export const locationCaptureFailureAction = (error: string) => {
-    console.log('fail action val', error);
     return {
         type: LOCATION_CAPTURE_FAILURE,
         payload: error,
@@ -59,7 +57,7 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                     console.log('error', error);
                                     dispatch(locationCaptureFailureAction(error.message));
                                     let errors = Array<ErrorResponse>();
-                                    errors.push(new ErrorResponse('Server', error.message))
+                                    errors.push(new ErrorResponse('Server', error.message));
                                     dispatch(serverErrorCallAction(errors));
                                     reject(error);
                                 },
