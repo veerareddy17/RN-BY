@@ -43,7 +43,6 @@ project.xcworkspace
 local.properties
 *.iml
 android/app/*
-android/app/debug.keystore
 !android/app/byjus*.keystore
 
 
