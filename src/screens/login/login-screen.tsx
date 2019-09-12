@@ -78,7 +78,6 @@ class Login extends React.Component<Props, State> {
     };
 
     componentDidMount = async () => {
-        // const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
         const selectedCampaign = this.props.campaignState.selectedCampaign;
         if (this.context.isConnected) {
             if (this.props.userState.user.token) {
@@ -120,20 +119,23 @@ class Login extends React.Component<Props, State> {
             );
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
-            } if (this.props.errorState.showToastError) {
+            }
+            if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
-            } if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+            }
+            if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
                 await this.props.fetchMetaData();
                 await this.props.fetchCampaigns();
                 if (this.props.errorState.showAlertError) {
                     AlertError.alertErr(this.props.errorState.error);
-                } if (this.props.errorState.showToastError) {
+                }
+                if (this.props.errorState.showToastError) {
                     ToastError.toastErr(this.props.errorState.error);
-                } if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+                }
+                if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
                     this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
                 }
             }
-
         } else {
             await this.props.requestLoginApi(
                 values.email,
@@ -216,11 +218,15 @@ class Login extends React.Component<Props, State> {
                                                         <Text style={loginStyle.error}>{errors.email}</Text>
                                                     ) : errors.password ? (
                                                         <Text style={loginStyle.error}>{errors.password}</Text>
-                                                        ) : this.props.userState.error ?
-                                                                        (this.props.errorState.showAlertError ?
-                                                                            <Text style={loginStyle.error}>{this.props.userState.error[0].message}</Text>
-                                                                            : <Text />
-                                                                        ) : (
+                                                    ) : this.props.userState.error ? (
+                                                        this.props.errorState.showAlertError ? (
+                                                            <Text style={loginStyle.error}>
+                                                                {this.props.userState.error[0].message}
+                                                            </Text>
+                                                        ) : (
+                                                            <Text />
+                                                        )
+                                                    ) : (
                                                         <Text />
                                                     )}
                                                 </View>
@@ -299,7 +305,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchMetaData: bindActionCreators(fetchMetaData, dispatch),
     forgotPassword: bindActionCreators(forgotPassword, dispatch),
     resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch),
-
 });
 
 export default connect(

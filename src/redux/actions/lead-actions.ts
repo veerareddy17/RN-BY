@@ -16,6 +16,7 @@ import {
 import { LeadResponse } from '../../models/response';
 import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 import { SyncLeadRequest } from '../../models/request/sync-leads-request';
+import config from '../../helpers/config';
 
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = (
@@ -26,7 +27,7 @@ export const fetchAllLeadsApi = (
         try {
             let isConnected = getState().connectionStateReducer.isConnected;
             if (!isConnected) {
-            	dispatch(fetchOfflineLeadsAction());
+                dispatch(fetchOfflineLeadsAction());
                 return;
             }
             dispatch(errorCallResetAction());
@@ -72,16 +73,15 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch, g
             if (response && response.data) {
                 dispatch(createLeadAction(response.data));
             } else {
-                dispatch(errorCallAction(response.errors))
+                dispatch(errorCallAction(response.errors));
                 dispatch(leadFailureAction(response.errors));
             }
         } catch (e) {
             let errors = Array<ErrorResponse>();
-            errors.push(new ErrorResponse('Server', e.message))
+            errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
             dispatch(leadFailureAction(e.message));
         }
-
     };
 };
 
@@ -98,28 +98,22 @@ export const getSelectedState = (state_id: string, store: any) => {
 };
 
 export const syncOfflineLeads = (): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
-    return async (dispatch: Dispatch, getState) => {
+    return async (dispatch: Dispatch, getState: any) => {
         let isConnected = getState().connectionStateReducer.isConnected;
         if (isConnected) {
             let leadsToSync = getState().leadReducer.offlineLeadList;
-            console.log('Init leads to sync', leadsToSync.length);
             try {
-                let batchCount = 1;
                 do {
                     let batchLeads = getLeadsByBatch(leadsToSync);
-                    // let response = await LeadService.syncLeads(batchLeads);
-                    // if (response && response.data) {
-                    //     dispatch(syncOfflineLeadsAction(response.data.success));
-                    //update offline leads
-                    console.log('Offline remaining before delete: ', leadsToSync.length);
-                    leadsToSync.splice(0, batchLeads.leads.length);
-                    // dispatch(deleteOfflineLeadsAction(leadsToSync));
-                    console.log('Offline remaining leads after sync: ', leadsToSync.length);
-                    // } else {
-                    // dispatch(leadFailureAction(response.errors));
-                    // }
+                    let response = await LeadService.syncLeads(batchLeads);
+                    if (response && response.data) {
+                        dispatch(syncOfflineLeadsAction(response.data.success));
+                        //update offline leads
+                        // dispatch(deleteOfflineLeadsAction(leadsToSync));
+                    } else {
+                        dispatch(leadFailureAction(response.errors));
+                    }
                 } while (leadsToSync.length > 0);
-                console.log('LeadsToSync :', leadsToSync);
             } catch (error) {
                 console.log(error);
             }
@@ -151,14 +145,9 @@ export const transformResponseToRequest = (leadResponse: LeadResponse): LeadRequ
 export const getLeadsByBatch = (totalLeads: LeadResponse[]): SyncLeadRequest => {
     let syncLeads = new SyncLeadRequest();
     syncLeads.leads = [];
-    let batchLeads = [];
-    let batchSize = 1;
-    console.log('tot', totalLeads.length);
-    if (totalLeads.length > batchSize) {
-        batchLeads = totalLeads.splice(0, batchSize);
-    }
-    console.log('lead by batch', batchLeads.length);
-    batchLeads.forEach(leadRes => {
+    let batchSize = config.OFFLINE_LEAD_BATCH_SIZE;
+    totalLeads.splice(0, batchSize);
+    totalLeads.forEach(leadRes => {
         syncLeads.leads.push(transformResponseToRequest(leadRes));
     });
     return syncLeads;
@@ -172,7 +161,7 @@ export const updateStatusOfflineSyncedLeads = (syncedLeads: LeadResponse[], stor
     return true;
 };
 
-export const formatDate = (date: any): string => {
+export const formatDate = (date: Date): string => {
     return (
         date.getFullYear() +
         '-' +

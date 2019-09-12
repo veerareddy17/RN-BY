@@ -81,7 +81,7 @@ export default function leadReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                offlineLeadList: [state.offlineLeadList, ...action.payload],
+                offlineLeadList: [...state.offlineLeadList, ...action.payload],
             };
         default:
             return state;

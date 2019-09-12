@@ -266,7 +266,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.setState({ sync_status: this.context.isConnected ? true : false });
                 let req = this.state;
                 this.setState({ leadRequest: req });
-            	await this.verifyOTP();
+                // await this.verifyOTP();
+                await this.props.createLead(this.state.leadRequest);
+                this.props.navigation.navigate('LeadList');
 
             }
         } catch (error) {

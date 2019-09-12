@@ -42,7 +42,7 @@ export interface Props {
     errorState: any;
     leadReportState: any;
     selectCampaign(campaignId: any): void;
-    fetchLeadReport(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchLeadReport(): (dispatch: Dispatch, getState: any) => Promise<void>;
     syncOfflineLeads(): (dispatch: Dispatch, getState: any) => Promise<void>;
 }
 
@@ -94,7 +94,6 @@ class Dashboard extends React.Component<Props, State> {
             */
         }
     };
-
 
     componentWillUnmount() {
         if (this.focusListener) this.focusListener.remove();

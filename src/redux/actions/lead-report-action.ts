@@ -1,4 +1,3 @@
-import { metaDataFailureAction } from './meta-data-actions';
 import { ErrorResponse } from './../../models/response/error-response';
 import { Dispatch } from 'redux';
 import { LeadService } from '../../services/lead-service';
@@ -20,15 +19,14 @@ export const fetchLeadReport = (): ((dispatch: Dispatch, getState: any) => Promi
             if (response && response.data) {
                 dispatch(fetchLeadReportAction(response.data));
             } else {
-                dispatch(errorCallAction(response.errors))
+                dispatch(errorCallAction(response.errors));
                 dispatch(leadReportFailureAction(response.errors));
             }
         } catch (e) {
             let errors = Array<ErrorResponse>();
-            errors.push(new ErrorResponse('Server', e.message))
+            errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
             dispatch(leadReportFailureAction(e));
         }
-
     };
 };

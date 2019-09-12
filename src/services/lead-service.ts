@@ -47,12 +47,6 @@ export class LeadService {
 
     public static fetchStateByCountry = async (countryId: number): Promise<ResponseViewModel<StateResponse>> => {
         const response = await HttpBaseService._get<StateResponse>(`/meta/country/${countryId}/states`);
-	if (response && response.data) {
-            console.log('response in service', response.data);
-            return response.data;
-        } else {
-            console.log('Failure');
-        }
         return response;
     };
 
