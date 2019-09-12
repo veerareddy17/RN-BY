@@ -252,7 +252,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             siblings: values.siblings
         });
         try {
-
             await this.props.captureLocation();
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
@@ -271,12 +270,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
             await this.props.createLead(this.state.leadRequest);
             this.props.navigation.navigate('LeadList');
+            }
         } catch (error) {
-            {
                 /*
             error to be handled
             */
-            }
         }
     };
 
