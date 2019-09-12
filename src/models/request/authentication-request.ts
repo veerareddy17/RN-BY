@@ -1,12 +1,4 @@
-export class Location {
-    public latitude: number;
-    public longitude: number;
-
-    constructor(latitude: number, longitude: number) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-}
+import { Location } from './location-request';
 
 export class AuthenticationRequest {
     public email: string;

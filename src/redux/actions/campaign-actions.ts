@@ -1,3 +1,5 @@
+import { ErrorResponse } from './../../models/response/error-response';
+import { serverErrorCallAction, errorCallAction, errorCallResetAction } from './error-actions';
 import { Dispatch } from 'redux';
 import {
     FETCH_CAMPAIGN,
@@ -44,28 +46,39 @@ export const selectedCampaignActions = campaignSelectedId => {
 
 export const fetchCampaigns = (): ((dispatch: Dispatch) => Promise<void>) => {
     return async (dispatch: Dispatch) => {
-        // const user = await StorageService.get<string>(StorageConstants.USER);
-        // console.log('Fetch camp action User ->', user);
         dispatch(campaignStartAction());
-        const response = await CampaignService.fetchCampaigns(1);
-        console.log('Fetch camp action resp: --', response);
-        if (response && response.data) {
-            dispatch(fetchCampaignsAction(response.data.data));
-        } else {
-            dispatch(campaignFailureAction(response.errors));
+
+        try {
+            const response = await CampaignService.fetchCampaigns(1);
+            if (response && response.data) {
+                dispatch(fetchCampaignsAction(response.data.data));
+            } else {
+                dispatch(errorCallAction(response.errors));
+                dispatch(campaignFailureAction(response.errors));
+            }
+        } catch (e) {
+            console.log('error:', e.message);
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message))
+            dispatch(serverErrorCallAction(errors));
+            dispatch(campaignFailureAction(e.message));
         }
+
     };
 };
 
 export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Dispatch) => {
     console.log('inside campaign action', selectedCampaign);
+    dispatch(errorCallResetAction());
     dispatch(campaignStartAction());
     try {
         await StorageService.store(StorageConstants.SELECTED_CAMPAIGN, selectedCampaign);
-        console.log('campaign successfully stored in async');
         dispatch(campaignSuccessAction());
-    } catch (error) {
-        console.log(error);
-        dispatch(campaignFailureAction(error));
+    } catch (e) {
+        console.log(e);
+        let errors = Array<ErrorResponse>();
+        errors.push(new ErrorResponse('Server', e.message))
+        dispatch(serverErrorCallAction(errors));
+        dispatch(campaignFailureAction(e));
     }
 };

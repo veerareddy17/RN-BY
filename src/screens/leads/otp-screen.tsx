@@ -26,9 +26,7 @@ class OTPScreen extends Component<Props, State> {
     };
 
     handleSubmit = async () => {
-        console.log('OTP entered', this.state.otp);
         const storedOTP = await StorageService.get<string>(StorageConstants.USER_OTP);
-        console.log('From storage->', storedOTP);
         if (storedOTP === this.state.otp) {
             console.log('Lead created successfully...');
             // Toast.show({

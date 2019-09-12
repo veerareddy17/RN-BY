@@ -13,15 +13,16 @@ export interface State {}
 class Splash extends React.Component<Props, State> {
     static navigationOptions = { header: null };
     async componentDidMount() {
-        const userTokenExists = await AuthenticationService.authCheck();
-        this.props.navigation.navigate(userTokenExists ? 'App' : 'Auth');
+        // const userTokenExists = await AuthenticationService.authCheck();
+        // // this.props.navigation.navigate(userTokenExists ? 'App' : 'Auth');
+        this.props.navigation.navigate('Auth');
     }
 
     render() {
         const { width, height } = Dimensions.get('window');
         return (
             <Container>
-                <StatusBar backgroundColor="purple" barStyle="light-content" />
+                <StatusBar backgroundColor="#813588" barStyle="light-content" />
                 <ImageBackground source={images.background} style={{ width, height }}>
                     <Content contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', flex: 1 }}>
                         <Image source={images.logo} />

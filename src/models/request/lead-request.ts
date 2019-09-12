@@ -1,19 +1,27 @@
+import { Location } from './location-request';
 export class LeadRequest {
-    public id: string;
-    public name: string;
-    public parent_name: string;
-    public email: string;
-    public phone: string;
-    public alternate_phone: string;
-    public class_name: string;
-    public school_board: string;
-    public school_name: string;
-    public address: string;
-    public country_id: number;
-    public state_id: number;
-    public city: string;
-    public pin_code: number;
-    public comments: string;
-    public siblings: JSON;
-    public campaign_id: string;
+    public id = '';
+    public name = '';
+    public parent_name = '';
+    public email = '';
+    public phone = '';
+    public alternate_phone = '';
+    public classes_id = '';
+    public board_id = '';
+    public school_name = '';
+    public address = '';
+    public country_id = '';
+    public state_id = '';
+    public city = '';
+    public pin_code = 0;
+    public comments = '';
+    public siblings = Array<SiblingRequest>();
+    public campaign_id = '';
+    public location: Location;
+    public sync_status = false;
+}
+
+export class SiblingRequest {
+    public name = '';
+    public classes_id = '';
 }

@@ -1,40 +1,43 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     campaingStyle: {
         backgroundColor: '#f6f6f6',
         flexDirection: 'row',
-        padding: 8
+        paddingLeft: 15,
+        paddingRight: 15,
+        paddingTop: 10,
+        paddingBottom: 10,
+        alignItems: 'center',
     },
     buttonChangeCampaingStyle: {
-        borderColor: 'purple',
-        marginLeft: 'auto'
+        borderColor: '#813588',
+        marginLeft: 'auto',
     },
     borderStyle: {
         borderColor: 'lightgrey',
         borderWidth: 1,
         borderRadius: 3,
-        top: 0
+        top: 0,
     },
     borderTextareaStyle: {
         width: 320,
         borderColor: 'lightgrey',
         borderWidth: 1,
         borderRadius: 3,
-        top: 0
+        top: 0,
     },
     buttonPickerStyle: {
         backgroundColor: '#FCFCFC',
         borderWidth: 1,
         borderRadius: 5,
-        marginTop: 10,
+        marginTop: 5,
+        marginBottom: 10,
         height: 50,
     },
     marginLeft: {
         marginLeft: 15,
-    }
-
-
-})
+    },
+});
 
 export default styles;

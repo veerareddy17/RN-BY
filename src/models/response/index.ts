@@ -6,4 +6,4 @@ export { LeadResponse } from './lead-response';
 export { OTPResponse } from './otp-response';
 export { CountryResponse } from './country-response';
 export { StateResponse } from './state-response';
-export { TeamResponse } from './team-response';
+export { UserResponse } from './user-response';

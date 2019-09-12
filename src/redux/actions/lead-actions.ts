@@ -1,127 +1,107 @@
+import { ErrorResponse } from './../../models/response/error-response';
+import { errorCallResetAction, errorCallAction, serverErrorCallAction } from './error-actions';
 import { Dispatch } from 'redux';
-import { ADD_LEAD, FETCH_LEAD, LOAD_LEAD_START, LOAD_LEAD_SUCCESS, LOAD_LEAD_FAIL, OTP_SENT } from './action-types';
-import generateOTP from '../../helpers/otp-creation';
-import StorageService from '../../database/storage-service';
-import { StorageConstants } from '../../helpers/storage-constants';
 import { LeadService } from '../../services/lead-service';
-import { LeadRequest, OTPRequest } from '../../models/request';
-import { LeadResponse, OTPResponse } from '../../models/response';
-
-// The action creators
-export const createLeadAction = lead => {
-    return {
-        type: ADD_LEAD,
-        payload: lead,
-    };
-};
-
-export const fetchLeadsAction = leads => {
-    return {
-        type: FETCH_LEAD,
-        payload: leads,
-    };
-};
-
-export const leadStartAction = () => {
-    return {
-        type: LOAD_LEAD_START,
-    };
-};
-
-export const leadSuccessAction = () => {
-    return {
-        type: LOAD_LEAD_SUCCESS,
-    };
-};
-
-export const leadFailureAction = error => {
-    return {
-        type: LOAD_LEAD_FAIL,
-        payload: error,
-    };
-};
-
-export const otpSuccessAction = (otpResponse: OTPResponse) => {
-    return {
-        type: OTP_SENT,
-        payload: otpResponse,
-    };
-};
+import { LeadRequest } from '../../models/request';
+import {
+    createLeadAction,
+    fetchLeadsAction,
+    leadStartAction,
+    leadFailureAction,
+    createOfflineLeadAction,
+    fetchOfflineLeadsAction,
+} from './lead-action-creator';
+import { LeadResponse } from '../../models/response';
+import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 
 // GET method to fetch all captured leads
-export const fetchAllLeadsApi = (pageNumber: number) => async (dispatch: Dispatch) => {
-    try {
-        console.log("action lead is... =>", pageNumber);
-        if (pageNumber === 0) {
-            console.log("inside if consyion lead action is")
-
-            dispatch(leadStartAction());
-        }
-
-
-        const response = await LeadService.fetchLeads(pageNumber);
-        console.log(response.data);
-        if (response && response.data) {
-            dispatch(fetchLeadsAction(response.data.data));
-            try {
-                await StorageService.store(StorageConstants.USER_LEADS, response.data);
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
+export const fetchAllLeadsApi = (
+    pageNumber: number,
+    flag: string,
+): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState) => {
+        try {
+            let isConnected = getState().connectionStateReducer.isConnected;
+            if (!isConnected) {
+                let response = getState().leadReducer.offlineLeadList;
+                dispatch(fetchOfflineLeadsAction(response));
+                return;
             }
-        } else {
-            dispatch(leadFailureAction(response.errors));
+            dispatch(errorCallResetAction());
+            if (pageNumber === 1) {
+                dispatch(leadStartAction());
+            }
+            const response = await LeadService.fetchLeads(pageNumber, flag);
+            let leadsResponse = new LeadFilterResponse();
+            if (response && response.data) {
+                let reducerData = getState().leadReducer;
+                if (reducerData.flag !== flag) {
+                    reducerData.leadList = [];
+                    reducerData.paginatedLeadList = [];
+                }
+                leadsResponse.paginatedLeadList = response.data;
+                leadsResponse.flag = flag;
+                dispatch(fetchLeadsAction(leadsResponse));
+            } else {
+                dispatch(leadFailureAction(response.errors));
+                dispatch(serverErrorCallAction(response.errors));
+            }
+        } catch (e) {
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message));
+            dispatch(serverErrorCallAction(errors));
         }
-    } catch (error) {
-        console.log(error);
-    }
+    };
 };
 
 // POST method to create Lead
-export const createLeadApi = (newLead: any): ((dispatch: Dispatch) => Promise<void>) => {
-    return async (dispatch: Dispatch) => {
+export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState) => {
         try {
+            dispatch(errorCallResetAction());
+            let isConnected = getState().connectionStateReducer.isConnected;
+            if (!isConnected) {
+                let response = transformRequestToResponse(leadRequest, getState());
+                dispatch(createOfflineLeadAction(response));
+                return;
+            }
             dispatch(leadStartAction());
-            let response = await LeadService.createLead(newLead);
-            console.log(response.data);
+            let response = await LeadService.createLead(leadRequest);
             if (response && response.data) {
                 dispatch(createLeadAction(response.data));
-                try {
-                    //TODO: Fetch exisiting leads and append new lead to the list
-                    await StorageService.store(StorageConstants.USER_LEADS, response.data);
-                    // await StorageService.removeKey(StorageConstants.USER_OTP);
-                } catch (error) {
-                    console.log('Error in storing asyncstorage', error);
-                }
             } else {
+                dispatch(errorCallAction(response.errors))
                 dispatch(leadFailureAction(response.errors));
             }
-        } catch (error) {
-            // Error
-            console.log(error);
+        } catch (e) {
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message))
+            dispatch(serverErrorCallAction(errors));
+            dispatch(leadFailureAction(e.message));
         }
+
     };
 };
 
-// POST method to generate and verify OTP
-export const verifyOTP = (phone: string) => async (dispatch: Dispatch) => {
-    let OTP = await generateOTP();
-    console.log('OTP generated - ', OTP);
-    let otpRequest = new OTPRequest(phone, OTP);
+//Used while offline
+export const transformRequestToResponse = (leadRequest: LeadRequest, store: any): LeadResponse => {
+    let leadResponse = new LeadResponse();
+    leadResponse = Object.assign(leadResponse, leadRequest);
+    leadResponse.board = getSelectedBoard(leadRequest.board_id, store);
+    leadResponse.classes = getSelectedClass(leadRequest.classes_id, store);
+    leadResponse.state = getSelectedState(leadRequest.state_id, store);
+    leadResponse.sync_status = false;
+    return leadResponse;
+};
 
-    try {
-        let response = await LeadService.verifyOTP(otpRequest);
-        console.log(response.data);
-        if (response && response.data) {
-            try {
-                dispatch(otpSuccessAction(response.data));
-            } catch (error) {
-                console.log('Error in storing asyncstorage', error);
-            }
-        } else {
-            dispatch(leadFailureAction(response.errors));
-        }
-    } catch (error) {
-        // Error
-        console.log(error);
-    }
+export const getSelectedBoard = (board_id: string, store: any) => {
+    return store.metaDataReducer.boardResponse.find(board => board.id == Number(board_id));
+};
+
+export const getSelectedClass = (classes_id: string, store: any) => {
+    return store.metaDataReducer.classesResponse.find(classes => classes.id == Number(classes_id));
+};
+
+export const getSelectedState = (state_id: string, store: any) => {
+    return store.metaDataReducer.stateResponse.find(state => state.id == Number(state_id));
 };

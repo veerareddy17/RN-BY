@@ -1,21 +1,19 @@
-import { LOCATION_CAPTURE_FAILURE, LOCATION_CAPTURE_START } from './../actions/action-types';
-import { LOCATION_CAPTURE_SUCCESS } from "../actions/action-types";
+import { LOCATION_CAPTURE_FAILURE, LOCATION_CAPTURE_START, LOCATION_CAPTURE_SUCCESS } from '../actions/action-types';
+import { LocationState, LocationActionTypes } from '../init/location-initial-state';
 
-export const initialState = {
-    location: {},
+export const initialState: LocationState = {
+    location: {latitude: 0, longitude: 0},
     status: '',
     isLoading: false,
 };
 
-export default function locationReducer(state = initialState, action) {
-    console.log('type,payload', action.type, action.payload)
+export default function locationReducer(state = initialState, action: LocationActionTypes) : LocationState {
+    console.log('action', action);
     switch (action.type) {
         case LOCATION_CAPTURE_START:
             return {
                 ...state,
-                status: 'done',
-                isLoading: true,
-                location: action.payload,
+                isLoading: true
             };
         case LOCATION_CAPTURE_SUCCESS:
             return {
@@ -29,8 +27,7 @@ export default function locationReducer(state = initialState, action) {
             return {
                 ...state,
                 status: 'fail',
-                isLoading: false,
-                error: action.payload,
+                isLoading: false
             };
         default:
             return state;
