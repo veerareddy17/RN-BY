@@ -1,8 +1,12 @@
-version: 0.1
+version: 0.2
 phases:
+  install:
+    runtime-versions:
+      java: openjdk8
+      android: 28
   build:
     commands:
-      - cd android && ./gradlew assembleRelease
+      - cd ./android && ./gradlew assembleDebug
 artifacts:
   files:
-    - android/app/build/outputs/apk/app-prod-release-unsigned.apk
+    - android/app/build/outputs/apk/app-debug-unsigned.apk
