@@ -45,7 +45,6 @@ export const authenticate = (
     longitude: number,
 ): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState: any) => {
-    	
         const authRequest = new AuthenticationRequest(username, password, new Location(latitude, longitude));
         try {
             let isConnected = getState().connectionStateReducer.isConnected;
@@ -64,20 +63,17 @@ export const authenticate = (
             if (response.data !== null) {
                 dispatch(successAction(response.data));
             } else {
-                console.log('error failure')
                 //errors = response.errors;
                 dispatch(errorCallAction(response.errors));
                 dispatch(failureAction(response.errors));
             }
         } catch (e) {
             // dispatch(failureAction(e.message));
-            console.log('catch error')
             //let errorVal = new
             let errors = Array<ErrorResponse>();
-            errors.push(new ErrorResponse('Server', e.message))
+            errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
         }
-
     };
 };
 

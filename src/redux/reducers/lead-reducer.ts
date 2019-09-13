@@ -9,6 +9,7 @@ import {
     FETCH_OFFLINE_LEAD,
     SYNC_OFFLINE_LEADS,
     DELETE_SYNCED_LEADS,
+    FETCH_FILTERED_LEADS,
 } from '../actions/action-types';
 import { initialState } from '../init/lead-initial-state';
 
@@ -41,7 +42,6 @@ export default function leadReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                paginatedLeadList: action.payload.leads,
             };
         case LOAD_LEAD_FAIL:
             return {
@@ -82,6 +82,15 @@ export default function leadReducer(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 offlineLeadList: [...state.offlineLeadList, ...action.payload],
+            };
+        case FETCH_FILTERED_LEADS:
+            return {
+                ...state,
+                status: 'done',
+                isLoading: false,
+                filteredPaginatedLeadList: action.payload.filteredPaginatedLeadList,
+                filteredLeadList: [...state.filteredLeadList, ...action.payload.filteredPaginatedLeadList.data],
+                flag: action.payload.flag,
             };
         default:
             return state;

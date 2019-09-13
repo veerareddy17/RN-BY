@@ -119,32 +119,34 @@ class Login extends React.Component<Props, State> {
             );
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
+                return;
+            }
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+                return;
+            }
+            // if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+            await this.props.fetchMetaData();
+            await this.props.fetchCampaigns();
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(this.props.errorState.error);
             }
             if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
             }
             if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
-                await this.props.fetchMetaData();
-                await this.props.fetchCampaigns();
-                if (this.props.errorState.showAlertError) {
-                    AlertError.alertErr(this.props.errorState.error);
-                }
-                if (this.props.errorState.showToastError) {
-                    ToastError.toastErr(this.props.errorState.error);
-                }
-                if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
-                    this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
-                }
+                this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
             }
-        } else {
-            await this.props.requestLoginApi(
-                values.email,
-                values.password,
-                this.props.locationState.location.latitude,
-                this.props.locationState.location.longitude,
-            );
-            this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
+            // }
+            return;
         }
+        await this.props.requestLoginApi(
+            values.email,
+            values.password,
+            this.props.locationState.location.latitude,
+            this.props.locationState.location.longitude,
+        );
+        this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
     };
     render() {
         const { width, height } = Dimensions.get('window');

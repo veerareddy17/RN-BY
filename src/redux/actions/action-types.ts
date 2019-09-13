@@ -19,6 +19,7 @@ export const FETCH_CLASSES = 'FETCH_CLASSES';
 export const FETCH_STATES = 'FETCH_STATES';
 export const META_DATA_ERROR = 'META_DATA_ERROR';
 export const FETCH_COMPLETE = 'FETCH_COMPLETE';
+export const FETCH_FILTERED_LEADS = 'FETCH_FILTERED_LEADS';
 
 //OTP Action types
 export const LOAD_OTP_START = 'LOAD_OTP_START';

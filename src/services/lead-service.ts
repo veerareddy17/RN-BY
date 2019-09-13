@@ -10,13 +10,21 @@ import { OTPRequest } from '../models/request';
 import { LeadReport } from '../models/response/lead-report-model';
 import { SyncLeadRequest } from '../models/request/sync-leads-request';
 import { StatusResponse } from '../models/response/status-response';
+import { LeadFilterResponse } from '../models/response/lead-filter-response';
 export class LeadService {
     //Paginated method
     public static fetchLeads = async (
         pgNo: number,
-        flag: string,
     ): Promise<ResponseViewModel<PaginatedResponseModel<LeadResponse>>> => {
-        const response = await HttpBaseService.get<LeadResponse>(
+        const response = await HttpBaseService.get<LeadResponse>(APIConstants.USER_LEADS_URL + '?page=' + pgNo);
+        return response;
+    };
+
+    public static fetchFilteredLeads = async (
+        pgNo: number,
+        flag: string,
+    ): Promise<ResponseViewModel<PaginatedResponseModel<LeadFilterResponse>>> => {
+        const response = await HttpBaseService.get<LeadFilterResponse>(
             APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&flag=' + flag,
         );
         return response;

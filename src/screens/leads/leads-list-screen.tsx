@@ -14,7 +14,7 @@ import Loader from '../../components/content-loader/content-loader';
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
-    fetchLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchLeads(pageNumber: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
 }
@@ -42,15 +42,11 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             if (this.props.userState.user.token === '') {
                 this.props.navigation.navigate('Auth');
             }
-            let selectedFlag = this.props.navigation.getParam('flag', '');
+            await this.fetchLeadsList(this.state.pageNumber, '');
             this.setState({
-                pageNumber:
-                    this.props.leadState.flag !== selectedFlag
-                        ? 1
-                        : this.props.leadState.paginatedLeadList.current_page,
-                flag: selectedFlag,
+                pageNumber: this.props.leadState.paginatedLeadList.current_page,
+                loadingMore: false,
             });
-            this.fetchLeadsList(this.state.pageNumber, selectedFlag);
         });
     }
 
@@ -65,8 +61,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
 
     fetchLeadsList = async (pgNo: number, flag: string) => {
         try {
-            await this.props.fetchLeads(pgNo, flag);
-            this.setState({ loadingMore: false });
+            await this.props.fetchLeads(pgNo);
+            this.setState({
+                loadingMore: false,
+            });
         } catch (error) {
             /* show server error here*/
         }
@@ -99,21 +97,17 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         }
         this.setState(
             {
-                pageNumber:
-                    this.props.leadState.flag !== this.props.navigation.getParam('flag', '')
-                        ? 1
-                        : this.state.pageNumber + 1,
-                flag: this.props.navigation.getParam('flag', ''),
+                pageNumber: this.state.pageNumber + 1,
                 loadingMore: true,
             },
-            () => {
-                this.fetchLeadsList(this.state.pageNumber, this.state.flag);
+            async () => {
+                await this.fetchLeadsList(this.state.pageNumber, this.state.flag);
             },
         );
     };
 
     renderFooter = () => {
-        if (!this.state.loadingMore) {
+        if (!this.state.loadingMore || this.props.leadState.paginatedLeadList.next_page_url == null) {
             return null;
         }
         return (

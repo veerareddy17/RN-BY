@@ -11,18 +11,17 @@ import {
     createOfflineLeadAction,
     fetchOfflineLeadsAction,
     syncOfflineLeadsAction,
-    deleteOfflineLeadsAction,
+    leadSuccessAction,
+    fetchFilteredLeadsAction,
 } from './lead-action-creator';
 import { LeadResponse } from '../../models/response';
-import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 import { SyncLeadRequest } from '../../models/request/sync-leads-request';
 import config from '../../helpers/config';
+import { LeadAllResponse } from '../../models/response/lead-all-response';
+import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 
 // GET method to fetch all captured leads
-export const fetchAllLeadsApi = (
-    pageNumber: number,
-    flag: string,
-): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState) => {
         try {
             let isConnected = getState().connectionStateReducer.isConnected;
@@ -34,21 +33,19 @@ export const fetchAllLeadsApi = (
             if (pageNumber === 1) {
                 dispatch(leadStartAction());
             }
-            const response = await LeadService.fetchLeads(pageNumber, flag);
-            let leadsResponse = new LeadFilterResponse();
-            if (response && response.data) {
-                let reducerData = getState().leadReducer;
-                if (reducerData.flag !== flag) {
-                    reducerData.leadList = [];
-                    reducerData.paginatedLeadList = [];
+            let reducerData = getState().leadReducer;
+            if (reducerData.paginatedLeadList.current_page !== pageNumber) {
+                const response = await LeadService.fetchLeads(pageNumber);
+                let leadsResponse = new LeadAllResponse();
+                if (response && response.data) {
+                    leadsResponse.paginatedLeadList = response.data;
+                    dispatch(fetchLeadsAction(leadsResponse));
+                } else {
+                    dispatch(leadFailureAction(response.errors));
+                    dispatch(serverErrorCallAction(response.errors));
                 }
-                leadsResponse.paginatedLeadList = response.data;
-                leadsResponse.flag = flag;
-                dispatch(fetchLeadsAction(leadsResponse));
-            } else {
-                dispatch(leadFailureAction(response.errors));
-                dispatch(serverErrorCallAction(response.errors));
             }
+            dispatch(leadSuccessAction());
         } catch (e) {
             let errors = Array<ErrorResponse>();
             errors.push(new ErrorResponse('Server', e.message));
@@ -179,4 +176,46 @@ export const formatDate = (date: Date): string => {
 
 export const leftpad = (val, resultLength = 2, leftpadChar = '0'): string => {
     return (String(leftpadChar).repeat(resultLength) + String(val)).slice(String(val).length);
+};
+
+export const fetchFilteredLeads = (
+    pageNumber: number,
+    flag: string,
+): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState) => {
+        try {
+            let isConnected = getState().connectionStateReducer.isConnected;
+            if (!isConnected) {
+                dispatch(fetchOfflineLeadsAction());
+                return;
+            }
+            dispatch(errorCallResetAction());
+            if (pageNumber === 1) {
+                dispatch(leadStartAction());
+            }
+            let reducerData = getState().leadReducer;
+            if (reducerData.filteredPaginatedLeadList.current_page !== pageNumber) {
+                const response = await LeadService.fetchFilteredLeads(pageNumber, flag);
+                let leadsFilterResponse = new LeadFilterResponse();
+                if (response && response.data) {
+                    if (reducerData.flag !== flag) {
+                        reducerData.filteredLeadList = [];
+                        reducerData.filteredPaginatedLeadList = [];
+                        reducerData.flag = flag;
+                    }
+                    leadsFilterResponse.filteredPaginatedLeadList = response.data;
+                    leadsFilterResponse.flag = flag;
+                    dispatch(fetchFilteredLeadsAction(leadsFilterResponse));
+                } else {
+                    dispatch(leadFailureAction(response.errors));
+                    dispatch(serverErrorCallAction(response.errors));
+                }
+            }
+            dispatch(leadSuccessAction());
+        } catch (e) {
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message));
+            dispatch(serverErrorCallAction(errors));
+        }
+    };
 };

@@ -8,9 +8,10 @@ import {
     FETCH_OFFLINE_LEAD,
     SYNC_OFFLINE_LEADS,
     DELETE_SYNCED_LEADS,
+    FETCH_FILTERED_LEADS,
 } from './action-types';
-import { LeadFilterResponse } from '../../models/response/lead-filter-response';
-import { LeadRequest } from '../../models/request';
+import { LeadFilterResponse } from '../../models/response/lead-all-response';
+import { LeadAllResponse } from '../../models/response/lead-filter-response';
 
 // The action creators
 export const createLeadAction = lead => {
@@ -20,7 +21,7 @@ export const createLeadAction = lead => {
     };
 };
 
-export const fetchLeadsAction = (leads: LeadFilterResponse) => {
+export const fetchLeadsAction = (leads: LeadAllResponse) => {
     return {
         type: FETCH_LEAD,
         payload: leads,
@@ -69,6 +70,13 @@ export const syncOfflineLeadsAction = (status: boolean) => {
 export const deleteOfflineLeadsAction = leads => {
     return {
         type: DELETE_SYNCED_LEADS,
+        payload: leads,
+    };
+};
+
+export const fetchFilteredLeadsAction = (leads: LeadFilterResponse) => {
+    return {
+        type: FETCH_FILTERED_LEADS,
         payload: leads,
     };
 };
