@@ -1,3 +1,28 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "explorer.confirmDelete": false,
+    "window.zoomLevel": 0,
+    "gitlens.advanced.messages": {
+        "suppressShowKeyBindingsNotice": true
+    },
+    "git.autofetch": true,
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "explorer.confirmDragAndDrop": false,
+    "workbench.sideBar.location": "left",
+    "editor.minimap.enabled": false,
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "aws.profile": "byjus",
+    "aws.samcli.location": "/usr/local/bin/sam",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "prettier.requireConfig": true,
+    "prettier.tabWidth": 4,
+    "prettier.trailingComma": "all",
+    "prettier.useTabs": true,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    }
 }

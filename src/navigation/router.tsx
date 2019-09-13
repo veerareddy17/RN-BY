@@ -17,7 +17,14 @@ import FilteredLeads from '../screens/leads/filtered-leads';
 
 const AuthStack = createStackNavigator({ Login: Login });
 
-const CampaignListStack = createStackNavigator({ CampaignList: CampaignList });
+const CampaignListStack = createStackNavigator({
+    CampaignList: {
+        screen: CampaignList,
+        navigationOptions: {
+            header: null,
+        },
+    },
+});
 
 const DashboardStack = createStackNavigator(
     {

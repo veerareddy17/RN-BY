@@ -8,9 +8,6 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-ty
 import { AuthenticationService } from '../../services/authentication-service';
 import { AuthenticationRequest } from '../../models/request/authentication-request';
 import { AuthenticationResponse } from '../../models/response/authentication-response';
-import StorageService from '../../database/storage-service';
-import { StorageConstants } from '../../helpers/storage-constants';
-import { resetWarningCache } from 'prop-types';
 // The action creators
 export const requestAction = () => {
     return {

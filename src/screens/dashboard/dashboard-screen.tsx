@@ -23,8 +23,6 @@ import { logout } from '../../redux/actions/user-actions';
 import { AppState } from '../../redux/store';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
-import StorageService from '../../database/storage-service';
-import { StorageConstants } from '../../helpers/storage-constants';
 import { selectedCampaign } from '../../redux/actions/campaign-actions';
 import { withNavigation } from 'react-navigation';
 import { NetworkContext } from '../../provider/network-provider';
@@ -155,7 +153,6 @@ class Dashboard extends React.Component<Props, State> {
             <Container>
                 {Platform.OS === 'ios' ? (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Left />
                         <Body>
                             <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Dashboard</Title>
                         </Body>

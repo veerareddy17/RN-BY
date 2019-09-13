@@ -1,7 +1,7 @@
 export default {
     api: {
-        // baseURL: 'https://crm-byjus.goave.ga/api',
-        baseURL: 'https://5cd47d0a.ngrok.io/api',
+        baseURL: 'https://crm-byjus.goave.ga/api',
+        // baseURL: 'https://5cd47d0a.ngrok.io/api',
     },
     otp: {
         length: 4,

@@ -21,6 +21,7 @@ import { fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { fetchMetaData } from '../../redux/actions/meta-data-actions';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -53,6 +54,7 @@ export interface State {
     latitude: number;
     longitude: number;
     input: any;
+    showLoadingSpinner: boolean;
 }
 export interface LoginRequestData {
     email: string;
@@ -71,6 +73,7 @@ class Login extends React.Component<Props, State> {
             latitude: 0,
             longitude: 0,
             input: {},
+            showLoadingSpinner: false,
         };
     }
     focusTheField = (id: string) => {
@@ -110,6 +113,7 @@ class Login extends React.Component<Props, State> {
 
     handleSubmit = async (values: LoginRequestData) => {
         if (this.context.isConnected) {
+            this.setState({ showLoadingSpinner: true });
             await this.props.captureLocation();
             await this.props.requestLoginApi(
                 values.email,
@@ -127,6 +131,7 @@ class Login extends React.Component<Props, State> {
             }
             await this.props.fetchMetaData();
             await this.props.fetchCampaigns();
+            this.setState({ showLoadingSpinner: false });
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
             }
@@ -239,11 +244,13 @@ class Login extends React.Component<Props, State> {
                                             <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
                                                 <Text style={{ fontSize: 16 }}>Login</Text>
                                             </Button>
-                                            {this.props.userState.isLoading || this.props.metaData.isLoading ? (
+                                            {/* {this.props.userState.isLoading || this.props.metaData.isLoading ? ( */}
+                                            {/* {this.state.showLoadingSpinner ? (
                                                 <View>
                                                     <Spinner />
                                                 </View>
-                                            ) : null}
+                                            ) : null} */}
+                                            <SpinnerOverlay visible={this.state.showLoadingSpinner} />
 
                                             <View style={{ alignItems: 'center', flexDirection: 'column' }}>
                                                 <Text
