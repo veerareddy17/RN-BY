@@ -54,6 +54,8 @@ import { SiblingRequest } from '../../models/request/lead-request';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import { logout } from '../../redux/actions/user-actions';
+import { CONSTANTS } from '../../helpers/app-constants';
+import { Utility } from '../utils/utility';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -172,17 +174,18 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             await this.props.createLead(this.state.leadRequest);
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
-            } else if (this.props.errorState.showToastError) {
-                ToastError.toastErr(this.props.errorState.error);
-            } else if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
-                Toast.show({
-                    text: 'Lead Created Successfully',
-                    buttonText: 'Ok',
-                    duration: 5000,
-                    type: 'success',
-                });
-                this.props.navigation.navigate('LeadList');
+                return;
             }
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+                return
+            } 
+            if(this.context.isConnected) {
+                Utility.showToast(CONSTANTS.LEAD_CREATED_SUCCESS, 'success')
+            }else {
+                Utility.showToast(CONSTANTS.OFFLINE_LEAD_CREATED_SUCCESS, 'success')
+            }
+            this.props.navigation.navigate('LeadList');
         }
     };
 
@@ -266,9 +269,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.setState({ sync_status: this.context.isConnected ? true : false });
                 let req = this.state;
                 this.setState({ leadRequest: req });
-                // await this.verifyOTP();
-                await this.props.createLead(this.state.leadRequest);
-                this.props.navigation.navigate('LeadList');
+                await this.verifyOTP();
+                // await this.props.createLead(this.state.leadRequest);
+                // this.props.navigation.navigate('LeadList');
 
             }
         } catch (error) {

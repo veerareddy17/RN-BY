@@ -41,6 +41,7 @@ export interface Props {
     metaData: any;
     errorState: any;
     leadReportState: any;
+    leadState: any;
     selectCampaign(campaignId: any): void;
     fetchLeadReport(): (dispatch: Dispatch, getState: any) => Promise<void>;
     syncOfflineLeads(): (dispatch: Dispatch, getState: any) => Promise<void>;
@@ -65,8 +66,8 @@ class Dashboard extends React.Component<Props, State> {
 
     componentDidMount = async () => {
         try {
-            if (this.context.isConnected) {
-                this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+            this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+                if (this.context.isConnected) {
                     if (this.props.userState.user.token === '') {
                         this.props.navigation.navigate('Auth');
                     }
@@ -82,12 +83,19 @@ class Dashboard extends React.Component<Props, State> {
                     this.setState({ campaignId: selectedCampaign.id });
                     this.setState({ campaignName: selectedCampaign.name });
                     await this.props.fetchLeadReport();
-                });
-            } else {
-                /*
-            show offline
-            */
-            }
+
+                    //Run background task to sync offline leads
+                    if (this.props.leadState.offlineLeadList.length > 0) {
+                        this.sync();
+                    } else {
+                        console.log('No offline leads');
+                    }
+                } else {
+                    /*
+                    show offline
+                    */
+                }
+            });
         } catch (error) {
             /*
             error to be handled
@@ -138,7 +146,7 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     sync = () => {
-        console.log('In Sync DB');
+        console.log('Syncing offline leads');
         this.props.syncOfflineLeads();
     };
 
@@ -277,28 +285,6 @@ class Dashboard extends React.Component<Props, State> {
                                     <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
                                 </Button>
                             </Item>
-                            <Item style={{ borderBottomWidth: 0 }}>
-                                <Button
-                                    iconRight
-                                    transparent
-                                    onPress={() => this.sync()}
-                                    style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
-                                >
-                                    <Text
-                                        style={{
-                                            color: '#555',
-                                            paddingLeft: 0,
-                                            fontSize: 16,
-                                            flex: 1,
-                                            textTransform: 'none',
-                                        }}
-                                    >
-                                        Sync Offline leads
-                                    </Text>
-
-                                    <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
-                                </Button>
-                            </Item>
                         </CardItem>
                     </Card>
                     <Card style={{ position: 'relative', top: -120, marginLeft: 20, marginRight: 20 }}>
@@ -379,6 +365,7 @@ const mapStateToProps = (state: AppState) => ({
     campaignState: state.campaignReducer,
     errorState: state.errorReducer,
     leadReportState: state.leadReportReducer,
+    leadState: state.leadReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
