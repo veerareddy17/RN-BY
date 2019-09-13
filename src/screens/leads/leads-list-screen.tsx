@@ -39,7 +39,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
 
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
-            if (this.props.userState.user.token === '') {
+            if (this.context.isConnected && this.props.userState.user.token === '') {
                 this.props.navigation.navigate('Auth');
             }
             await this.fetchLeadsList(this.state.pageNumber, '');

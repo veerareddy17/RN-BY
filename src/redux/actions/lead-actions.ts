@@ -105,8 +105,6 @@ export const syncOfflineLeads = (): ((dispatch: Dispatch, getState: any) => Prom
                     let response = await LeadService.syncLeads(batchLeads);
                     if (response && response.data) {
                         dispatch(syncOfflineLeadsAction(response.data.success));
-                        //update offline leads
-                        // dispatch(deleteOfflineLeadsAction(leadsToSync));
                     } else {
                         dispatch(leadFailureAction(response.errors));
                     }

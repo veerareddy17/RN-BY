@@ -125,7 +125,6 @@ class Login extends React.Component<Props, State> {
                 ToastError.toastErr(this.props.errorState.error);
                 return;
             }
-            // if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
             await this.props.fetchMetaData();
             await this.props.fetchCampaigns();
             if (this.props.errorState.showAlertError) {
@@ -137,7 +136,6 @@ class Login extends React.Component<Props, State> {
             if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
                 this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
             }
-            // }
             return;
         }
         await this.props.requestLoginApi(
@@ -189,7 +187,9 @@ class Login extends React.Component<Props, State> {
                                                 />
                                             </Item>
                                             <Item floatingLabel style={loginStyle.password}>
-                                                <Label style={{ marginLeft: 10 }}>Password</Label>
+                                                <Label style={{ marginLeft: 10 }}>
+                                                    {this.context.isConnected ? 'Password' : 'Offline PIN'}
+                                                </Label>
                                                 <Input
                                                     secureTextEntry={this.state.showPassword}
                                                     value={values.password}

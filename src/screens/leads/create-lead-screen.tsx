@@ -132,11 +132,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         }
     }
 
-    // logout = async () => {
-    //     await this.props.logout();
-
-    // };
-
     updateClassDropdown = () => {
         const all_items = this.props.metaData.classesResponse.map((_class, i) => {
             return <Picker.Item key={_class.id} color="#333" label={_class.name} value={_class.id} />;
@@ -258,22 +253,22 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             await this.props.captureLocation();
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
+                return;
             } if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
-            } else {
-                let locObj = {
-                    latitude: this.props.locationState.location.latitude,
-                    longitude: this.props.locationState.location.longitude,
-                };
-                this.setState({ location: locObj });
-                this.setState({ sync_status: this.context.isConnected ? true : false });
-                let req = this.state;
-                this.setState({ leadRequest: req });
-                await this.verifyOTP();
-                // await this.props.createLead(this.state.leadRequest);
-                // this.props.navigation.navigate('LeadList');
-
-            }
+                return;
+            } 
+            let locObj = {
+                latitude: this.props.locationState.location.latitude,
+                longitude: this.props.locationState.location.longitude,
+            };
+            this.setState({ location: locObj });
+            this.setState({ sync_status: this.context.isConnected ? true : false });
+            let req = this.state;
+            this.setState({ leadRequest: req });
+            await this.verifyOTP();
+            // await this.props.createLead(this.state.leadRequest);
+            // this.props.navigation.navigate('LeadList');
         } catch (error) {
                 /*
             error to be handled
@@ -337,7 +332,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                 </ListItem>
                             </Left>
                             <Body>
-                                <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Capture Lead</Title>
+                                <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Create Lead</Title>
                             </Body>
                             <Right />
                         </Header>
