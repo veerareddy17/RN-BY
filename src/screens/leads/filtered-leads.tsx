@@ -1,7 +1,21 @@
 import React, { Component } from 'react';
 import { FlatList, ListView, Platform, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-import { View, Header, Container, Content, Left, Button, Title, Right, Body, ListItem, Icon } from 'native-base';
+import {
+    View,
+    Header,
+    Container,
+    Content,
+    Left,
+    Button,
+    Title,
+    Right,
+    Body,
+    ListItem,
+    Icon,
+    Card,
+    Text,
+} from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
 import Lead from './lead';
@@ -117,6 +131,30 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         );
     };
 
+    renderEmptyView = () => {
+        const { width, height } = Dimensions.get('window');
+        return (
+            <View style={{ paddingTop: 0 }}>
+                <Card
+                    style={{
+                        marginTop: 0,
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        borderTopWidth: 0,
+                        borderLeftWidth: 0,
+                        borderBottomWidth: 0,
+                        borderRightWidth: 0,
+                        borderRadius: 5,
+                    }}
+                >
+                    <Text>No Data to Display</Text>
+                    {/* <ImageBackground source={images.noData} style={{ width, height }}></ImageBackground> */}
+                </Card>
+            </View>
+        );
+    };
+
     renderItem(item) {
         return (
             <ListItem
@@ -152,6 +190,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                                         data={this.props.leadState.filteredLeadList}
                                         renderItem={({ item, index }) => this.renderItem(item)}
                                         keyExtractor={(item, index) => `${item.id}+${index}`}
+                                        ListEmptyComponent={this.renderEmptyView}
                                         ListFooterComponent={this.renderFooter}
                                         onEndReached={this.fetchMore}
                                         onEndReachedThreshold={0.1}
@@ -164,6 +203,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                                     data={this.props.leadState.offlineLeadList}
                                     renderItem={({ item, index }) => this.renderItem(item)}
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
+                                    ListEmptyComponent={this.renderEmptyView}
                                 />
                             </View>
                         )}

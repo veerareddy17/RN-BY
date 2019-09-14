@@ -117,9 +117,9 @@ class Login extends React.Component<Props, State> {
     };
 
     handleSubmit = async (values: LoginRequestData) => {
+        await this.props.captureLocation();
         if (this.context.isConnected) {
             this.setState({ showLoadingSpinner: true });
-            await this.props.captureLocation();
             await this.props.requestLoginApi(
                 values.email,
                 values.password,

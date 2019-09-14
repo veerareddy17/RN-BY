@@ -1,7 +1,22 @@
 import React, { Component } from 'react';
-import { FlatList, ListView, Platform, ActivityIndicator } from 'react-native';
+import { FlatList, ListView, Platform, ActivityIndicator, ImageBackground, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
-import { View, Header, Container, Content, Left, Button, Title, Right, Body, ListItem, Icon } from 'native-base';
+import {
+    View,
+    Header,
+    Container,
+    Content,
+    Left,
+    Button,
+    Title,
+    Right,
+    Body,
+    ListItem,
+    Icon,
+    Text,
+    Card,
+    Image,
+} from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
 import Lead from './lead';
@@ -11,6 +26,7 @@ import { NavigationScreenProp } from 'react-navigation';
 import { Alert } from 'react-native';
 import { logout } from '../../redux/actions/user-actions';
 import Loader from '../../components/content-loader/content-loader';
+import images from '../../assets';
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
@@ -60,14 +76,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     }
 
     fetchLeadsList = async (pgNo: number, flag: string) => {
-        try {
-            await this.props.fetchLeads(pgNo);
-            this.setState({
-                loadingMore: false,
-            });
-        } catch (error) {
-            /* show server error here*/
-        }
+        await this.props.fetchLeads(pgNo);
+        this.setState({
+            loadingMore: false,
+        });
     };
 
     logout = async () => {
@@ -112,6 +124,30 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         return (
             <View>
                 <ActivityIndicator animating size="large" />
+            </View>
+        );
+    };
+
+    renderEmptyView = () => {
+        const { width, height } = Dimensions.get('window');
+        return (
+            <View style={{ paddingTop: 0 }}>
+                <Card
+                    style={{
+                        marginTop: 0,
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        borderTopWidth: 0,
+                        borderLeftWidth: 0,
+                        borderBottomWidth: 0,
+                        borderRightWidth: 0,
+                        borderRadius: 5,
+                    }}
+                >
+                    <Text>No Data to Display</Text>
+                    {/* <ImageBackground source={images.noData} style={{ width, height }}></ImageBackground> */}
+                </Card>
             </View>
         );
     };
@@ -177,6 +213,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                         renderItem={({ item, index }) => this.renderItem(item)}
                                         keyExtractor={(item, index) => `${item.id}+${index}`}
                                         ListFooterComponent={this.renderFooter}
+                                        ListEmptyComponent={this.renderEmptyView}
                                         onEndReached={this.fetchMore}
                                         onEndReachedThreshold={0.1}
                                     />
@@ -188,6 +225,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     data={this.props.leadState.offlineLeadList}
                                     renderItem={({ item, index }) => this.renderItem(item)}
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
+                                    ListEmptyComponent={this.renderEmptyView}
                                 />
                             </View>
                         )}
