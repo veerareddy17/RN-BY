@@ -44,8 +44,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             let selectedFlag = this.props.navigation.getParam('flag', '');
-            if (this.props.leadState.flag !== selectedFlag)
-                await this.fetchLeadsList(this.state.pageNumber, selectedFlag);
+            await this.fetchLeadsList(this.state.pageNumber, selectedFlag);
             this.setState({
                 pageNumber: this.props.leadState.filteredPaginatedLeadList.current_page,
                 flag: selectedFlag,

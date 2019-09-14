@@ -19,6 +19,7 @@ import { SyncLeadRequest } from '../../models/request/sync-leads-request';
 import config from '../../helpers/config';
 import { LeadAllResponse } from '../../models/response/lead-all-response';
 import { LeadFilterResponse } from '../../models/response/lead-filter-response';
+import { PaginatedResponseState } from '../init/lead-initial-state';
 
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
@@ -192,15 +193,15 @@ export const fetchFilteredLeads = (
                 dispatch(leadStartAction());
             }
             let reducerData = getState().leadReducer;
+            // IF filter type is changes
+            if (reducerData.flag !== flag) {
+                reducerData.filteredLeadList = [];
+                reducerData.filteredPaginatedLeadList = PaginatedResponseState;
+            }
             if (reducerData.filteredPaginatedLeadList.current_page !== pageNumber) {
                 const response = await LeadService.fetchFilteredLeads(pageNumber, flag);
                 let leadsFilterResponse = new LeadFilterResponse();
                 if (response && response.data) {
-                    if (reducerData.flag !== flag) {
-                        reducerData.filteredLeadList = [];
-                        reducerData.filteredPaginatedLeadList = [];
-                        reducerData.flag = flag;
-                    }
                     leadsFilterResponse.filteredPaginatedLeadList = response.data;
                     leadsFilterResponse.flag = flag;
                     dispatch(fetchFilteredLeadsAction(leadsFilterResponse));
