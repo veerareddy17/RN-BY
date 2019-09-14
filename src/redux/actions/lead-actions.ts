@@ -193,7 +193,7 @@ export const fetchFilteredLeads = (
                 dispatch(leadStartAction());
             }
             let reducerData = getState().leadReducer;
-            // IF filter type is changes
+            // IF filter type is changed
             if (reducerData.flag !== flag) {
                 reducerData.filteredLeadList = [];
                 reducerData.filteredPaginatedLeadList = PaginatedResponseState;

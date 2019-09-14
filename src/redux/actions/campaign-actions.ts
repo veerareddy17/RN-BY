@@ -65,13 +65,11 @@ export const fetchCampaigns = (): ((dispatch: Dispatch, getState: any) => Promis
                 dispatch(campaignFailureAction(response.errors));
             }
         } catch (e) {
-            console.log('error:', e.message);
             let errors = Array<ErrorResponse>();
-            errors.push(new ErrorResponse('Server', e.message))
+            errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
             dispatch(campaignFailureAction(e.message));
         }
-
     };
 };
 
@@ -79,16 +77,14 @@ export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Disp
     dispatch(errorCallResetAction());
     dispatch(campaignStartAction());
     try {
-        await StorageService.store(StorageConstants.SELECTED_CAMPAIGN, selectedCampaign);
         let selectedCamp = new MetaResponse();
         selectedCamp.id = selectedCampaign.id;
         selectedCamp.name = selectedCampaign.name;
         dispatch(selectedCampaignAction(selectedCamp));
-        // dispatch(campaignSuccessAction());
     } catch (e) {
         console.log(e);
         let errors = Array<ErrorResponse>();
-        errors.push(new ErrorResponse('Server', e.message))
+        errors.push(new ErrorResponse('Server', e.message));
         dispatch(serverErrorCallAction(errors));
         dispatch(campaignFailureAction(e));
     }

@@ -30,4 +30,5 @@ export class LeadResponse {
     public user: UserResponse;
     public location: Location;
     public sync_status: boolean;
+    public is_otp_verified: boolean;
 }

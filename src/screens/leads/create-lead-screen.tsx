@@ -56,6 +56,7 @@ import { ToastError } from '../error/toast-error';
 import { logout } from '../../redux/actions/user-actions';
 import { CONSTANTS } from '../../helpers/app-constants';
 import { Utility } from '../utils/utility';
+import { MetaResponse } from '../../models/response/meta-response';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -98,7 +99,7 @@ export interface CreateLeadState {
     campaignList: Array<String>;
     statuses: Array<String>;
     pin_code: string;
-    isOTPVerified: boolean;
+    is_otp_verified: boolean;
     location: { latitude: number; longitude: number };
     sync_status: boolean;
     siblings: Array<SiblingRequest>;
@@ -106,23 +107,49 @@ export interface CreateLeadState {
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     static contextType = NetworkContext;
+
+    constructor(props: CreateLeadProps) {
+        super(props);
+        this.onPressCampaign = this.onPressCampaign.bind(this);
+        this.state = {
+            leadRequest: new LeadRequest(),
+            campaignList: [],
+            campaignName: '',
+            name: '',
+            parent_name: '',
+            email: '',
+            otp: '',
+            phone: '',
+            classes_id: '',
+            board_id: '',
+            school_name: '',
+            statuses: [],
+            address: '',
+            comments: '',
+            pin_code: '',
+            city: '',
+            campaign_id: '',
+            country: '',
+            state: '',
+            is_otp_verified: false,
+            location: { latitude: 0, longitude: 0 },
+            sync_status: false,
+            siblings: Array<SiblingRequest>(),
+        };
+    }
+
     async componentDidMount() {
         try {
             this.focusListener = this.props.navigation.addListener('didFocus', async () => {
+                const selectedCampaign = this.props.campaignState.selectedCampaign;
+                const compaignList = this.props.campaignState.campaignList;
+                this.setState({ campaignList: compaignList });
+                this.setState({ campaign_id: selectedCampaign.id });
+                this.setState({ campaignName: selectedCampaign.name });
+
                 // The screen is focused call any action
-                if (this.context.isConnected) {
-                    if (this.props.userState.user.token === '') {
-                        this.props.navigation.navigate('Auth');
-                    }
-                    const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
-                    const compaignList = this.props.campaignState.campaignList;
-                    this.setState({ campaignList: compaignList });
-                    this.setState({ campaign_id: selectedCampaign.id });
-                    this.setState({ campaignName: selectedCampaign.name });
-                } else {
-                    /*
-                show offline
-                */
+                if (this.context.isConnected && this.props.userState.user.token === '') {
+                    this.props.navigation.navigate('Auth');
                 }
             });
         } catch (error) {
@@ -166,19 +193,25 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         await this.props.submitOtp(this.state.otp);
         if (!this.props.otpState.error) {
             await this.RBSheetOtp.close();
+
+            //Assigning is-otp-verified property to true if phone no was validated with OTP else false
+            const updateLeadState = Object.assign({}, this.state.leadRequest, { is_otp_verified: true });
+            this.setState({ leadRequest: updateLeadState });
+
             await this.props.createLead(this.state.leadRequest);
+
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
                 return;
             }
             if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
-                return
-            } 
-            if(this.context.isConnected) {
-                Utility.showToast(CONSTANTS.LEAD_CREATED_SUCCESS, 'success')
-            }else {
-                Utility.showToast(CONSTANTS.OFFLINE_LEAD_CREATED_SUCCESS, 'success')
+                return;
+            }
+            if (this.context.isConnected) {
+                Utility.showToast(CONSTANTS.LEAD_CREATED_SUCCESS, 'success');
+            } else {
+                Utility.showToast(CONSTANTS.OFFLINE_LEAD_CREATED_SUCCESS, 'success');
             }
             this.props.navigation.navigate('LeadList');
         }
@@ -190,48 +223,19 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
     verifyOTP = async () => {
         await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
-        <SpinnerOverlay visible={this.props.otpState.isLoading} />
+        <SpinnerOverlay visible={this.props.otpState.isLoading} />;
         if (this.props.errorState.showAlertError) {
             AlertError.alertErr(this.props.errorState.error);
-        } if (this.props.errorState.showToastError) {
-            ToastError.toastErr(this.props.errorState.error);
-        } else {
-            if (this.props.otpState.otp.success) {
-                await this.RBSheetOtp.open();
-            }
+            return;
         }
-
+        if (this.props.errorState.showToastError) {
+            ToastError.toastErr(this.props.errorState.error);
+            return;
+        }
+        if (this.props.otpState.otp.success) {
+            await this.RBSheetOtp.open();
+        }
     };
-
-    constructor(props: CreateLeadProps) {
-        super(props);
-        this.onPressCampaign = this.onPressCampaign.bind(this);
-        this.state = {
-            leadRequest: new LeadRequest(),
-            campaignList: [],
-            campaignName: '',
-            name: '',
-            parent_name: '',
-            email: '',
-            otp: '',
-            phone: '',
-            classes_id: '',
-            board_id: '',
-            school_name: '',
-            statuses: [],
-            address: '',
-            comments: '',
-            pin_code: '',
-            city: '',
-            campaign_id: '',
-            country: '',
-            state: '',
-            isOTPVerified: false,
-            location: { latitude: 0, longitude: 0 },
-            sync_status: false,
-            siblings: Array<SiblingRequest>(),
-        };
-    }
 
     handleSubmit = async values => {
         this.setState({
@@ -247,30 +251,32 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             state_id: values.state,
             city: values.city,
             pin_code: values.pincode,
-            siblings: values.siblings
+            siblings: values.siblings,
         });
         try {
             await this.props.captureLocation();
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
                 return;
-            } if (this.props.errorState.showToastError) {
+            }
+            if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
                 return;
-            } 
+            }
             let locObj = {
                 latitude: this.props.locationState.location.latitude,
                 longitude: this.props.locationState.location.longitude,
             };
             this.setState({ location: locObj });
             this.setState({ sync_status: this.context.isConnected ? true : false });
+
             let req = this.state;
             this.setState({ leadRequest: req });
             await this.verifyOTP();
             // await this.props.createLead(this.state.leadRequest);
             // this.props.navigation.navigate('LeadList');
         } catch (error) {
-                /*
+            /*
             error to be handled
             */
         }
@@ -286,12 +292,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         this.setState({ otp: text });
     };
 
-    onPressCampaign = (index: number, campaign: Object) => {
-        this.props.selectCampaign(campaign);
+    onPressCampaign = (index: number, selectedCampaign: MetaResponse) => {
+        this.props.selectCampaign(selectedCampaign);
         this.setState({
-            ...this.state,
-            campaignName: campaign.name,
-            campaign_id: campaign.id,
+            campaign_id: selectedCampaign.id,
+            campaignName: selectedCampaign.name,
         });
     };
     render() {
@@ -315,13 +320,21 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                     siblings: Array<SiblingRequest>(),
                 }}
                 onSubmit={values => {
-                    this.handleSubmit(values)
-                }
-                }
+                    this.handleSubmit(values);
+                }}
                 validationSchema={leadValidation}
             >
-                {({ values, handleChange, errors, setFieldTouched, touched, handleBlur, isValid, handleSubmit, setFieldValue }) => (
-
+                {({
+                    values,
+                    handleChange,
+                    errors,
+                    setFieldTouched,
+                    touched,
+                    handleBlur,
+                    isValid,
+                    handleSubmit,
+                    setFieldValue,
+                }) => (
                     <Container>
                         <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                             <Left>
@@ -550,12 +563,23 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <Error error={errors.classes_id} touched={touched.classes_id} />
                                                 </View>
                                             </View>
-                                            <View style={{ flexDirection: 'row', }}>
+                                            <View style={{ flexDirection: 'row' }}>
                                                 <FieldArray
                                                     name="siblings"
                                                     render={arrayHelpers => (
                                                         <View style={{ flex: 1 }}>
-                                                            {values.siblings.length > 0 ? <Text style={{ fontWeight: 'bold', color: '#555', paddingTop: 5, paddingBottom: 5 }}>Sibling Details</Text> : null}
+                                                            {values.siblings.length > 0 ? (
+                                                                <Text
+                                                                    style={{
+                                                                        fontWeight: 'bold',
+                                                                        color: '#555',
+                                                                        paddingTop: 5,
+                                                                        paddingBottom: 5,
+                                                                    }}
+                                                                >
+                                                                    Sibling Details
+                                                                </Text>
+                                                            ) : null}
                                                             {values.siblings.map((sibling, index) => (
                                                                 <View key={index} style={{ flex: 1, marginBottom: 10 }}>
                                                                     <View style={{ flex: 1 }}>
@@ -567,32 +591,40 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                 style.formInput,
                                                                                 {
                                                                                     borderColor:
-                                                                                        errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index]
-                                                                                            && errors.siblings[index]!.name && touched.siblings[index]!.name
+                                                                                        errors.siblings &&
+                                                                                        errors.siblings[index] &&
+                                                                                        touched.siblings &&
+                                                                                        touched.siblings[index] &&
+                                                                                        errors.siblings[index]!.name &&
+                                                                                        touched.siblings[index]!.name
                                                                                             ? '#ff0000'
                                                                                             : '#333',
                                                                                 },
                                                                             ]}
                                                                             onChangeText={e => {
-                                                                                handleChange(`siblings[${index}}.name`)
+                                                                                handleChange(`siblings[${index}}.name`);
                                                                                 setFieldValue(
                                                                                     `siblings.${index}.name`,
                                                                                     e,
                                                                                 );
-
                                                                             }}
-                                                                            onBlur={() => setFieldTouched(
-                                                                                `siblings[${index}].name`,
-                                                                            )}
+                                                                            onBlur={() =>
+                                                                                setFieldTouched(
+                                                                                    `siblings[${index}].name`,
+                                                                                )
+                                                                            }
                                                                         >
                                                                             Sibling Name
-                                                    </FloatingLabel>
-                                                                        {
-                                                                            errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index] ?
-                                                                                <Error error={errors.siblings[index]!.name} touched={touched.siblings[index]!.name} />
-                                                                                : null
-                                                                        }
-
+                                                                        </FloatingLabel>
+                                                                        {errors.siblings &&
+                                                                        errors.siblings[index] &&
+                                                                        touched.siblings &&
+                                                                        touched.siblings[index] ? (
+                                                                            <Error
+                                                                                error={errors.siblings[index]!.name}
+                                                                                touched={touched.siblings[index]!.name}
+                                                                            />
+                                                                        ) : null}
                                                                     </View>
                                                                     <View>
                                                                         <View
@@ -602,12 +634,26 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                     flex: 1,
                                                                                     flexDirection: 'row',
                                                                                     borderColor:
-                                                                                        errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index]
-                                                                                            && errors.siblings[index]!.classes_id && touched.siblings[index]!.classes_id ? '#ff0000' : '#333',
+                                                                                        errors.siblings &&
+                                                                                        errors.siblings[index] &&
+                                                                                        touched.siblings &&
+                                                                                        touched.siblings[index] &&
+                                                                                        errors.siblings[index]!
+                                                                                            .classes_id &&
+                                                                                        touched.siblings[index]!
+                                                                                            .classes_id
+                                                                                            ? '#ff0000'
+                                                                                            : '#333',
                                                                                 },
                                                                             ]}
                                                                         >
-                                                                            <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                                                            <Item
+                                                                                picker
+                                                                                style={{
+                                                                                    borderBottomWidth: 0,
+                                                                                    flex: 1,
+                                                                                }}
+                                                                            >
                                                                                 <View style={{ flex: 1 }}>
                                                                                     <Label
                                                                                         style={{
@@ -618,18 +664,25 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                         }}
                                                                                     >
                                                                                         Class
-                                                        </Label>
+                                                                                    </Label>
                                                                                     <Picker
                                                                                         mode="dropdown"
-                                                                                        iosIcon={<Icon name="arrow-down" />}
+                                                                                        iosIcon={
+                                                                                            <Icon name="arrow-down" />
+                                                                                        }
                                                                                         style={{
                                                                                             fontSize: 15,
                                                                                             height: 30,
                                                                                         }}
                                                                                         placeholder="Select"
-                                                                                        placeholderStyle={{ color: '#bfc6ea' }}
+                                                                                        placeholderStyle={{
+                                                                                            color: '#bfc6ea',
+                                                                                        }}
                                                                                         placeholderIconColor="#007aff"
-                                                                                        selectedValue={values.siblings[index].classes_id}
+                                                                                        selectedValue={
+                                                                                            values.siblings[index]
+                                                                                                .classes_id
+                                                                                        }
                                                                                         onValueChange={e => {
                                                                                             setFieldValue(
                                                                                                 `siblings.${index}.classes_id`,
@@ -640,29 +693,66 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                             );
                                                                                         }}
                                                                                     >
-                                                                                        <Picker.Item label="Select" color="#ccc" value="" />
+                                                                                        <Picker.Item
+                                                                                            label="Select"
+                                                                                            color="#ccc"
+                                                                                            value=""
+                                                                                        />
                                                                                         {this.updateClassDropdown()}
                                                                                     </Picker>
                                                                                 </View>
                                                                             </Item>
                                                                         </View>
-                                                                        {
-                                                                            errors.siblings && errors.siblings[index] && touched.siblings && touched.siblings[index] ?
-                                                                                <Error error={errors.siblings[index]!.classes_id} touched={touched.siblings[index]!.classes_id} />
-                                                                                : null
-                                                                        }
+                                                                        {errors.siblings &&
+                                                                        errors.siblings[index] &&
+                                                                        touched.siblings &&
+                                                                        touched.siblings[index] ? (
+                                                                            <Error
+                                                                                error={
+                                                                                    errors.siblings[index]!.classes_id
+                                                                                }
+                                                                                touched={
+                                                                                    touched.siblings[index]!.classes_id
+                                                                                }
+                                                                            />
+                                                                        ) : null}
                                                                     </View>
-                                                                    <Button iconLeft danger bordered style={{ justifyContent: 'center', marginTop: 5 }}
+                                                                    <Button
+                                                                        iconLeft
+                                                                        danger
+                                                                        bordered
+                                                                        style={{
+                                                                            justifyContent: 'center',
+                                                                            marginTop: 5,
+                                                                        }}
                                                                         onPress={() => arrayHelpers.remove(index)}
-                                                                    ><Icon name='trash' /><Text>Remove</Text></Button>
+                                                                    >
+                                                                        <Icon name="trash" />
+                                                                        <Text>Remove</Text>
+                                                                    </Button>
                                                                 </View>
                                                             ))}
-                                                            <Button bordered style={{ justifyContent: 'center', marginTop: 5 }}
-                                                                onPress={() => arrayHelpers.push({ name: '', classes_id: '' })}
-                                                                disabled={values.siblings.length > 0 && errors.siblings ? true : false}
-                                                            ><Text>{values.siblings.length > 0 ? 'Add More' : 'Add Sibling Data'}</Text></Button>
+                                                            <Button
+                                                                bordered
+                                                                style={{ justifyContent: 'center', marginTop: 5 }}
+                                                                onPress={() =>
+                                                                    arrayHelpers.push({ name: '', classes_id: '' })
+                                                                }
+                                                                disabled={
+                                                                    values.siblings.length > 0 && errors.siblings
+                                                                        ? true
+                                                                        : false
+                                                                }
+                                                            >
+                                                                <Text>
+                                                                    {values.siblings.length > 0
+                                                                        ? 'Add More'
+                                                                        : 'Add Sibling Data'}
+                                                                </Text>
+                                                            </Button>
                                                         </View>
-                                                    )}></FieldArray>
+                                                    )}
+                                                ></FieldArray>
                                             </View>
                                         </Body>
                                     </CardItem>

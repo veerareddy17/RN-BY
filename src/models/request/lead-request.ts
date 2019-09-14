@@ -20,6 +20,7 @@ export class LeadRequest {
     public location: Location;
     public sync_status = false;
     public created_at = '';
+    public is_otp_verified = false;
 }
 
 export class SiblingRequest {

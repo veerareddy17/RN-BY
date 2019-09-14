@@ -22,6 +22,7 @@ import { fetchMetaData } from '../../redux/actions/meta-data-actions';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
+import { Utility } from '../utils/utility';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -92,6 +93,10 @@ class Login extends React.Component<Props, State> {
     };
 
     handlePress = () => {
+        if (!this.context.isConnected) {
+            Utility.showToast('No internet connection', 'warning');
+            return;
+        }
         this.RBSheetForgotPass.open();
     };
 
@@ -244,12 +249,6 @@ class Login extends React.Component<Props, State> {
                                             <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
                                                 <Text style={{ fontSize: 16 }}>Login</Text>
                                             </Button>
-                                            {/* {this.props.userState.isLoading || this.props.metaData.isLoading ? ( */}
-                                            {/* {this.state.showLoadingSpinner ? (
-                                                <View>
-                                                    <Spinner />
-                                                </View>
-                                            ) : null} */}
                                             <SpinnerOverlay visible={this.state.showLoadingSpinner} />
 
                                             <View style={{ alignItems: 'center', flexDirection: 'column' }}>

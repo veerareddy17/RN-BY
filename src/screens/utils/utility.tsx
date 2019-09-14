@@ -6,7 +6,7 @@ export class Utility extends React.Component {
     public static showToast = (message: string, type: any) => {
         Toast.show({
             text: message,
-            duration: 5000,
+            duration: 3000,
             type: type,
         });
     };
