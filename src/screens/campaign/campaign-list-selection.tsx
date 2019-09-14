@@ -63,10 +63,9 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
             [
                 {
                     text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                 },
-                { text: 'OK', onPress: () => this.logout() },
+                { text: 'Ok', onPress: () => this.logout() },
             ],
             { cancelable: false },
         );

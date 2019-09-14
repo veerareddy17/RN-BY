@@ -124,10 +124,9 @@ class Dashboard extends React.Component<Props, State> {
             [
                 {
                     text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                 },
-                { text: 'OK', onPress: () => this.logout() },
+                { text: 'Ok', onPress: () => this.logout() },
             ],
             { cancelable: false },
         );
