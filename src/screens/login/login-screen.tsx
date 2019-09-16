@@ -128,15 +128,16 @@ class Login extends React.Component<Props, State> {
             );
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
+                this.setState({ showLoadingSpinner: false });
                 return;
             }
             if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
+                this.setState({ showLoadingSpinner: false });
                 return;
             }
             await this.props.fetchMetaData();
             await this.props.fetchCampaigns();
-            this.setState({ showLoadingSpinner: false });
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
             }
@@ -146,6 +147,7 @@ class Login extends React.Component<Props, State> {
             if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
                 this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
             }
+            this.setState({ showLoadingSpinner: false });
             return;
         }
         await this.props.requestLoginApi(

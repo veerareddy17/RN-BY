@@ -272,9 +272,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
             let req = this.state;
             this.setState({ leadRequest: req });
+
+            //If app offline then no OTP verification
+            if(!this.context.isConnected) {
+                await this.props.createLead(this.state.leadRequest);
+                this.props.navigation.navigate('LeadList');
+                return;
+            }
             await this.verifyOTP();
-            // await this.props.createLead(this.state.leadRequest);
-            // this.props.navigation.navigate('LeadList');
         } catch (error) {
             /*
             error to be handled

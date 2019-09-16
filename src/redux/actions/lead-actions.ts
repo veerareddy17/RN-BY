@@ -142,8 +142,8 @@ export const getLeadsByBatch = (totalLeads: LeadResponse[]): SyncLeadRequest => 
     let syncLeads = new SyncLeadRequest();
     syncLeads.leads = [];
     let batchSize = config.OFFLINE_LEAD_BATCH_SIZE;
-    totalLeads.splice(0, batchSize);
-    totalLeads.forEach(leadRes => {
+    let filteredLeads = totalLeads.splice(0, batchSize);
+    filteredLeads.forEach(leadRes => {
         syncLeads.leads.push(transformResponseToRequest(leadRes));
     });
     return syncLeads;
