@@ -23,7 +23,7 @@ import { logout } from '../../redux/actions/user-actions';
 import { AppState } from '../../redux/store';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
-import { selectedCampaign } from '../../redux/actions/campaign-actions';
+import { selectedCampaign, fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { withNavigation } from 'react-navigation';
 import { NetworkContext } from '../../provider/network-provider';
 import { fetchLeadReport } from '../../redux/actions/lead-report-action';
@@ -32,6 +32,7 @@ import { syncOfflineLeads } from '../../redux/actions/lead-actions';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import { MetaResponse } from '../../models/response/meta-response';
+
 export interface Props {
     navigation: NavigationScreenProp<any>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -41,6 +42,7 @@ export interface Props {
     errorState: any;
     leadReportState: any;
     leadState: any;
+    fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     selectCampaign(campaignId: any): void;
     fetchLeadReport(): (dispatch: Dispatch, getState: any) => Promise<void>;
     syncOfflineLeads(): (dispatch: Dispatch, getState: any) => Promise<void>;
@@ -148,6 +150,12 @@ class Dashboard extends React.Component<Props, State> {
         this.props.syncOfflineLeads();
     };
 
+    onPressOpenRBSheet = async () => {
+        await this.props.fetchCampaigns();
+        this.setState({ campaignList: this.props.campaignState.campaignList });
+        this.RBSheet.open();
+    }
+
     render() {
         return (
             <Container>
@@ -163,19 +171,19 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 ) : (
-                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
-                                Dashboard
+                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                            <Body>
+                                <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
+                                    Dashboard
                             </Title>
-                        </Body>
-                        <Right>
-                            <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
-                            </Button>
-                        </Right>
-                    </Header>
-                )}
+                            </Body>
+                            <Right>
+                                <Button transparent onPress={this.confirmLogout}>
+                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                </Button>
+                            </Right>
+                        </Header>
+                    )}
 
                 <Content style={{ backgroundColor: '#eee' }}>
                     <View style={styles.containerStyle}>
@@ -306,15 +314,15 @@ class Dashboard extends React.Component<Props, State> {
                                     <Spinner size={15} color="#813588" style={{ marginTop: -25 }} />
                                 </View>
                             ) : (
-                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
-                                    {this.state.campaignName}
-                                </Text>
-                            )}
+                                    <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
+                                        {this.state.campaignName}
+                                    </Text>
+                                )}
                             <Button
                                 small
                                 bordered
                                 onPress={() => {
-                                    this.RBSheet.open();
+                                    this.onPressOpenRBSheet();
                                 }}
                                 style={{ borderColor: '#813588' }}
                             >
@@ -379,6 +387,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: bindActionCreators(logout, dispatch),
+    fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
     fetchLeadReport: bindActionCreators(fetchLeadReport, dispatch),
     syncOfflineLeads: bindActionCreators(syncOfflineLeads, dispatch),
