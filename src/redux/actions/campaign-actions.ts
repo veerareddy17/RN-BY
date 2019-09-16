@@ -57,9 +57,10 @@ export const fetchCampaigns = (): ((dispatch: Dispatch, getState: any) => Promis
         dispatch(campaignStartAction());
 
         try {
-            const response = await CampaignService.fetchCampaigns(1);
+            const response = await CampaignService.fetchCampaigns();
+            console.log('response', response.data && response.data ? response.data : "");
             if (response && response.data) {
-                dispatch(fetchCampaignsAction(response.data.data));
+                dispatch(fetchCampaignsAction(response.data));
             } else {
                 dispatch(errorCallAction(response.errors));
                 dispatch(campaignFailureAction(response.errors));
