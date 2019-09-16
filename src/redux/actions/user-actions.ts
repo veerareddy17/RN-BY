@@ -46,18 +46,21 @@ export const authenticate = (
         try {
             let isConnected = getState().connectionStateReducer.isConnected;
             let storedUser = getState().userReducer.user;
+            dispatch(requestAction());
             if (!isConnected) {
                 if (username == storedUser.email && password === storedUser.offline_pin) {
+                    storedUser.isOfflineLoggedIn = true;
                     dispatch(successAction(storedUser));
                 } else {
+                    storedUser.isOfflineLoggedIn = false;
                     dispatch(failureAction(['Invalid Username/ PIN']));
                 }
                 return;
             }
-            dispatch(requestAction());
             dispatch(errorCallResetAction());
             const response = await AuthenticationService.authenticate(authRequest);
             if (response.data !== null) {
+                response.data.isOfflineLoggedIn = false;
                 dispatch(successAction(response.data));
             } else {
                 //errors = response.errors;

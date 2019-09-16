@@ -5,4 +5,5 @@ export class AuthenticationResponse {
     public token = '';
     public email = '';
     public offline_pin = '';
+    public isOfflineLoggedIn = false;
 }

@@ -83,13 +83,16 @@ class Login extends React.Component<Props, State> {
 
     componentDidMount = async () => {
         const selectedCampaign = this.props.campaignState.selectedCampaign;
-        if (this.context.isConnected) {
-            if (this.props.userState.user.token) {
-                this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
-                return;
-            }
+        let isLoggedIn = false;
+        if (this.context.isConnected && this.props.userState.user.token) {
+            isLoggedIn = true;
         }
-        this.props.navigation.navigate('Auth');
+        if (this.props.userState.user.isOfflineLoggedIn) {
+            isLoggedIn = true;
+        }
+        isLoggedIn
+            ? this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App')
+            : this.props.navigation.navigate('Auth');
     };
 
     handlePress = () => {
@@ -128,11 +131,11 @@ class Login extends React.Component<Props, State> {
             );
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
-                this.setState({ showLoadingSpinner: false });
-                return;
             }
             if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
+            }
+            if (this.props.errorState.showAlertError && this.props.errorState.showToastError) {
                 this.setState({ showLoadingSpinner: false });
                 return;
             }
