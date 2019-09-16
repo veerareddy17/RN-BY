@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, ListView, Platform, ActivityIndicator } from 'react-native';
+import { FlatList, ListView, Platform, ActivityIndicator, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
 import {
     View,
