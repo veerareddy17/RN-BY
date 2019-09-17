@@ -85,10 +85,12 @@ class Login extends React.Component<Props, State> {
         const selectedCampaign = this.props.campaignState.selectedCampaign;
         let isLoggedIn = false;
         if (this.context.isConnected && this.props.userState.user.token) {
+            console.log('online:');
             isLoggedIn = true;
         }
         if (this.props.userState.user.isOfflineLoggedIn) {
             isLoggedIn = true;
+            console.log('offline:');
         }
         isLoggedIn
             ? this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App')

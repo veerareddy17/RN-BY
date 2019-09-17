@@ -47,11 +47,13 @@ export const authenticate = (
             let isConnected = getState().connectionStateReducer.isConnected;
             let storedUser = getState().userReducer.user;
             dispatch(requestAction());
+            console.log('In user action: ', storedUser.isOfflineLoggedIn);
             if (!isConnected) {
                 if (username == storedUser.email && password === storedUser.offline_pin) {
                     storedUser.isOfflineLoggedIn = true;
                     dispatch(successAction(storedUser));
                 } else {
+                    console.log('Failuer login');
                     storedUser.isOfflineLoggedIn = false;
                     dispatch(failureAction(['Invalid Username/ PIN']));
                 }
