@@ -5,5 +5,6 @@ read tag
 git fetch --tags
 git merge $tag
 #git commit
-git push origin master
+git push aws master
+git push vsts master
 
