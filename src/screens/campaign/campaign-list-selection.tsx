@@ -77,7 +77,8 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                 {/* <StatusBar backgroundColor="#813588" barStyle="light-content" /> */}
                 {Platform.OS === 'ios' ? (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
+                        <Left />
+                        <Body style={{ flex: 3 }}>
                             <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Select Campaign</Title>
                         </Body>
                         <Right>

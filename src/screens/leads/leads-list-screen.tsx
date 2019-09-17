@@ -176,7 +176,8 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             <Container>
                 {Platform.OS === 'ios' ? (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
+                        <Left />
+                        <Body style={{ flex: 3 }}>
                             <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Leads</Title>
                         </Body>
                         <Right>

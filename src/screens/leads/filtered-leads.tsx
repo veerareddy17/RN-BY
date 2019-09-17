@@ -22,14 +22,11 @@ import Lead from './lead';
 import { fetchFilteredLeads } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
-import { Alert } from 'react-native';
-import { logout } from '../../redux/actions/user-actions';
 import Loader from '../../components/content-loader/content-loader';
 export interface FLeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
     fetchFilteredLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
 }
 
@@ -80,27 +77,6 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         } catch (error) {
             /* show server error here*/
         }
-    };
-
-    logout = async () => {
-        await this.props.logout();
-        this.props.navigation.navigate('Auth');
-    };
-
-    confirmLogout = () => {
-        Alert.alert(
-            'Confirm Logout',
-            'Are you sure you want to logout?',
-            [
-                {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                },
-                { text: 'OK', onPress: () => this.logout() },
-            ],
-            { cancelable: false },
-        );
     };
 
     fetchMore = () => {
@@ -221,7 +197,6 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchFilteredLeads: bindActionCreators(fetchFilteredLeads, dispatch),
-    logout: bindActionCreators(logout, dispatch),
 });
 
 export default connect(

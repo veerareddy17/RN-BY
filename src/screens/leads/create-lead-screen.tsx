@@ -356,8 +356,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         </Left>
                                     </ListItem>
                                 </Left>
-                                <Body>
-                                    <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Create Lead</Title>
+                                <Body style={{flex: 3}}>
+                                    <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18}}>Create Lead</Title>
                                 </Body>
                                 <Right />
                             </Header>
