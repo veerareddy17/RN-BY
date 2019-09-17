@@ -81,7 +81,7 @@ class Login extends React.Component<Props, State> {
         this.state.input[id]._root.focus();
     };
 
-    componentDidMount = async () => {
+     componentDidMount = async () => {
         const selectedCampaign = this.props.campaignState.selectedCampaign;
         let isLoggedIn = false;
         if (this.context.isConnected && this.props.userState.user.token) {
@@ -96,7 +96,6 @@ class Login extends React.Component<Props, State> {
             ? this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App')
             : this.props.navigation.navigate('Auth');
     };
-
     handlePress = () => {
         if (!this.context.isConnected) {
             Utility.showToast('No internet connection', 'warning');
