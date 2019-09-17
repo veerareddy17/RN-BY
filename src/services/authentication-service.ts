@@ -17,7 +17,6 @@ export class AuthenticationService {
             authenticationRequest,
         );
         if (response && response.data) {
-            console.log('In auth service', response.data);
             try {
                 await StorageService.store(StorageConstants.TOKEN_KEY, response.data.token);
                 await StorageService.store(StorageConstants.USER, response.data);
@@ -40,7 +39,9 @@ export class AuthenticationService {
         return false;
     };
 
-    public static forgotPassword = async (forgotPasswordRequest: ForgotPasswordRequest, ): Promise<ResponseViewModel<ForgotPasswordResponse>> => {
+    public static forgotPassword = async (
+        forgotPasswordRequest: ForgotPasswordRequest,
+    ): Promise<ResponseViewModel<ForgotPasswordResponse>> => {
         const response = await HttpBaseService.post<ForgotPasswordRequest, ForgotPasswordResponse>(
             APIConstants.FORGOT_PASSWORD_URL,
             forgotPasswordRequest,
@@ -48,5 +49,4 @@ export class AuthenticationService {
         console.log('Forgot Password Response : ', response);
         return response;
     };
-
 }

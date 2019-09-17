@@ -8,15 +8,23 @@ import { LeadRequest } from '../models/request/lead-request';
 import { APIConstants } from '../helpers/api-constants';
 import { OTPRequest } from '../models/request';
 import { LeadReport } from '../models/response/lead-report-model';
-
+import { SyncLeadRequest } from '../models/request/sync-leads-request';
+import { StatusResponse } from '../models/response/status-response';
+import { LeadFilterResponse } from '../models/response/lead-filter-response';
 export class LeadService {
     //Paginated method
     public static fetchLeads = async (
         pgNo: number,
-        flag: string,
     ): Promise<ResponseViewModel<PaginatedResponseModel<LeadResponse>>> => {
-        console.log('Service', flag);
-        const response = await HttpBaseService.get<LeadResponse>(
+        const response = await HttpBaseService.get<LeadResponse>(APIConstants.USER_LEADS_URL + '?page=' + pgNo);
+        return response;
+    };
+
+    public static fetchFilteredLeads = async (
+        pgNo: number,
+        flag: string,
+    ): Promise<ResponseViewModel<PaginatedResponseModel<LeadFilterResponse>>> => {
+        const response = await HttpBaseService.get<LeadFilterResponse>(
             APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&flag=' + flag,
         );
         return response;
@@ -52,6 +60,14 @@ export class LeadService {
 
     public static fetchLeadReport = async (): Promise<ResponseViewModel<LeadReport>> => {
         const response = await HttpBaseService._get<LeadReport>(APIConstants.LEAD_REPORT_URL);
+        return response;
+    };
+
+    public static syncLeads = async (leads: SyncLeadRequest): Promise<ResponseViewModel<StatusResponse>> => {
+        let response = await HttpBaseService.post<SyncLeadRequest, StatusResponse>(
+            APIConstants.LEAD_OFFLINE_SYNC,
+            leads,
+        );
         return response;
     };
 }

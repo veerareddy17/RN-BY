@@ -11,6 +11,7 @@ import {
 import StorageService from '../../database/storage-service';
 import { CampaignService } from '../../services/campaign-service';
 import { StorageConstants } from '../../helpers/storage-constants';
+import { MetaResponse } from '../../models/response/meta-response';
 
 export const fetchCampaignsAction = campaigns => {
     return {
@@ -38,46 +39,53 @@ export const campaignFailureAction = error => {
     };
 };
 
-export const selectedCampaignActions = campaignSelectedId => {
+export const selectedCampaignAction = (campaignSelected: MetaResponse) => {
     return {
         type: CAMPAIGN_SELECTED,
+        payload: campaignSelected,
     };
 };
 
-export const fetchCampaigns = (): ((dispatch: Dispatch) => Promise<void>) => {
-    return async (dispatch: Dispatch) => {
+export const fetchCampaigns = (): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState: any) => {
+        let isConnected = getState().connectionStateReducer.isConnected;
+        if (!isConnected) {
+            let response = getState().campaignReducer.campaignList;
+            dispatch(fetchCampaignsAction(response));
+            return;
+        }
         dispatch(campaignStartAction());
 
         try {
-            const response = await CampaignService.fetchCampaigns(1);
+            const response = await CampaignService.fetchCampaigns();
+            console.log('response', response.data && response.data ? response.data : "");
             if (response && response.data) {
-                dispatch(fetchCampaignsAction(response.data.data));
+                dispatch(fetchCampaignsAction(response.data));
             } else {
                 dispatch(errorCallAction(response.errors));
                 dispatch(campaignFailureAction(response.errors));
             }
         } catch (e) {
-            console.log('error:', e.message);
             let errors = Array<ErrorResponse>();
-            errors.push(new ErrorResponse('Server', e.message))
+            errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
             dispatch(campaignFailureAction(e.message));
         }
-
     };
 };
 
 export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Dispatch) => {
-    console.log('inside campaign action', selectedCampaign);
     dispatch(errorCallResetAction());
     dispatch(campaignStartAction());
     try {
-        await StorageService.store(StorageConstants.SELECTED_CAMPAIGN, selectedCampaign);
-        dispatch(campaignSuccessAction());
+        let selectedCamp = new MetaResponse();
+        selectedCamp.id = selectedCampaign.id;
+        selectedCamp.name = selectedCampaign.name;
+        dispatch(selectedCampaignAction(selectedCamp));
     } catch (e) {
         console.log(e);
         let errors = Array<ErrorResponse>();
-        errors.push(new ErrorResponse('Server', e.message))
+        errors.push(new ErrorResponse('Server', e.message));
         dispatch(serverErrorCallAction(errors));
         dispatch(campaignFailureAction(e));
     }

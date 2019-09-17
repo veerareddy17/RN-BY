@@ -1,21 +1,32 @@
 import React, { Component } from 'react';
-import { FlatList, ListView, Platform, ActivityIndicator } from 'react-native';
+import { FlatList, ListView, Platform, ActivityIndicator, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
-import { View, Header, Container, Content, Left, Button, Title, Right, Body, ListItem, Icon } from 'native-base';
+import {
+    View,
+    Header,
+    Container,
+    Content,
+    Left,
+    Button,
+    Title,
+    Right,
+    Body,
+    ListItem,
+    Icon,
+    Card,
+    Text,
+} from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
 import Lead from './lead';
-import { fetchAllLeadsApi } from '../../redux/actions/lead-actions';
+import { fetchFilteredLeads } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
-import { Alert } from 'react-native';
-import { logout } from '../../redux/actions/user-actions';
 import Loader from '../../components/content-loader/content-loader';
 export interface FLeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
-    fetchLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchFilteredLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
 }
 
@@ -44,14 +55,12 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             let selectedFlag = this.props.navigation.getParam('flag', '');
+            await this.fetchLeadsList(this.state.pageNumber, selectedFlag);
             this.setState({
-                pageNumber:
-                    this.props.leadState.flag !== selectedFlag
-                        ? 1
-                        : this.props.leadState.paginatedLeadList.current_page,
+                pageNumber: this.props.leadState.filteredPaginatedLeadList.current_page,
                 flag: selectedFlag,
+                loadingMore: false,
             });
-            this.fetchLeadsList(this.state.pageNumber, selectedFlag);
         });
     }
 
@@ -61,50 +70,28 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
 
     fetchLeadsList = async (pgNo: number, flag: string) => {
         try {
-            await this.props.fetchLeads(pgNo, flag);
-            this.setState({ loadingMore: false });
+            await this.props.fetchFilteredLeads(pgNo, flag);
+            this.setState({
+                loadingMore: false,
+            });
         } catch (error) {
             /* show server error here*/
         }
     };
 
-    logout = async () => {
-        await this.props.logout();
-        this.props.navigation.navigate('Auth');
-    };
-
-    confirmLogout = () => {
-        Alert.alert(
-            'Confirm Logout',
-            'Are you sure you want to logout?',
-            [
-                {
-                    text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
-                    style: 'cancel',
-                },
-                { text: 'OK', onPress: () => this.logout() },
-            ],
-            { cancelable: false },
-        );
-    };
-
     fetchMore = () => {
-        if (this.props.leadState.paginatedLeadList.next_page_url == null) {
+        if (this.props.leadState.filteredPaginatedLeadList.next_page_url == null) {
             this.setState({ loadingMore: false });
             return;
         }
         this.setState(
             {
-                pageNumber:
-                    this.props.leadState.flag !== this.props.navigation.getParam('flag', '')
-                        ? 1
-                        : this.state.pageNumber + 1,
-                flag: this.props.navigation.getParam('flag', ''),
+                pageNumber: this.props.leadState.flag !== this.state.flag ? 1 : this.state.pageNumber + 1,
+                flag: this.state.flag,
                 loadingMore: true,
             },
-            () => {
-                this.fetchLeadsList(this.state.pageNumber, this.state.flag);
+            async () => {
+                await this.fetchLeadsList(this.state.pageNumber, this.state.flag);
             },
         );
     };
@@ -116,6 +103,30 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         return (
             <View>
                 <ActivityIndicator animating size="large" />
+            </View>
+        );
+    };
+
+    renderEmptyView = () => {
+        const { width, height } = Dimensions.get('window');
+        return (
+            <View style={{ paddingTop: 0 }}>
+                <Card
+                    style={{
+                        marginTop: 0,
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        borderTopWidth: 0,
+                        borderLeftWidth: 0,
+                        borderBottomWidth: 0,
+                        borderRightWidth: 0,
+                        borderRadius: 5,
+                    }}
+                >
+                    <Text>No Data to Display</Text>
+                    {/* <ImageBackground source={images.noData} style={{ width, height }}></ImageBackground> */}
+                </Card>
             </View>
         );
     };
@@ -152,9 +163,10 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                             ) : (
                                 <View style={{ flex: 1 }}>
                                     <FlatList
-                                        data={this.props.leadState.leadList}
+                                        data={this.props.leadState.filteredLeadList}
                                         renderItem={({ item, index }) => this.renderItem(item)}
                                         keyExtractor={(item, index) => `${item.id}+${index}`}
+                                        ListEmptyComponent={this.renderEmptyView}
                                         ListFooterComponent={this.renderFooter}
                                         onEndReached={this.fetchMore}
                                         onEndReachedThreshold={0.1}
@@ -167,6 +179,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                                     data={this.props.leadState.offlineLeadList}
                                     renderItem={({ item, index }) => this.renderItem(item)}
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
+                                    ListEmptyComponent={this.renderEmptyView}
                                 />
                             </View>
                         )}
@@ -183,8 +196,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    fetchLeads: bindActionCreators(fetchAllLeadsApi, dispatch),
-    logout: bindActionCreators(logout, dispatch),
+    fetchFilteredLeads: bindActionCreators(fetchFilteredLeads, dispatch),
 });
 
 export default connect(

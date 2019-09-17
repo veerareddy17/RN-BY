@@ -1,7 +1,22 @@
 import React, { Component } from 'react';
-import { FlatList, ListView, Platform, ActivityIndicator } from 'react-native';
+import { FlatList, ListView, Platform, ActivityIndicator, ImageBackground, Dimensions } from 'react-native';
 import { connect } from 'react-redux';
-import { View, Header, Container, Content, Left, Button, Title, Right, Body, ListItem, Icon } from 'native-base';
+import {
+    View,
+    Header,
+    Container,
+    Content,
+    Left,
+    Button,
+    Title,
+    Right,
+    Body,
+    ListItem,
+    Icon,
+    Text,
+    Card,
+    Image,
+} from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
 import Lead from './lead';
@@ -11,10 +26,11 @@ import { NavigationScreenProp } from 'react-navigation';
 import { Alert } from 'react-native';
 import { logout } from '../../redux/actions/user-actions';
 import Loader from '../../components/content-loader/content-loader';
+import images from '../../assets';
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
-    fetchLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchLeads(pageNumber: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
 }
@@ -39,18 +55,14 @@ class LeadList extends Component<LeadListProps, LeadListState> {
 
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
-            if (this.props.userState.user.token === '') {
+            if (this.context.isConnected && this.props.userState.user.token === '') {
                 this.props.navigation.navigate('Auth');
             }
-            let selectedFlag = this.props.navigation.getParam('flag', '');
+            await this.fetchLeadsList(this.state.pageNumber, '');
             this.setState({
-                pageNumber:
-                    this.props.leadState.flag !== selectedFlag
-                        ? 1
-                        : this.props.leadState.paginatedLeadList.current_page,
-                flag: selectedFlag,
+                pageNumber: this.props.leadState.paginatedLeadList.current_page,
+                loadingMore: false,
             });
-            this.fetchLeadsList(this.state.pageNumber, selectedFlag);
         });
     }
 
@@ -64,14 +76,16 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     }
 
     fetchLeadsList = async (pgNo: number, flag: string) => {
-        try {
-            await this.props.fetchLeads(pgNo, flag);
-            this.setState({ loadingMore: false });
-        } catch (error) {
-            /* show server error here*/
-        }
+        await this.props.fetchLeads(pgNo);
+        this.setState({
+            loadingMore: false,
+        });
     };
 
+    logout = async () => {
+        await this.props.logout();
+        this.props.navigation.navigate('Auth');
+    };
     confirmLogout = () => {
         Alert.alert(
             'Confirm Logout',
@@ -79,10 +93,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             [
                 {
                     text: 'Cancel',
-                    onPress: () => console.log('Cancel Pressed'),
                     style: 'cancel',
                 },
-                { text: 'OK', onPress: () => this.logout() },
+                { text: 'Ok', onPress: () => this.logout() },
             ],
             { cancelable: false },
         );
@@ -95,26 +108,46 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         }
         this.setState(
             {
-                pageNumber:
-                    this.props.leadState.flag !== this.props.navigation.getParam('flag', '')
-                        ? 1
-                        : this.state.pageNumber + 1,
-                flag: this.props.navigation.getParam('flag', ''),
+                pageNumber: this.state.pageNumber + 1,
                 loadingMore: true,
             },
-            () => {
-                this.fetchLeadsList(this.state.pageNumber, this.state.flag);
+            async () => {
+                await this.fetchLeadsList(this.state.pageNumber, this.state.flag);
             },
         );
     };
 
     renderFooter = () => {
-        if (!this.state.loadingMore) {
+        if (!this.state.loadingMore || this.props.leadState.paginatedLeadList.next_page_url == null) {
             return null;
         }
         return (
             <View>
                 <ActivityIndicator animating size="large" />
+            </View>
+        );
+    };
+
+    renderEmptyView = () => {
+        const { width, height } = Dimensions.get('window');
+        return (
+            <View style={{ paddingTop: 0 }}>
+                <Card
+                    style={{
+                        marginTop: 0,
+                        marginBottom: 0,
+                        marginLeft: 0,
+                        marginRight: 0,
+                        borderTopWidth: 0,
+                        borderLeftWidth: 0,
+                        borderBottomWidth: 0,
+                        borderRightWidth: 0,
+                        borderRadius: 5,
+                    }}
+                >
+                    <Text>No Data to Display</Text>
+                    {/* <ImageBackground source={images.noData} style={{ width, height }}></ImageBackground> */}
+                </Card>
             </View>
         );
     };
@@ -144,7 +177,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 {Platform.OS === 'ios' ? (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Left />
-                        <Body>
+                        <Body style={{ flex: 3 }}>
                             <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Leads</Title>
                         </Body>
                         <Right>
@@ -181,6 +214,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                         renderItem={({ item, index }) => this.renderItem(item)}
                                         keyExtractor={(item, index) => `${item.id}+${index}`}
                                         ListFooterComponent={this.renderFooter}
+                                        ListEmptyComponent={this.renderEmptyView}
                                         onEndReached={this.fetchMore}
                                         onEndReachedThreshold={0.1}
                                     />
@@ -192,6 +226,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     data={this.props.leadState.offlineLeadList}
                                     renderItem={({ item, index }) => this.renderItem(item)}
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
+                                    ListEmptyComponent={this.renderEmptyView}
                                 />
                             </View>
                         )}

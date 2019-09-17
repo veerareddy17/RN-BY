@@ -19,10 +19,10 @@ import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import { fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { fetchMetaData } from '../../redux/actions/meta-data-actions';
-import StorageService from '../../database/storage-service';
-import { StorageConstants } from '../../helpers/storage-constants';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
+import SpinnerOverlay from 'react-native-loading-spinner-overlay';
+import { Utility } from '../utils/utility';
 
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -55,6 +55,7 @@ export interface State {
     latitude: number;
     longitude: number;
     input: any;
+    showLoadingSpinner: boolean;
 }
 export interface LoginRequestData {
     email: string;
@@ -73,6 +74,7 @@ class Login extends React.Component<Props, State> {
             latitude: 0,
             longitude: 0,
             input: {},
+            showLoadingSpinner: false,
         };
     }
     focusTheField = (id: string) => {
@@ -80,15 +82,24 @@ class Login extends React.Component<Props, State> {
     };
 
     componentDidMount = async () => {
-        const selectedCampaign = await StorageService.get<string>(StorageConstants.SELECTED_CAMPAIGN);
-        if (this.props.userState.user) {
-            this.props.navigation.navigate(this.props.userState.user.token && selectedCampaign === null ? 'Campaigns'
-                : this.props.userState.user.token && selectedCampaign != null ? 'App'
-                    : 'Auth');
+        const selectedCampaign = this.props.campaignState.selectedCampaign;
+        let isLoggedIn = false;
+        if (this.context.isConnected && this.props.userState.user.token) {
+            isLoggedIn = true;
         }
+        if (this.props.userState.user.isOfflineLoggedIn) {
+            isLoggedIn = true;
+        }
+        isLoggedIn
+            ? this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App')
+            : this.props.navigation.navigate('Auth');
     };
 
     handlePress = () => {
+        if (!this.context.isConnected) {
+            Utility.showToast('No internet connection', 'warning');
+            return;
+        }
         this.RBSheetForgotPass.open();
     };
 
@@ -109,8 +120,9 @@ class Login extends React.Component<Props, State> {
     };
 
     handleSubmit = async (values: LoginRequestData) => {
+        await this.props.captureLocation();
         if (this.context.isConnected) {
-            await this.props.captureLocation();
+            this.setState({ showLoadingSpinner: true });
             await this.props.requestLoginApi(
                 values.email,
                 values.password,
@@ -119,28 +131,35 @@ class Login extends React.Component<Props, State> {
             );
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
-            } if (this.props.errorState.showToastError) {
-                ToastError.toastErr(this.props.errorState.error);
-            } if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
-                await this.props.fetchMetaData();
-                await this.props.fetchCampaigns();
-                if (this.props.errorState.showAlertError) {
-                    AlertError.alertErr(this.props.errorState.error);
-                } if (this.props.errorState.showToastError) {
-                    ToastError.toastErr(this.props.errorState.error);
-                } if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
-                    this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
-                }
             }
-
-        } else {
-            console.log('no internet')
-            Toast.show({
-                text: 'No Internet Connection',
-                duration: 5000,
-                type: 'danger',
-            });
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+            }
+            if (this.props.errorState.showAlertError && this.props.errorState.showToastError) {
+                this.setState({ showLoadingSpinner: false });
+                return;
+            }
+            await this.props.fetchMetaData();
+            await this.props.fetchCampaigns();
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(this.props.errorState.error);
+            }
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+            }
+            if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+                this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
+            }
+            this.setState({ showLoadingSpinner: false });
+            return;
         }
+        await this.props.requestLoginApi(
+            values.email,
+            values.password,
+            this.props.locationState.location.latitude,
+            this.props.locationState.location.longitude,
+        );
+        this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
     };
     render() {
         const { width, height } = Dimensions.get('window');
@@ -168,82 +187,85 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                            <Form>
-                                                <Item floatingLabel style={loginStyle.userName}>
-                                                    <Label style={{ marginLeft: 10 }}>Email</Label>
-                                                    <Input
-                                                        keyboardType="email-address"
-                                                        onChangeText={handleChange('email')}
-                                                        onBlur={() => setFieldTouched('email')}
-                                                        style={{ marginLeft: 10 }}
-                                                        returnKeyType="next"
-                                                        blurOnSubmit={false}
-                                                        onSubmitEditing={() => this.focusTheField('password')}
-                                                        autoCapitalize="none"
-                                                    />
-                                                </Item>
-                                                <Item floatingLabel style={loginStyle.password}>
-                                                    <Label style={{ marginLeft: 10 }}>Password</Label>
-                                                    <Input
-                                                        secureTextEntry={this.state.showPassword}
-                                                        value={values.password}
-                                                        onChangeText={handleChange('password')}
-                                                        onBlur={() => setFieldTouched('password')}
-                                                        style={{ marginLeft: 10 }}
-                                                        returnKeyType="done"
-                                                        getRef={input => {
-                                                            this.state.input['password'] = input;
-                                                        }}
-                                                        onSubmitEditing={() => this.handleSubmit(values)}
-                                                    />
-                                                    <Icon
-                                                        style={{ paddingTop: 0 }}
-                                                        active
-                                                        name={this.state.showPassword ? 'eye-off' : 'eye'}
-                                                        onPress={e => {
-                                                            e.preventDefault();
-                                                            this.setState({ showPassword: !this.state.showPassword });
-                                                        }}
-                                                    />
-                                                </Item>
-                                                {errors.password || errors.email || this.props.userState.error ? (
-                                                    <View>
-                                                        {!(this.context.isConnected) ? (<Text style={loginStyle.error}>No Internet Connection</Text>
-                                                        ) : errors.email ? (
-                                                            <Text style={loginStyle.error}>{errors.email}</Text>
-                                                        ) : errors.password ? (
-                                                            <Text style={loginStyle.error}>{errors.password}</Text>
-                                                        ) : this.props.userState.error ?
-                                                                        (this.props.errorState.showAlertError ?
-                                                                            <Text style={loginStyle.error}>{this.props.userState.error[0].message}</Text>
-                                                                            : <Text />
-                                                                        ) : (
-                                                                            <Text />
-                                                                        )}
-                                                    </View>
-                                                ) : (
-                                                        <View />
+                                        <Form>
+                                            <Item floatingLabel style={loginStyle.userName}>
+                                                <Label style={{ marginLeft: 10 }}>Email</Label>
+                                                <Input
+                                                    keyboardType="email-address"
+                                                    onChangeText={handleChange('email')}
+                                                    onBlur={() => setFieldTouched('email')}
+                                                    style={{ marginLeft: 10 }}
+                                                    returnKeyType="next"
+                                                    blurOnSubmit={false}
+                                                    onSubmitEditing={() => this.focusTheField('password')}
+                                                    autoCapitalize="none"
+                                                />
+                                            </Item>
+                                            <Item floatingLabel style={loginStyle.password}>
+                                                <Label style={{ marginLeft: 10 }}>
+                                                    {this.context.isConnected ? 'Password' : 'Offline PIN'}
+                                                </Label>
+                                                <Input
+                                                    secureTextEntry={this.state.showPassword}
+                                                    value={values.password}
+                                                    onChangeText={handleChange('password')}
+                                                    onBlur={() => setFieldTouched('password')}
+                                                    style={{ marginLeft: 10 }}
+                                                    returnKeyType="done"
+                                                    getRef={input => {
+                                                        this.state.input['password'] = input;
+                                                    }}
+                                                    onSubmitEditing={() => this.handleSubmit(values)}
+                                                />
+                                                <Icon
+                                                    style={{ paddingTop: 0 }}
+                                                    active
+                                                    name={this.state.showPassword ? 'eye-off' : 'eye'}
+                                                    onPress={e => {
+                                                        e.preventDefault();
+                                                        this.setState({ showPassword: !this.state.showPassword });
+                                                    }}
+                                                />
+                                            </Item>
+                                            {errors.password || errors.email || this.props.userState.error ? (
+                                                <View>
+                                                    {!this.context.isConnected ? (
+                                                        <Text style={loginStyle.error}>No Internet Connection</Text>
+                                                    ) : errors.email ? (
+                                                        <Text style={loginStyle.error}>{errors.email}</Text>
+                                                    ) : errors.password ? (
+                                                        <Text style={loginStyle.error}>{errors.password}</Text>
+                                                    ) : this.props.userState.error ? (
+                                                        this.props.errorState.showAlertError ? (
+                                                            <Text style={loginStyle.error}>
+                                                                {this.props.userState.error[0].message}
+                                                            </Text>
+                                                        ) : (
+                                                            <Text />
+                                                        )
+                                                    ) : (
+                                                        <Text />
                                                     )}
-
-                                                <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                    <Text style={{ fontSize: 16 }}>Login</Text>
-                                                </Button>
-                                                {this.props.userState.isLoading || this.props.metaData.isLoading ? (
-                                                    <View>
-                                                        <Spinner />
-                                                    </View>
-                                                ) : null}
-
-                                                <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                    <Text
-                                                        onPress={this.handlePress}
-                                                        style={{ color: '#fff', fontSize: 14 }}
-                                                    >
-                                                        Forgot Password?
-                                                </Text>
                                                 </View>
-                                            </Form>
-                                        )}
+                                            ) : (
+                                                <View />
+                                            )}
+
+                                            <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
+                                                <Text style={{ fontSize: 16 }}>Login</Text>
+                                            </Button>
+                                            <SpinnerOverlay visible={this.state.showLoadingSpinner} />
+
+                                            <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                                                <Text
+                                                    onPress={this.handlePress}
+                                                    style={{ color: '#fff', fontSize: 14 }}
+                                                >
+                                                    Forgot Password?
+                                                </Text>
+                                            </View>
+                                        </Form>
+                                    )}
                                 </Formik>
                             </View>
                             <RBSheet
@@ -296,7 +318,6 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchMetaData: bindActionCreators(fetchMetaData, dispatch),
     forgotPassword: bindActionCreators(forgotPassword, dispatch),
     resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch),
-
 });
 
 export default connect(

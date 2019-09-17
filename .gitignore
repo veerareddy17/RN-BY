@@ -1,4 +1,6 @@
 !.gitignore
+
+.vscode/.react
 # OSX
 #
 .DS_Store

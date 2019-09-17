@@ -42,8 +42,7 @@ export const metaDataFailureAction = error => {
 };
 
 export const fetchMetaData = () => async (dispatch: Dispatch) => {
-    console.log('fetch meta data');
-    dispatch(errorCallResetAction())
+    dispatch(errorCallResetAction());
     try {
         const boardResp = await LeadService.fetchBoards();
         if (boardResp && boardResp.data) {
@@ -61,7 +60,7 @@ export const fetchMetaData = () => async (dispatch: Dispatch) => {
     } catch (e) {
         console.log(e);
         let errors = Array<ErrorResponse>();
-        errors.push(new ErrorResponse('Server', e.message))
+        errors.push(new ErrorResponse('Server', e.message));
         dispatch(serverErrorCallAction(errors));
         dispatch(metaDataFailureAction(e));
     }

@@ -24,10 +24,11 @@ export class LeadResponse {
     public pin_code: number;
     public comments: string;
     public siblings: JSON;
-    public created_at: Date;
+    public created_at: string;
     public campaign: CampaignResponse;
     public campaign_id: string;
     public user: UserResponse;
     public location: Location;
     public sync_status: boolean;
+    public is_otp_verified: boolean;
 }
