@@ -83,16 +83,13 @@ class Login extends React.Component<Props, State> {
 
     componentDidMount = async () => {
         const selectedCampaign = this.props.campaignState.selectedCampaign;
-        let isLoggedIn = false;
-        if (this.context.isConnected && this.props.userState.user.token) {
-            isLoggedIn = true;
+        if (this.context.isConnected) {
+            if (this.props.userState.user.token) {
+                this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
+                return;
+            }
         }
-        if (this.props.userState.user.isOfflineLoggedIn) {
-            isLoggedIn = true;
-        }
-        isLoggedIn
-            ? this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App')
-            : this.props.navigation.navigate('Auth');
+        this.props.navigation.navigate('Auth');
     };
 
     handlePress = () => {

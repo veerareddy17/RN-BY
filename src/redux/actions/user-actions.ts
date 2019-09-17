@@ -49,10 +49,10 @@ export const authenticate = (
             dispatch(requestAction());
             if (!isConnected) {
                 if (username == storedUser.email && password === storedUser.offline_pin) {
-                    storedUser.isOfflineLoggedIn = true;
+                    // storedUser.isOfflineLoggedIn = true;
                     dispatch(successAction(storedUser));
                 } else {
-                    storedUser.isOfflineLoggedIn = false;
+                    // storedUser.isOfflineLoggedIn = false;
                     dispatch(failureAction(['Invalid Username/ PIN']));
                 }
                 return;
@@ -60,7 +60,7 @@ export const authenticate = (
             dispatch(errorCallResetAction());
             const response = await AuthenticationService.authenticate(authRequest);
             if (response.data !== null) {
-                response.data.isOfflineLoggedIn = false;
+                // response.data.isOfflineLoggedIn = false;
                 dispatch(successAction(response.data));
             } else {
                 //errors = response.errors;
@@ -82,6 +82,7 @@ export const logout = (): ((dispatch: Dispatch, getState: any) => Promise<void>)
         try {
             let storedUser = getState().userReducer.user;
             storedUser.token = '';
+            // storedUser.isOfflineLoggedIn = false;
             dispatch(logoutAction());
         } catch (error) {
             console.log('Logout action', error);
