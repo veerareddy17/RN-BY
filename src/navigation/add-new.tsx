@@ -5,14 +5,14 @@ export class AddNew extends Component {
         return (
             <View
                 style={{
-                    height: 35,
-                    width: 70,
-                    borderBottomLeftRadius: 70,
-                    borderBottomRightRadius: 70,
+                    height: 36,
+                    width: 72,
+                    borderBottomLeftRadius: 72,
+                    borderBottomRightRadius: 72,
                     backgroundColor: '#eee',
                     justifyContent: 'center',
                     alignItems: 'center',
-                    bottom: 8,
+                    bottom: 7,
                     borderWidth: 0.5,
                     borderColor: '#eee',
                 }}
@@ -25,10 +25,10 @@ export class AddNew extends Component {
                         borderRadius: 50,
                         justifyContent: 'center',
                         alignItems: 'center',
-                        bottom: 18,
+                        bottom: 15,
                     }}
                 >
-                    <Icon name="add" style={{ color: 'white' }} />
+                    <Icon name="add" style={{ color: 'white', fontSize: 30 }} />
                 </View>
             </View>
         );

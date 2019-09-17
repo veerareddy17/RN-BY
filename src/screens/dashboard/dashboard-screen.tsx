@@ -32,7 +32,7 @@ import { syncOfflineLeads } from '../../redux/actions/lead-actions';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import { MetaResponse } from '../../models/response/meta-response';
-
+import styles from './dashboard-style';
 export interface Props {
     navigation: NavigationScreenProp<any>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -53,7 +53,7 @@ export interface State {
     campaignId: string;
     campaignList: Array<String>;
 }
-const window = Dimensions.get('window');
+
 class Dashboard extends React.Component<Props, State> {
     static contextType = NetworkContext;
     constructor(props: Props) {
@@ -160,81 +160,50 @@ class Dashboard extends React.Component<Props, State> {
         return (
             <Container>
                 {Platform.OS === 'ios' ? (
-                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                    <Header style={styles.headerBackground} androidStatusBarColor="#813588">
                         <Left />
                         <Body style={{ flex: 3 }}>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Dashboard</Title>
+                            <Title style={styles.headeriOSTitle}>Dashboard</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                <Icon name="ios-log-out" style={styles.whiteColor} />
                             </Button>
                         </Right>
                     </Header>
                 ) : (
-                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                    <Header style={styles.headerBackground} androidStatusBarColor="#813588">
                         <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
-                                Dashboard
-                            </Title>
+                            <Title style={styles.headerAndroidTitle}>Dashboard</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                <Icon name="ios-log-out" style={styles.whiteColor} />
                             </Button>
                         </Right>
                     </Header>
                 )}
 
-                <Content style={{ backgroundColor: '#eee' }}>
+                <Content style={styles.contentBg}>
                     <View style={styles.containerStyle}>
                         <View style={styles.sliderContainerStyle}>
                             <SpinnerOverlay visible={this.props.leadReportState.isLoading} />
                         </View>
                     </View>
-                    <Card
-                        style={{ position: 'relative', top: -120, marginLeft: 20, marginRight: 20, marginBottom: 20 }}
-                    >
-                        <CardItem
-                            header
-                            style={{
-                                justifyContent: 'center',
-                                paddingTop: 0,
-                                paddingBottom: 0,
-                                height: 80,
-                            }}
-                        >
-                            <View
-                                style={{
-                                    alignItems: 'center',
-                                    flexDirection: 'column',
-                                    top: -50,
-                                }}
-                            >
-                                <Text style={{ fontSize: 18, color: '#fff', fontWeight: 'bold', marginBottom: 10 }}>
-                                    Hi {this.props.userState.user.name}
-                                </Text>
-                                <View
-                                    style={{
-                                        backgroundColor: '#fbd4ff',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        padding: 10,
-                                        borderRadius: 50,
-                                        borderWidth: 1,
-                                        borderColor: '#813588',
-                                        width: 95,
-                                        height: 95,
-                                    }}
-                                >
-                                    <Text style={{ fontSize: 30, color: '#813588', fontWeight: 'bold' }}>
+                    <View style={styles.cardShadow}></View>
+                    <Card style={styles.leadsCard}>
+                        <CardItem header style={styles.leadsCardHeader}>
+                            <View style={styles.leadCountSection}>
+                                <Text style={styles.leadCountUsername}>Hi {this.props.userState.user.name}</Text>
+                                <View style={styles.leadCountCircle}>
+                                    <Text style={styles.leadCountNumber}>
                                         {this.props.leadReportState.leadReport.total}
                                     </Text>
                                 </View>
-                                <Text style={{ fontSize: 16, color: '#813588', fontWeight: 'bold' }}>Total Leads</Text>
+                                <Text style={styles.leadCountText}>Total Leads</Text>
                             </View>
                         </CardItem>
-                        <CardItem style={{ flexDirection: 'column', paddingTop: 0 }}>
+                        <CardItem style={styles.leadCardItem}>
                             <Item>
                                 <Button
                                     iconRight
@@ -242,16 +211,16 @@ class Dashboard extends React.Component<Props, State> {
                                     onPress={() => {
                                         this.props.leadReportState.leadReport.today > 0 && this.getLeads('today');
                                     }}
-                                    style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
+                                    style={styles.leadCardItemButton}
                                 >
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 16, flex: 1 }}>
+                                    <Text uppercase={false} style={styles.leadCardItemText}>
                                         Leads today
                                     </Text>
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>
+                                    <Text style={styles.leadCardItemNumber}>
                                         {this.props.leadReportState.leadReport.today}
                                     </Text>
                                     {this.props.leadReportState.leadReport.today > 0 && (
-                                        <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
+                                        <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                     )}
                                 </Button>
                             </Item>
@@ -262,60 +231,52 @@ class Dashboard extends React.Component<Props, State> {
                                     onPress={() => {
                                         this.props.leadReportState.leadReport.week > 0 && this.getLeads('week');
                                     }}
-                                    style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
+                                    style={styles.leadCardItemButton}
                                 >
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 16, flex: 1 }}>
+                                    <Text uppercase={false} style={styles.leadCardItemText}>
                                         Leads this week
                                     </Text>
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>
+                                    <Text style={styles.leadCardItemNumber}>
                                         {this.props.leadReportState.leadReport.week}
                                     </Text>
                                     {this.props.leadReportState.leadReport.week > 0 && (
-                                        <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
+                                        <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                     )}
                                 </Button>
                             </Item>
-                            <Item style={{ borderBottomWidth: 0 }}>
+                            <Item style={styles.noBorderBottom}>
                                 <Button
                                     iconRight
                                     transparent
                                     onPress={() => {
                                         this.props.leadReportState.leadReport.month > 0 && this.getLeads('month');
                                     }}
-                                    style={{ flex: 1, marginBottom: 5, marginTop: 5 }}
+                                    style={styles.leadCardItemButton}
                                 >
-                                    <Text
-                                        style={{
-                                            color: '#555',
-                                            paddingLeft: 0,
-                                            fontSize: 16,
-                                            flex: 1,
-                                            textTransform: 'none',
-                                        }}
-                                    >
+                                    <Text uppercase={false} style={styles.leadCardItemText}>
                                         Leads this month
                                     </Text>
-                                    <Text style={{ color: '#555', paddingLeft: 0, fontSize: 24 }}>
+                                    <Text style={styles.leadCardItemNumber}>
                                         {this.props.leadReportState.leadReport.month}
                                     </Text>
                                     {this.props.leadReportState.leadReport.month > 0 && (
-                                        <Icon style={{ color: '#813588', marginRight: 0 }} name="arrow-forward" />
+                                        <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                     )}
                                 </Button>
                             </Item>
                         </CardItem>
                     </Card>
-                    <Card style={{ position: 'relative', top: -120, marginLeft: 20, marginRight: 20 }}>
-                        <CardItem header style={{ borderBottomWidth: 1, borderBottomColor: '#ccc' }}>
-                            <Text style={{ fontWeight: 'bold', color: '#555' }}>Current Campaign</Text>
+                    <Card style={styles.campaignCard}>
+                        <CardItem header style={styles.campaignCardItem}>
+                            <Text style={styles.campaignCardTitle}>Current Campaign</Text>
                         </CardItem>
                         <CardItem>
                             {this.props.campaignState.isLoading ? (
-                                <View style={{ flex: 1, height: 30 }}>
-                                    <Spinner size={15} color="#813588" style={{ marginTop: -25 }} />
+                                <View style={styles.campaignSpinnerContainer}>
+                                    <Spinner size={15} color="#813588" style={styles.campaignSpinner} />
                                 </View>
                             ) : (
-                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, color: '#555' }}>
+                                <Text numberOfLines={1} style={styles.campaignName}>
                                     {this.state.campaignName}
                                 </Text>
                             )}
@@ -325,9 +286,9 @@ class Dashboard extends React.Component<Props, State> {
                                 onPress={() => {
                                     this.onPressOpenRBSheet();
                                 }}
-                                style={{ borderColor: '#813588' }}
+                                style={styles.campaignCardButton}
                             >
-                                <Text style={{ color: '#813588', paddingLeft: 8, paddingRight: 8 }}>Change</Text>
+                                <Text style={styles.campaignCardButtonText}>Change</Text>
                             </Button>
                             <RBSheet
                                 ref={ref => {
@@ -337,11 +298,7 @@ class Dashboard extends React.Component<Props, State> {
                                 duration={150}
                                 closeOnDragDown={false}
                                 customStyles={{
-                                    container: {
-                                        flex: 1,
-                                        borderTopRightRadius: 20,
-                                        borderTopLeftRadius: 20,
-                                    },
+                                    container: styles.bottomSheetContainer,
                                 }}
                             >
                                 <BottomSheet
@@ -360,24 +317,7 @@ class Dashboard extends React.Component<Props, State> {
         );
     }
 }
-const styles = StyleSheet.create({
-    containerStyle: {
-        alignSelf: 'center',
-        width: window.width,
-        overflow: 'hidden',
-        height: window.width / 1.6,
-    },
-    sliderContainerStyle: {
-        borderRadius: window.width,
-        width: window.width * 2,
-        height: window.width * 2,
-        marginLeft: -(window.width / 2),
-        position: 'absolute',
-        bottom: 0,
-        overflow: 'hidden',
-        backgroundColor: '#813588',
-    },
-});
+
 const mapStateToProps = (state: AppState) => ({
     userState: state.userReducer,
     campaignState: state.campaignReducer,

@@ -45,7 +45,7 @@ const DashboardStack = createStackNavigator(
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
-                fontWeight: 'bold',
+                fontWeight: '700',
                 alignSelf: 'center',
             },
         },
@@ -63,10 +63,18 @@ const TabStack = createBottomTabNavigator(
         Dashboard: {
             screen: DashboardStack,
             navigationOptions: {
-                tabBarIcon: ({ tintColor }) => (
+                tabBarIcon: ({ tintColor, focused }) => (
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                         <Icon name="home" style={{ color: tintColor }} />
-                        <Text style={{ color: tintColor, fontSize: 16 }}>Dashboard</Text>
+                        <Text
+                            style={{
+                                color: tintColor,
+                                fontSize: focused ? 16 : 15,
+                                fontWeight: focused ? '700' : '100',
+                            }}
+                        >
+                            Dashboard
+                        </Text>
                     </View>
                 ),
             },
@@ -81,10 +89,18 @@ const TabStack = createBottomTabNavigator(
         LeadList: {
             screen: LeadList,
             navigationOptions: {
-                tabBarIcon: ({ tintColor }) => (
+                tabBarIcon: ({ tintColor, focused }) => (
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                         <Icon name="people" style={{ color: tintColor }} />
-                        <Text style={{ color: tintColor, fontSize: 16 }}>Leads</Text>
+                        <Text
+                            style={{
+                                color: tintColor,
+                                fontSize: focused ? 16 : 15,
+                                fontWeight: focused ? '700' : '100',
+                            }}
+                        >
+                            Leads
+                        </Text>
                     </View>
                 ),
             },
@@ -92,9 +108,10 @@ const TabStack = createBottomTabNavigator(
     },
     {
         initialRouteName: 'Dashboard',
+        lazy: false,
         tabBarOptions: {
             activeTintColor: '#813588',
-            inactiveTintColor: '#000',
+            inactiveTintColor: '#555',
             showLabel: false,
             style: {
                 height: 50,
@@ -105,6 +122,10 @@ const TabStack = createBottomTabNavigator(
                 shadowOpacity: 0.5,
                 shadowRadius: 10,
                 borderTopWidth: 0,
+            },
+            tabStyle: {
+                // borderColor: 'red',
+                // borderWidth: 1,
             },
         },
     },

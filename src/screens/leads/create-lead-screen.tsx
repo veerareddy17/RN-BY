@@ -350,10 +350,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         <Container>
                             <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                                 <Left>
-                                    <ListItem icon onPress={this.backToDashboard}>
-                                        <Left>
-                                            <Icon name="arrow-back" style={{ color: 'white' }} />
-                                        </Left>
+                                    <ListItem icon onPress={this.backToDashboard} style={{marginLeft: 10}}>
+                                            <Icon name="arrow-back" style={{ color: '#fff' }} />
                                     </ListItem>
                                 </Left>
                                 <Body style={{flex: 3}}>
@@ -363,7 +361,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                             </Header>
                             <Content>
                                 <View style={leadStyle.campaingStyle}>
-                                    <View style={{ flexDirection: 'row', flex: 1 }}>
+                                    <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
                                         <Text>Campaign : </Text>
                                         {this.props.campaignState.isLoading ? (
                                             <View
@@ -420,7 +418,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                 <View style={{ flex: 1 }}>
                                     <Card>
                                         <CardItem header style={{ paddingBottom: 0 }}>
-                                            <Text style={{ fontWeight: 'bold', color: '#555' }}>Student Details</Text>
+                                            <Text style={{ fontWeight: '700', color: '#555' }}>Student Details</Text>
                                         </CardItem>
                                         <CardItem>
                                             <Body>
@@ -434,7 +432,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 style.formInput,
                                                                 {
                                                                     borderColor:
-                                                                        touched.name && errors.name ? '#ff0000' : '#333',
+                                                                        touched.name && errors.name ? '#ff0000' : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('name')}
@@ -452,7 +450,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             flex: 1,
                                                             flexDirection: 'row',
                                                             borderColor:
-                                                                touched.board_id && errors.board_id ? '#ff0000' : '#333',
+                                                                touched.board_id && errors.board_id ? '#ff0000' : '#888',
                                                         },
                                                     ]}
                                                 >
@@ -503,7 +501,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     borderColor:
                                                                         touched.school_name && errors.school_name
                                                                             ? '#ff0000'
-                                                                            : '#333',
+                                                                            : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('school_name')}
@@ -522,7 +520,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     borderColor:
                                                                         touched.classes_id && errors.classes_id
                                                                             ? '#ff0000'
-                                                                            : '#333',
+                                                                            : '#888',
                                                                 },
                                                             ]}
                                                         >
@@ -586,7 +584,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                             <View style={{ flex: 1, flexDirection: "row" }}>
                                                                                 <Text
                                                                                     style={{
-                                                                                        fontWeight: 'bold',
+                                                                            fontWeight: '700',
                                                                                         color: '#555',
                                                                                     }}
                                                                                 >
@@ -611,7 +609,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                                 errors.siblings[index]!.name &&
                                                                                                 touched.siblings[index]!.name
                                                                                                 ? '#ff0000'
-                                                                                                : '#333',
+                                                                                                : '#888',
                                                                                     },
                                                                                 ]}
                                                                                 onChangeText={e => {
@@ -656,7 +654,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                                 touched.siblings[index]!
                                                                                                     .classes_id
                                                                                                 ? '#ff0000'
-                                                                                                : '#333',
+                                                                                                : '#888',
                                                                                     },
                                                                                 ]}
                                                                             >
@@ -755,7 +753,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     </Card>
                                     <Card>
                                         <CardItem header style={{ paddingBottom: 0 }}>
-                                            <Text style={{ fontWeight: 'bold', color: '#555' }}>Parent Details</Text>
+                                            <Text style={{ fontWeight: '700', color: '#555' }}>Parent Details</Text>
                                         </CardItem>
                                         <CardItem>
                                             <Body>
@@ -771,7 +769,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     borderColor:
                                                                         touched.parent_name && errors.parent_name
                                                                             ? '#ff0000'
-                                                                            : '#333',
+                                                                            : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('parent_name')}
@@ -794,7 +792,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 style.formInput,
                                                                 {
                                                                     borderColor:
-                                                                        touched.phone && errors.phone ? '#ff0000' : '#333',
+                                                                        touched.phone && errors.phone ? '#ff0000' : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('phone')}
@@ -813,7 +811,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             maxLength={10}
                                                             labelStyle={style.labelInput}
                                                             inputStyle={style.input}
-                                                            style={style.formInput}
+                                                            style={[style.formInput, {borderColor: '#888'}]}
                                                             onChangeText={handleChange('alternateMobileNumber')}
                                                             onBlur={() => setFieldTouched('alternateMobileNumber')}
                                                         >
@@ -836,7 +834,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 style.formInput,
                                                                 {
                                                                     borderColor:
-                                                                        touched.email && errors.email ? '#ff0000' : '#333',
+                                                                        touched.email && errors.email ? '#ff0000' : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('email')}
@@ -859,7 +857,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     borderColor:
                                                                         touched.address && errors.address
                                                                             ? '#ff0000'
-                                                                            : '#333',
+                                                                            : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('address')}
@@ -881,7 +879,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     borderColor:
                                                                         touched.country && errors.country
                                                                             ? '#ff0000'
-                                                                            : '#333',
+                                                                            : '#888',
                                                                 },
                                                             ]}
                                                         >
@@ -926,7 +924,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     flex: 1,
                                                                     flexDirection: 'row',
                                                                     borderColor:
-                                                                        touched.state && errors.state ? '#ff0000' : '#333',
+                                                                        touched.state && errors.state ? '#ff0000' : '#888',
                                                                 },
                                                             ]}
                                                         >
@@ -988,7 +986,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 style.formInput,
                                                                 {
                                                                     borderColor:
-                                                                        touched.city && errors.city ? '#ff0000' : '#333',
+                                                                        touched.city && errors.city ? '#ff0000' : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('city')}
@@ -1009,7 +1007,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     borderColor:
                                                                         touched.pincode && errors.pincode
                                                                             ? '#ff0000'
-                                                                            : '#333',
+                                                                            : '#888',
                                                                 },
                                                             ]}
                                                             onChangeText={handleChange('pincode')}
@@ -1040,7 +1038,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         <View>{isValid}</View>
                                                         <Textarea
                                                             underline={true}
-                                                            style={{ borderRadius: 5, borderColor: '#333' }}
+                                                            style={{ borderRadius: 5, borderColor: '#888' }}
                                                             rowSpan={5}
                                                             bordered={true}
                                                             placeholder="Comments"
@@ -1055,7 +1053,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                             <Footer>
                                 <FooterTab>
                                     <Button full={true} onPress={handleSubmit} style={{ backgroundColor: '#813588' }}>
-                                        <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 14 }}>Save</Text>
+                                        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Save</Text>
                                     </Button>
                                     <RBSheet
                                         ref={ref => {

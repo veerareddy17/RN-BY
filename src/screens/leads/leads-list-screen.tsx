@@ -122,7 +122,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             return null;
         }
         return (
-            <View>
+            <View style={{ marginBottom: 20 }}>
                 <ActivityIndicator animating size="large" />
             </View>
         );
@@ -178,7 +178,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Left />
                         <Body style={{ flex: 3 }}>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Leads</Title>
+                            <Title style={{ color: 'white', fontSize: 18 }}>Leads</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
@@ -189,9 +189,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 ) : (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold', marginLeft: 10, fontSize: 18 }}>
-                                Leads
-                            </Title>
+                            <Title style={{ color: 'white', marginLeft: 10, fontSize: 18 }}>Leads</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>

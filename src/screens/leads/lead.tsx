@@ -18,7 +18,7 @@ const Lead = ({ lead }) => {
                 }}
             >
                 <CardItem header style={{ paddingBottom: 0, paddingTop: 12, paddingLeft: 12, paddingRight: 12 }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{lead.name}</Text>
+                    <Text style={{ fontWeight: '700', fontSize: 16, color: '#555' }}>{lead.name}</Text>
                     <Button
                         rounded
                         small
@@ -48,10 +48,10 @@ const Lead = ({ lead }) => {
                 >
                     <Grid>
                         <Col style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Icon name="phone-portrait" style={{ fontSize: 20, width: 20 }} />
-                            <Text style={{ marginRight: 10, fontSize: 14 }}>{lead.phone}</Text>
-                            <Icon name="mail" style={{ fontSize: 20, width: 25 }} />
-                            <Text style={{ flex: 1, fontSize: 14 }} numberOfLines={1}>
+                            <Icon name="phone-portrait" style={{ fontSize: 20, width: 20, color: '#555' }} />
+                            <Text style={{ marginRight: 10, fontSize: 14, color: '#555' }}>{lead.phone}</Text>
+                            <Icon name="mail" style={{ fontSize: 20, width: 25, color: '#555' }} />
+                            <Text style={{ flex: 1, fontSize: 14, color: '#555' }} numberOfLines={1}>
                                 {lead.email}
                             </Text>
                         </Col>
@@ -61,10 +61,10 @@ const Lead = ({ lead }) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Grid>
                             <Col>
-                                <Text style={{ fontSize: 10 }}>School Board</Text>
+                                <Text style={{ fontSize: 10, color: '#555' }}>School Board</Text>
                             </Col>
                             <Col style={{ marginLeft: 20 }}>
-                                <Text style={{ fontSize: 10 }}>School</Text>
+                                <Text style={{ fontSize: 10, color: '#555' }}>School</Text>
                             </Col>
                         </Grid>
                     </View>
@@ -73,12 +73,12 @@ const Lead = ({ lead }) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Grid>
                             <Col>
-                                <Text style={{ flex: 1 }} numberOfLines={1}>
+                                <Text style={{ flex: 1, color: '#555' }} numberOfLines={1}>
                                     {lead.board.name}
                                 </Text>
                             </Col>
                             <Col style={{ marginLeft: 20 }}>
-                                <Text style={{ flex: 1 }} numberOfLines={1}>
+                                <Text style={{ flex: 1, color: '#555' }} numberOfLines={1}>
                                     {lead.school_name}
                                 </Text>
                             </Col>
