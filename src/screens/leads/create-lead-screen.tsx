@@ -580,21 +580,22 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         name="siblings"
                                                         render={arrayHelpers => (
                                                             <View style={{ flex: 1 }}>
-                                                                {values.siblings.length > 0 ? (
-                                                                    <Text
-                                                                        style={{
-                                                                            fontWeight: 'bold',
-                                                                            color: '#555',
-                                                                            paddingTop: 5,
-                                                                            paddingBottom: 5,
-                                                                        }}
-                                                                    >
-                                                                        Sibling Details
-                                                                </Text>
-                                                                ) : null}
                                                                 {values.siblings.map((sibling, index) => (
                                                                     <View key={index} style={{ flex: 1, marginBottom: 10 }}>
                                                                         <View style={{ flex: 1 }}>
+                                                                            <View style={{ flex: 1, flexDirection: "row" }}>
+                                                                                <Text
+                                                                                    style={{
+                                                                                        fontWeight: 'bold',
+                                                                                        color: '#555',
+                                                                                    }}
+                                                                                >
+                                                                                    Sibling {index + 1}
+                                                                                </Text>
+                                                                                <Text style={{ color: 'red', marginLeft: 'auto', }}
+                                                                                    onPress={() => arrayHelpers.remove(index)}>
+                                                                                    <Icon name="trash" style={{ fontSize: 20, width: 20, color: "red" }} />Remove</Text>
+                                                                            </View>
                                                                             <FloatingLabel
                                                                                 value={sibling.name}
                                                                                 labelStyle={style.labelInput}
@@ -729,24 +730,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                     />
                                                                                 ) : null}
                                                                         </View>
-                                                                        <Button
-                                                                            iconLeft
-                                                                            danger
-                                                                            bordered
-                                                                            style={{
-                                                                                justifyContent: 'center',
-                                                                                marginTop: 5,
-                                                                            }}
-                                                                            onPress={() => arrayHelpers.remove(index)}
-                                                                        >
-                                                                            <Icon name="trash" />
-                                                                            <Text>Remove</Text>
-                                                                        </Button>
                                                                     </View>
                                                                 ))}
-                                                                <Button
-                                                                    bordered
-                                                                    style={{ justifyContent: 'center', marginTop: 5 }}
+                                                                <Button style={{ width: 200 }} iconLeft
+                                                                    transparent
                                                                     onPress={() =>
                                                                         arrayHelpers.push({ name: '', classes_id: '' })
                                                                     }
@@ -756,11 +743,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                             : false
                                                                     }
                                                                 >
-                                                                    <Text>
-                                                                        {values.siblings.length > 0
-                                                                            ? 'Add More'
-                                                                            : 'Add Sibling Data'}
-                                                                    </Text>
+                                                                    <Icon style={{ color: values.siblings.length > 0 && errors.siblings ? '#ccc' : "#813588" }} name="add" />
+                                                                    <Text style={{ color: values.siblings.length > 0 && errors.siblings ? '#ccc' : "#813588" }}>Add Sibling Details</Text>
                                                                 </Button>
                                                             </View>
                                                         )}
