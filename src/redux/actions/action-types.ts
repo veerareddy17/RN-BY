@@ -24,6 +24,7 @@ export const FETCH_FILTERED_LEADS = 'FETCH_FILTERED_LEADS';
 //OTP Action types
 export const LOAD_OTP_START = 'LOAD_OTP_START';
 export const OTP_SENT = 'OTP_SENT';
+export const OTP_VALIDATE = 'OTP_VALIDATE';
 export const LOAD_OTP_FAIL = 'LOAD_OTP_FAIL';
 export const LOAD_OTP_INIT = 'LOAD_OTP_INIT';
 

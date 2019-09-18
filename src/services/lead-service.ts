@@ -38,8 +38,9 @@ export class LeadService {
         return response;
     };
 
-    public static verifyOTP = async (otpRequest: OTPRequest): Promise<ResponseViewModel<OTPResponse>> => {
-        const response = await HttpBaseService.post<OTPRequest, OTPResponse>(APIConstants.VERIFY_OTP_URL, otpRequest);
+    public static sendOTP = async (otpRequest: OTPRequest): Promise<ResponseViewModel<OTPResponse>> => {
+        console.log('request in service', otpRequest);
+        const response = await HttpBaseService.post<OTPRequest, OTPResponse>(APIConstants.SEND_OTP_URL, otpRequest);
         return response;
     };
 

@@ -13,6 +13,7 @@ export const loginValidation = yup.object().shape({
 });
 
 export const leadValidation = yup.object().shape({
+    proceedWithoutOtp: yup.boolean(),
     name: yup
         .string()
         .label('Student Name')
@@ -68,7 +69,7 @@ export const leadValidation = yup.object().shape({
     pincode: yup
         .string()
         .max(6)
-            .min(6)
+        .min(6)
         .label('Pin code')
         .required(),
     siblings: yup.array().of(
@@ -77,4 +78,14 @@ export const leadValidation = yup.object().shape({
             classes_id: yup.string().label('Sibling Class').required(),
         }),
     ),
+    otp: yup
+        .string()
+        .max(4)
+        .min(4)
+        .label('OTP')
+        .when(
+            'proceedWithoutOtp', (proceedWithoutOtp, schema) => {
+                return !proceedWithoutOtp ? schema.required() : schema;
+            }
+        ),
 });

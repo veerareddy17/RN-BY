@@ -25,6 +25,8 @@ import {
     ListItem,
     Spinner,
     Toast,
+    Input,
+    CheckBox,
 } from 'native-base';
 
 import { connect } from 'react-redux';
@@ -39,14 +41,12 @@ import style from '../style/styles';
 
 var FloatingLabel = require('react-native-floating-labels');
 
-import { StorageConstants } from '../../helpers/storage-constants';
-import StorageService from '../../database/storage-service';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
 import { captureLocation } from '../../redux/actions/location-action';
 import { leadValidation } from '../../validations/validation-model';
 import { Error } from '../error/error';
-import { submitOTP, verifyOTP, otpInitAction } from '../../redux/actions/otp-actions';
+import { submitOTP, otpInitAction, sendOTP } from '../../redux/actions/otp-actions';
 import { LeadRequest } from '../../models/request';
 import { withNavigation } from 'react-navigation';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
@@ -57,6 +57,7 @@ import { logout } from '../../redux/actions/user-actions';
 import { CONSTANTS } from '../../helpers/app-constants';
 import { Utility } from '../utils/utility';
 import { MetaResponse } from '../../models/response/meta-response';
+import { Alert } from 'react-native';
 import { Platform } from 'react-native';
 
 export interface CreateLeadProps {
@@ -71,7 +72,7 @@ export interface CreateLeadProps {
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     createLead(newLead: any): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    generateAndVerifyOTP(phone: string, connection: boolean): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    sendOtp(phone: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     selectCampaign(campaignId: any): void;
     captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     submitOtp(otp: String): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -100,6 +101,7 @@ export interface CreateLeadState {
     campaignList: Array<String>;
     statuses: Array<String>;
     pin_code: string;
+    proceedWithoutOtp: boolean;
     is_otp_verified: boolean;
     location: { latitude: number; longitude: number };
     sync_status: boolean;
@@ -133,6 +135,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             country: '',
             state: '',
             is_otp_verified: false,
+            proceedWithoutOtp: false,
             location: { latitude: 0, longitude: 0 },
             sync_status: false,
             siblings: Array<SiblingRequest>(),
@@ -190,53 +193,32 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         this.props.navigation.navigate('Dashboard');
     };
 
-    submitOtp = async () => {
-        await this.props.submitOtp(this.state.otp);
-        if (!this.props.otpState.error) {
-            await this.RBSheetOtp.close();
-
-            //Assigning is-otp-verified property to true if phone no was validated with OTP else false
-            const updateLeadState = Object.assign({}, this.state.leadRequest, { is_otp_verified: true });
-            this.setState({ leadRequest: updateLeadState });
-
-            await this.props.createLead(this.state.leadRequest);
-
-            if (this.props.errorState.showAlertError) {
-                AlertError.alertErr(this.props.errorState.error);
-                return;
-            }
-            if (this.props.errorState.showToastError) {
-                ToastError.toastErr(this.props.errorState.error);
-                return;
-            }
-            if (this.context.isConnected) {
-                Utility.showToast(CONSTANTS.LEAD_CREATED_SUCCESS, 'success');
-            } else {
-                Utility.showToast(CONSTANTS.OFFLINE_LEAD_CREATED_SUCCESS, 'success');
-            }
-            this.props.navigation.navigate('LeadList');
-        }
-    };
-
     handleResend = async () => {
-        await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
+        await this.props.sendOtp(this.state.phone);
     };
 
-    verifyOTP = async () => {
-        await this.props.generateAndVerifyOTP(this.state.phone, this.context.isConnected);
-        <SpinnerOverlay visible={this.props.otpState.isLoading} />;
-        if (this.props.errorState.showAlertError) {
-            AlertError.alertErr(this.props.errorState.error);
-            return;
+    onPressSendOtp = async (phone: string) => {
+        await this.props.sendOtp(phone);
+    }
+
+    onPressCheckBoxAlert = async () => {
+        await this.setState({ proceedWithoutOtp: !this.state.proceedWithoutOtp });
+        if (this.state.proceedWithoutOtp) {
+            Alert.alert(
+                'Alert',
+                'This Lead will be captured without OTP verification',
+                [
+                    { text: 'OK', onPress: () => console.log('OK Pressed') },
+                ],
+                { cancelable: false },
+            );
         }
-        if (this.props.errorState.showToastError) {
-            ToastError.toastErr(this.props.errorState.error);
-            return;
-        }
-        if (this.props.otpState.otp.success) {
-            await this.RBSheetOtp.open();
-        }
-    };
+
+    }
+
+    onPressSubmitOTP = async (otp: string) => {
+        await this.props.submitOtp(otp);
+    }
 
     handleSubmit = async values => {
         this.setState({
@@ -254,6 +236,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             pin_code: values.pincode,
             siblings: values.siblings,
         });
+
         try {
             await this.props.captureLocation();
             if (this.props.errorState.showAlertError) {
@@ -270,6 +253,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             };
             this.setState({ location: locObj });
             this.setState({ sync_status: this.context.isConnected ? true : false });
+            this.setState({ is_otp_verified: this.state.proceedWithoutOtp ? false : true })
 
             let req = this.state;
             this.setState({ leadRequest: req });
@@ -280,7 +264,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.props.navigation.navigate('LeadList');
                 return;
             }
-            await this.verifyOTP();
+            await this.props.createLead(this.state.leadRequest);
+            if (!this.props.leadState.error) {
+                this.props.navigation.navigate('LeadList');
+            }
         } catch (error) {
             /*
             error to be handled
@@ -330,6 +317,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                     state: '',
                     city: '',
                     pincode: '',
+                    otp: '',
                     siblings: Array<SiblingRequest>(),
                 }}
                 onSubmit={values => {
@@ -352,7 +340,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         {Platform.OS === 'ios' ? (
                             <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                                 <Left>
-                                    <ListItem icon onPress={this.backToDashboard} style={{marginLeft: 10}}>
+                                    <ListItem icon onPress={this.backToDashboard} style={{ marginLeft: 10 }}>
                                         <Icon name="arrow-back" style={{ color: '#fff' }} />
                                     </ListItem>
                                 </Left>
@@ -434,7 +422,79 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                             <View style={{ flex: 1 }}>
                                 <Card>
                                     <CardItem header style={{ paddingBottom: 0 }}>
-                                        <Text style={{ fontWeight: '700', color: '#555' }}>Student Details</Text>
+
+                                            <Text style={{ fontWeight: '700', color: '#555' }}>
+                                                Mobile Number
+                                            </Text>
+                                        </CardItem>
+                                        <CardItem>
+                                            <Body>
+                                                <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                    <View style={{ flex: 1 }}>
+                                                        <FloatingLabel
+                                                            keyboardType="phone-pad"
+                                                            value={values.phone}
+                                                            labelStyle={style.labelInput}
+                                                            inputStyle={style.input}
+                                                            style={[
+                                                                style.formInput,
+                                                                {
+                                                                    borderColor:
+                                                                        touched.phone && errors.phone
+                                                                            ? '#ff0000'
+                                                                            : '#333',
+                                                                },
+                                                                {
+                                                                    borderTopRightRadius: 0,
+                                                                    borderBottomRightRadius: 0,
+                                                                    borderRightWidth: 0,
+                                                                },
+                                                            ]}
+                                                            onChangeText={handleChange('phone')}
+                                                            onBlur={() => setFieldTouched('phone')}
+                                                        >
+                                                            Mobile Number*
+                                                        </FloatingLabel>
+                                                    </View>
+                                                    <Button
+                                                        transparent
+                                                        dark
+                                                        bordered
+                                                        disabled={touched.phone && errors.phone ? true : false}
+                                                        onPress={() =>
+                                                            this.onPressSendOtp(values.phone)
+                                                        }
+                                                        style={{
+                                                            borderLeftWidth: 1,
+                                                            borderTopWidth: 1,
+                                                            borderRightWidth: 1,
+                                                            borderBottomWidth: 1,
+                                                            borderColor: "#333",
+                                                            marginTop: 5,
+                                                            height: 50,
+                                                            borderRadius: 3,
+                                                            borderTopLeftRadius: 0,
+                                                            borderBottomLeftRadius: 0
+                                                        }}>
+                                                        <Text style={{ color: "#813588" }}>
+                                                            {this.props.otpState.otp || this.props.otpState.error ? 'Resend OTP' : 'Send OTP'}
+                                                        </Text>
+                                                    </Button>
+
+                                                </View>
+                                                <Error error={errors.phone} touched={touched.phone} />
+                                                <Text style={{ color: this.props.otpState.otp ? "green" : this.props.otpState.error ? "red" : "" }}>
+                                                    {this.props.otpState.otp ? 'OTP sent successfully' : this.props.otpState.error ? this.props.otpState.error : ""}
+                                                </Text>
+                                            </Body>
+                                        </CardItem>
+                                    </Card>
+                                    <Card>
+                                        <CardItem header style={{ paddingBottom: 0 }}>
+
+                                            <Text style={{ fontWeight: '700', color: '#555' }}>
+                                                Student Details
+                                            </Text>
                                     </CardItem>
                                     <CardItem>
                                         <Body>
@@ -600,7 +660,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                         <View style={{ flex: 1, flexDirection: 'row' }}>
                                                                             <Text
                                                                                 style={{
-                                                                                    fontWeight: '700',
+                                                                                        fontWeight: '700',
                                                                                     color: '#555',
                                                                                 }}
                                                                             >
@@ -833,7 +893,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <Error error={errors.parent_name} touched={touched.parent_name} />
                                                 </View>
                                             </View>
-                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                {/* <View style={{ flexDirection: 'row', flex: 1 }}>
                                                 <View style={{ flex: 1 }}>
                                                     <FloatingLabel
                                                         value={values.phone}
@@ -854,8 +914,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         Mobile Number*
                                                     </FloatingLabel>
                                                 </View>
-                                            </View>
-                                            <Error error={errors.phone} touched={touched.phone} />
+                                                </View> */}
+
                                             <View style={{ flexDirection: 'row', flex: 1 }}>
                                                 <View style={{ flex: 1 }}>
                                                     <FloatingLabel
@@ -1101,6 +1161,61 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         </Body>
                                     </CardItem>
                                 </Card>
+                                    <Card>
+                                        <CardItem header style={{ paddingBottom: 0 }}>
+                                            <Text style={{ fontWeight: 'bold', color: '#555' }}>OTP Settings</Text>
+                                        </CardItem>
+                                        <CardItem>
+                                            <Body>
+                                                <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                    <View style={{ flex: 1 }}>
+                                                        <FloatingLabel
+                                                            keyboardType="numeric"
+                                                            value={values.otp}
+                                                            labelStyle={style.labelInput}
+                                                            inputStyle={style.input}
+                                                            onSubmitEditing={() => this.onPressSubmitOTP(values.otp)}
+                                                            style={[
+                                                                style.formInput,
+                                                                {
+                                                                    borderColor:
+                                                                        touched.otp && errors.otp
+                                                                            ? '#ff0000'
+                                                                            : '#333',
+                                                                },
+                                                            ]}
+                                                            onChangeText={handleChange('otp')}
+                                                            onBlur={() => {
+                                                                this.onPressSubmitOTP(values.otp)
+                                                                setFieldTouched('otp');
+                                                            }}
+                                                        >
+                                                            OTP
+                                                        </FloatingLabel>
+                                                    </View>
+
+                                                </View>
+                                                {
+                                                    errors.otp && touched.otp ? <Error error={errors.otp} touched={touched.otp} />
+                                                        : this.props.otpState.validated != "" ? <Text style={{ color: "green" }}>Valid OTP</Text>
+                                                            : this.props.otpState.error ? <Text style={{ color: "red" }}>Invalid OTP</Text>
+                                                                : <Text />
+                                                }
+
+                                                <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                    <CheckBox style={{ borderColor: "#ccc" }}
+                                                        checked={this.state.proceedWithoutOtp}
+                                                        onPress={e => {
+                                                            e.preventDefault();
+                                                            handleChange('proceedWithoutOtp')(!this.state.proceedWithoutOtp);
+                                                            setFieldTouched('proceedWithoutOtp', true);
+                                                            this.onPressCheckBoxAlert();
+                                                        }} />
+                                                    <Text style={leadStyle.marginLeft}>Proceed without OTP </Text>
+                                                </View>
+                                            </Body>
+                                        </CardItem>
+                                    </Card>
                             </View>
                         </Content>
                         <Footer>
@@ -1139,7 +1254,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                             </FooterTab>
                         </Footer>
                     </Container>
-                )}
+                    )
+                }
             </Formik>
         );
     }
@@ -1159,7 +1275,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     logout: bindActionCreators(logout, dispatch),
     createLead: bindActionCreators(createLeadApi, dispatch),
     fetchCampaigns: bindActionCreators(fetchCampaigns, dispatch),
-    generateAndVerifyOTP: bindActionCreators(verifyOTP, dispatch),
+    sendOtp: bindActionCreators(sendOTP, dispatch),
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
     captureLocation: bindActionCreators(captureLocation, dispatch),
     submitOtp: bindActionCreators(submitOTP, dispatch),

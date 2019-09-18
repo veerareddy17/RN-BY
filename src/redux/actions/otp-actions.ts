@@ -1,7 +1,7 @@
 import { ErrorResponse } from './../../models/response/error-response';
 import { errorCallResetAction, errorCallAction, serverErrorCallAction } from './error-actions';
 import { SMSService } from './../../services/sendSMS-service';
-import { OTP_SENT, LOAD_OTP_START, LOAD_OTP_FAIL, LOAD_OTP_INIT } from './action-types';
+import { OTP_SENT, LOAD_OTP_START, LOAD_OTP_FAIL, LOAD_OTP_INIT, OTP_VALIDATE } from './action-types';
 import { OTPRequest } from './../../models/request/otp-request';
 import { LeadService } from './../../services/lead-service';
 import { Dispatch } from 'redux';
@@ -37,16 +37,26 @@ export const otpSuccessAction = successData => {
     };
 };
 
-export const verifyOTP = (phone: string, connection: boolean) => async (dispatch: Dispatch) => {
+export const otpValidateAction = successData => {
+    return {
+        type: OTP_VALIDATE,
+        payload: successData,
+    };
+};
+
+export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: any) => {
     dispatch(errorCallResetAction())
     dispatch(otpStartAction());
     let OTP = await generateOTP();
     console.log('OTP generated - ', OTP);
-    console.log('connection', connection);
+    console.log('phone', phone);
     let otpRequest = new OTPRequest(phone, OTP);
+
     try {
-        if (connection) {
-            let response = await LeadService.verifyOTP(otpRequest);
+        if (getState().connectionStateReducer.isConnected) {
+            console.log('otp request', otpRequest)
+            let response = await LeadService.sendOTP(otpRequest);
+            console.log('otp response', response)
             if (response && response.data) {
                 dispatch(otpSuccessAction(response.data));
             } else {
@@ -96,10 +106,10 @@ export const submitOTP = (otp: String) => async (dispatch: Dispatch) => {
     dispatch(otpStartAction());
     let storedOTP = await StorageService.get<string>(StorageConstants.USER_OTP);
     if (otp === storedOTP) {
-        dispatch(otpSuccessAction(true));
+        dispatch(otpValidateAction(true));
         await StorageService.removeKey(StorageConstants.USER_OTP);
     } else {
-        dispatch(otpFailureAction('OTP invalid'));
+        dispatch(otpFailureAction('Invalid OTP'));
     }
 };
 
