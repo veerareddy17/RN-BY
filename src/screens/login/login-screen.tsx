@@ -81,7 +81,7 @@ class Login extends React.Component<Props, State> {
         this.state.input[id]._root.focus();
     };
 
-     componentDidMount = async () => {
+    componentDidMount = async () => {
         const selectedCampaign = this.props.campaignState.selectedCampaign;
         let isLoggedIn = false;
         if (this.context.isConnected && this.props.userState.user.token) {
@@ -163,17 +163,16 @@ class Login extends React.Component<Props, State> {
         this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
     };
     render() {
-        const { width, height } = Dimensions.get('window');
         return (
             <Container>
                 <StatusBar backgroundColor="#813588" barStyle="light-content" />
-                <ScrollView keyboardShouldPersistTaps="always">
-                    <ImageBackground source={images.background} style={{ width, height }}>
+                <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }}>
+                    <ImageBackground source={images.background} style={loginStyle.imageBg}>
                         <Content contentContainerStyle={loginStyle.containerStyle}>
-                            <View style={{ alignItems: 'center', flexDirection: 'column' }}>
+                            <View style={loginStyle.logoContainer}>
                                 <Image source={images.logo} />
                             </View>
-                            <View style={{}}>
+                            <View>
                                 <Formik
                                     initialValues={{ email: '', password: '' }}
                                     onSubmit={values => this.handleSubmit(values)}
@@ -190,12 +189,12 @@ class Login extends React.Component<Props, State> {
                                     }) => (
                                         <Form>
                                             <Item floatingLabel style={loginStyle.userName}>
-                                                <Label style={{ marginLeft: 10 }}>Email</Label>
+                                                <Label style={loginStyle.marginLeft}>Email</Label>
                                                 <Input
                                                     keyboardType="email-address"
                                                     onChangeText={handleChange('email')}
                                                     onBlur={() => setFieldTouched('email')}
-                                                    style={{ marginLeft: 10 }}
+                                                    style={loginStyle.marginLeft}
                                                     returnKeyType="next"
                                                     blurOnSubmit={false}
                                                     onSubmitEditing={() => this.focusTheField('password')}
@@ -203,7 +202,7 @@ class Login extends React.Component<Props, State> {
                                                 />
                                             </Item>
                                             <Item floatingLabel style={loginStyle.password}>
-                                                <Label style={{ marginLeft: 10 }}>
+                                                <Label style={loginStyle.marginLeft}>
                                                     {this.context.isConnected ? 'Password' : 'Offline PIN'}
                                                 </Label>
                                                 <Input
@@ -211,7 +210,7 @@ class Login extends React.Component<Props, State> {
                                                     value={values.password}
                                                     onChangeText={handleChange('password')}
                                                     onBlur={() => setFieldTouched('password')}
-                                                    style={{ marginLeft: 10 }}
+                                                    style={loginStyle.marginLeft}
                                                     returnKeyType="done"
                                                     getRef={input => {
                                                         this.state.input['password'] = input;
@@ -219,7 +218,7 @@ class Login extends React.Component<Props, State> {
                                                     onSubmitEditing={() => this.handleSubmit(values)}
                                                 />
                                                 <Icon
-                                                    style={{ paddingTop: 0 }}
+                                                    style={loginStyle.paddingTop}
                                                     active
                                                     name={this.state.showPassword ? 'eye-off' : 'eye'}
                                                     onPress={e => {
@@ -253,15 +252,12 @@ class Login extends React.Component<Props, State> {
                                             )}
 
                                             <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                <Text style={{ fontSize: 16 }}>Login</Text>
+                                                <Text style={loginStyle.loginButtonText}>Login</Text>
                                             </Button>
                                             <SpinnerOverlay visible={this.state.showLoadingSpinner} />
 
-                                            <View style={{ alignItems: 'center', flexDirection: 'column' }}>
-                                                <Text
-                                                    onPress={this.handlePress}
-                                                    style={{ color: '#fff', fontSize: 14 }}
-                                                >
+                                            <View style={loginStyle.forgotPasswordContainer}>
+                                                <Text onPress={this.handlePress} style={loginStyle.forgotPasswordText}>
                                                     Forgot Password?
                                                 </Text>
                                             </View>

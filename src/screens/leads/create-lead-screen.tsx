@@ -57,6 +57,7 @@ import { logout } from '../../redux/actions/user-actions';
 import { CONSTANTS } from '../../helpers/app-constants';
 import { Utility } from '../utils/utility';
 import { MetaResponse } from '../../models/response/meta-response';
+import { Platform } from 'react-native';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -274,7 +275,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             this.setState({ leadRequest: req });
 
             //If app offline then no OTP verification
-            if(!this.context.isConnected) {
+            if (!this.context.isConnected) {
                 await this.props.createLead(this.state.leadRequest);
                 this.props.navigation.navigate('LeadList');
                 return;
@@ -309,7 +310,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         await this.props.fetchCampaigns();
         this.setState({ campaignList: this.props.campaignState.campaignList });
         this.RBSheet.open();
-    }
+    };
 
     render() {
         return (
@@ -347,746 +348,798 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                     handleSubmit,
                     setFieldValue,
                 }) => (
-                        <Container>
+                    <Container>
+                        {Platform.OS === 'ios' ? (
                             <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                                 <Left>
                                     <ListItem icon onPress={this.backToDashboard} style={{marginLeft: 10}}>
-                                            <Icon name="arrow-back" style={{ color: '#fff' }} />
+                                        <Icon name="arrow-back" style={{ color: '#fff' }} />
                                     </ListItem>
                                 </Left>
-                                <Body style={{flex: 3}}>
-                                    <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18}}>Create Lead</Title>
+                                <Body>
+                                    <Title style={{ color: 'white', fontSize: 18 }}>Create Lead</Title>
                                 </Body>
                                 <Right />
                             </Header>
-                            <Content>
-                                <View style={leadStyle.campaingStyle}>
-                                    <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-                                        <Text>Campaign : </Text>
-                                        {this.props.campaignState.isLoading ? (
+                        ) : (
+                            <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                                <Left style={{ paddingRight: 10 }}>
+                                    <ListItem icon onPress={this.backToDashboard} style={{ marginLeft: 10 }}>
+                                        <Icon name="arrow-back" style={{ color: '#fff' }} />
+                                    </ListItem>
+                                </Left>
+                                <Body style={{ flex: 3, paddingLeft: 20 }}>
+                                    <Title style={{ color: 'white', fontSize: 18 }}>Create Lead</Title>
+                                </Body>
+                                <Right />
+                            </Header>
+                        )}
+
+                        <Content>
+                            <View style={leadStyle.campaingStyle}>
+                                <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
+                                    <Text>Campaign : </Text>
+                                    {this.props.campaignState.isLoading ? (
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                height: 30,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
+                                        </View>
+                                    ) : (
+                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
+                                            {this.state.campaignName}
+                                        </Text>
+                                    )}
+                                </View>
+                                <Button
+                                    onPress={() => {
+                                        this.onPressOpenRBSheet();
+                                    }}
+                                    small
+                                    bordered
+                                    style={leadStyle.buttonChangeCampaingStyle}
+                                >
+                                    <Text style={{ color: '#813588', paddingLeft: 8, paddingRight: 8 }}>Change</Text>
+                                </Button>
+                                <RBSheet
+                                    ref={ref => {
+                                        this.RBSheet = ref;
+                                    }}
+                                    height={400}
+                                    duration={150}
+                                    closeOnDragDown={false}
+                                    customStyles={{
+                                        container: {
+                                            flex: 1,
+                                            borderTopRightRadius: 20,
+                                            borderTopLeftRadius: 20,
+                                        },
+                                    }}
+                                >
+                                    <BottomSheet
+                                        type="List"
+                                        currentcampaign={this.state.campaign_id}
+                                        data={this.state.campaignList}
+                                        close={this.closeBottomSheet}
+                                        title="Change Campaign"
+                                        onPress={this.onPressCampaign}
+                                    />
+                                </RBSheet>
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Card>
+                                    <CardItem header style={{ paddingBottom: 0 }}>
+                                        <Text style={{ fontWeight: '700', color: '#555' }}>Student Details</Text>
+                                    </CardItem>
+                                    <CardItem>
+                                        <Body>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        value={values.name}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.name && errors.name ? '#ff0000' : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('name')}
+                                                        onBlur={handleBlur('name')}
+                                                    >
+                                                        Student Name*
+                                                    </FloatingLabel>
+                                                    <Error error={errors.name} touched={touched.name} />
+                                                </View>
+                                            </View>
+                                            <View
+                                                style={[
+                                                    leadStyle.buttonPickerStyle,
+                                                    {
+                                                        flex: 1,
+                                                        flexDirection: 'row',
+                                                        borderColor:
+                                                            touched.board_id && errors.board_id ? '#ff0000' : '#888',
+                                                    },
+                                                ]}
+                                            >
+                                                <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                                    <View style={{ flex: 1 }}>
+                                                        <Label
+                                                            style={{
+                                                                fontSize: 11,
+                                                                color: '#555',
+                                                                marginTop: 10,
+                                                                marginLeft: 10,
+                                                            }}
+                                                        >
+                                                            School Board*
+                                                        </Label>
+                                                        <Picker
+                                                            mode="dropdown"
+                                                            iosIcon={<Icon name="arrow-down" />}
+                                                            style={{
+                                                                fontSize: 15,
+                                                                height: 30,
+                                                            }}
+                                                            placeholder="Select"
+                                                            placeholderStyle={{ color: '#bfc6ea' }}
+                                                            placeholderIconColor="#007aff"
+                                                            selectedValue={values.board_id}
+                                                            onValueChange={value => {
+                                                                handleChange('board_id')(value);
+                                                                setFieldTouched('board_id', true);
+                                                            }}
+                                                        >
+                                                            <Picker.Item label="Select" color="#ccc" value="" />
+                                                            {this.updateBoardDropdown()}
+                                                        </Picker>
+                                                    </View>
+                                                </Item>
+                                            </View>
+                                            <Error error={errors.board_id} touched={touched.board_id} />
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        value={values.school_name}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.school_name && errors.school_name
+                                                                        ? '#ff0000'
+                                                                        : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('school_name')}
+                                                        onBlur={() => setFieldTouched('school_name')}
+                                                    >
+                                                        School Name*
+                                                    </FloatingLabel>
+                                                </View>
+                                                <View style={[leadStyle.marginLeft, style.flexQuater]}>
+                                                    <View
+                                                        style={[
+                                                            leadStyle.buttonPickerStyle,
+                                                            {
+                                                                flex: 1,
+                                                                flexDirection: 'row',
+                                                                borderColor:
+                                                                    touched.classes_id && errors.classes_id
+                                                                        ? '#ff0000'
+                                                                        : '#888',
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                                            <View style={{ flex: 1, marginBottom: 10 }}>
+                                                                <Label
+                                                                    style={{
+                                                                        fontSize: 11,
+                                                                        color: '#555',
+                                                                        marginTop: 10,
+                                                                        marginLeft: 10,
+                                                                    }}
+                                                                >
+                                                                    Class*
+                                                                </Label>
+                                                                <Picker
+                                                                    mode="dropdown"
+                                                                    iosIcon={<Icon name="arrow-down" />}
+                                                                    placeholder="Select"
+                                                                    placeholderStyle={{ color: '#bfc6ea' }}
+                                                                    placeholderIconColor="#007aff"
+                                                                    style={{ fontSize: 15, height: 30 }}
+                                                                    selectedValue={values.classes_id}
+                                                                    onValueChange={value => {
+                                                                        handleChange('classes_id')(value);
+                                                                        setFieldTouched('classes_id', true);
+                                                                    }}
+                                                                >
+                                                                    <Picker.Item label="Select" color="#ccc" value="" />
+                                                                    {this.updateClassDropdown()}
+                                                                </Picker>
+                                                            </View>
+                                                        </Item>
+                                                    </View>
+                                                </View>
+                                            </View>
                                             <View
                                                 style={{
+                                                    flexDirection: 'row',
                                                     flex: 1,
-                                                    height: 30,
+                                                    marginBottom: 10,
                                                     justifyContent: 'center',
                                                     alignItems: 'center',
                                                 }}
                                             >
-                                                <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
+                                                <View style={[style.felxHalf]}>
+                                                    <Error error={errors.school_name} touched={touched.school_name} />
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
+                                                    <Error error={errors.classes_id} touched={touched.classes_id} />
+                                                </View>
                                             </View>
-                                        ) : (
-                                                <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
-                                                    {this.state.campaignName}
-                                                </Text>
-                                            )}
-                                    </View>
-                                    <Button
-                                        onPress={() => {
-                                            this.onPressOpenRBSheet();
-                                        }}
-                                        small
-                                        bordered
-                                        style={leadStyle.buttonChangeCampaingStyle}
-                                    >
-                                        <Text style={{ color: '#813588', paddingLeft: 8, paddingRight: 8 }}>Change</Text>
-                                    </Button>
-                                    <RBSheet
-                                        ref={ref => {
-                                            this.RBSheet = ref;
-                                        }}
-                                        height={400}
-                                        duration={150}
-                                        closeOnDragDown={false}
-                                        customStyles={{
-                                            container: {
-                                                flex: 1,
-                                                borderTopRightRadius: 20,
-                                                borderTopLeftRadius: 20,
-                                            },
-                                        }}
-                                    >
-                                        <BottomSheet
-                                            type="List"
-                                            currentcampaign={this.state.campaign_id}
-                                            data={this.state.campaignList}
-                                            close={this.closeBottomSheet}
-                                            title="Change Campaign"
-                                            onPress={this.onPressCampaign}
-                                        />
-                                    </RBSheet>
-                                </View>
-                                <View style={{ flex: 1 }}>
-                                    <Card>
-                                        <CardItem header style={{ paddingBottom: 0 }}>
-                                            <Text style={{ fontWeight: '700', color: '#555' }}>Student Details</Text>
-                                        </CardItem>
-                                        <CardItem>
-                                            <Body>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            value={values.name}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.name && errors.name ? '#ff0000' : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('name')}
-                                                            onBlur={handleBlur('name')}
-                                                        >
-                                                            Student Name*
-                                                    </FloatingLabel>
-                                                        <Error error={errors.name} touched={touched.name} />
-                                                    </View>
-                                                </View>
-                                                <View
-                                                    style={[
-                                                        leadStyle.buttonPickerStyle,
-                                                        {
-                                                            flex: 1,
-                                                            flexDirection: 'row',
-                                                            borderColor:
-                                                                touched.board_id && errors.board_id ? '#ff0000' : '#888',
-                                                        },
-                                                    ]}
-                                                >
-                                                    <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <FieldArray
+                                                    name="siblings"
+                                                    render={arrayHelpers => (
                                                         <View style={{ flex: 1 }}>
-                                                            <Label
-                                                                style={{
-                                                                    fontSize: 11,
-                                                                    color: '#555',
-                                                                    marginTop: 10,
-                                                                    marginLeft: 10,
-                                                                }}
-                                                            >
-                                                                School Board*
-                                                        </Label>
-                                                            <Picker
-                                                                mode="dropdown"
-                                                                iosIcon={<Icon name="arrow-down" />}
-                                                                style={{
-                                                                    fontSize: 15,
-                                                                    height: 30,
-                                                                }}
-                                                                placeholder="Select"
-                                                                placeholderStyle={{ color: '#bfc6ea' }}
-                                                                placeholderIconColor="#007aff"
-                                                                selectedValue={values.board_id}
-                                                                onValueChange={value => {
-                                                                    handleChange('board_id')(value);
-                                                                    setFieldTouched('board_id', true);
-                                                                }}
-                                                            >
-                                                                <Picker.Item label="Select" color="#ccc" value="" />
-                                                                {this.updateBoardDropdown()}
-                                                            </Picker>
-                                                        </View>
-                                                    </Item>
-                                                </View>
-                                                <Error error={errors.board_id} touched={touched.board_id} />
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            value={values.school_name}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.school_name && errors.school_name
-                                                                            ? '#ff0000'
-                                                                            : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('school_name')}
-                                                            onBlur={() => setFieldTouched('school_name')}
-                                                        >
-                                                            School Name*
-                                                    </FloatingLabel>
-                                                    </View>
-                                                    <View style={[leadStyle.marginLeft, style.flexQuater]}>
-                                                        <View
-                                                            style={[
-                                                                leadStyle.buttonPickerStyle,
-                                                                {
-                                                                    flex: 1,
-                                                                    flexDirection: 'row',
-                                                                    borderColor:
-                                                                        touched.classes_id && errors.classes_id
-                                                                            ? '#ff0000'
-                                                                            : '#888',
-                                                                },
-                                                            ]}
-                                                        >
-                                                            <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
-                                                                <View style={{ flex: 1, marginBottom: 10 }}>
-                                                                    <Label
-                                                                        style={{
-                                                                            fontSize: 11,
-                                                                            color: '#555',
-                                                                            marginTop: 10,
-                                                                            marginLeft: 10,
-                                                                        }}
-                                                                    >
-                                                                        Class*
-                                                                </Label>
-                                                                    <Picker
-                                                                        mode="dropdown"
-                                                                        iosIcon={<Icon name="arrow-down" />}
-                                                                        placeholder="Select"
-                                                                        placeholderStyle={{ color: '#bfc6ea' }}
-                                                                        placeholderIconColor="#007aff"
-                                                                        style={{ fontSize: 15, height: 30 }}
-                                                                        selectedValue={values.classes_id}
-                                                                        onValueChange={value => {
-                                                                            handleChange('classes_id')(value);
-                                                                            setFieldTouched('classes_id', true);
-                                                                        }}
-                                                                    >
-                                                                        <Picker.Item label="Select" color="#ccc" value="" />
-                                                                        {this.updateClassDropdown()}
-                                                                    </Picker>
-                                                                </View>
-                                                            </Item>
-                                                        </View>
-                                                    </View>
-                                                </View>
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'row',
-                                                        flex: 1,
-                                                        marginBottom: 10,
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                    }}
-                                                >
-                                                    <View style={[style.felxHalf]}>
-                                                        <Error error={errors.school_name} touched={touched.school_name} />
-                                                    </View>
-                                                    <View style={[style.felxHalf, leadStyle.marginLeft]}>
-                                                        <Error error={errors.classes_id} touched={touched.classes_id} />
-                                                    </View>
-                                                </View>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <FieldArray
-                                                        name="siblings"
-                                                        render={arrayHelpers => (
-                                                            <View style={{ flex: 1 }}>
-                                                                {values.siblings.map((sibling, index) => (
-                                                                    <View key={index} style={{ flex: 1, marginBottom: 10 }}>
-                                                                        <View style={{ flex: 1 }}>
-                                                                            <View style={{ flex: 1, flexDirection: "row" }}>
-                                                                                <Text
-                                                                                    style={{
-                                                                            fontWeight: '700',
-                                                                                        color: '#555',
-                                                                                    }}
-                                                                                >
-                                                                                    Sibling {index + 1}
-                                                                                </Text>
-                                                                                <Text style={{ color: 'red', marginLeft: 'auto', }}
-                                                                                    onPress={() => arrayHelpers.remove(index)}>
-                                                                                    <Icon name="trash" style={{ fontSize: 20, width: 20, color: "red" }} />Remove</Text>
-                                                                            </View>
-                                                                            <FloatingLabel
-                                                                                value={sibling.name}
-                                                                                labelStyle={style.labelInput}
-                                                                                inputStyle={style.input}
-                                                                                style={[
-                                                                                    style.formInput,
-                                                                                    {
-                                                                                        borderColor:
-                                                                                            errors.siblings &&
-                                                                                                errors.siblings[index] &&
-                                                                                                touched.siblings &&
-                                                                                                touched.siblings[index] &&
-                                                                                                errors.siblings[index]!.name &&
-                                                                                                touched.siblings[index]!.name
-                                                                                                ? '#ff0000'
-                                                                                                : '#888',
-                                                                                    },
-                                                                                ]}
-                                                                                onChangeText={e => {
-                                                                                    handleChange(`siblings[${index}}.name`);
-                                                                                    setFieldValue(
-                                                                                        `siblings.${index}.name`,
-                                                                                        e,
-                                                                                    );
+                                                            {values.siblings.map((sibling, index) => (
+                                                                <View key={index} style={{ flex: 1, marginBottom: 10 }}>
+                                                                    <View style={{ flex: 1 }}>
+                                                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                                            <Text
+                                                                                style={{
+                                                                                    fontWeight: '700',
+                                                                                    color: '#555',
                                                                                 }}
-                                                                                onBlur={() =>
-                                                                                    setFieldTouched(
-                                                                                        `siblings[${index}].name`,
-                                                                                    )
+                                                                            >
+                                                                                Sibling {index + 1}
+                                                                            </Text>
+                                                                            <Text
+                                                                                style={{
+                                                                                    color: 'red',
+                                                                                    marginLeft: 'auto',
+                                                                                }}
+                                                                                onPress={() =>
+                                                                                    arrayHelpers.remove(index)
                                                                                 }
                                                                             >
-                                                                                Sibling Name
-                                                                        </FloatingLabel>
-                                                                            {errors.siblings &&
-                                                                                errors.siblings[index] &&
-                                                                                touched.siblings &&
-                                                                                touched.siblings[index] ? (
-                                                                                    <Error
-                                                                                        error={errors.siblings[index]!.name}
-                                                                                        touched={touched.siblings[index]!.name}
-                                                                                    />
-                                                                                ) : null}
-                                                                        </View>
-                                                                        <View>
-                                                                            <View
-                                                                                style={[
-                                                                                    leadStyle.buttonPickerStyle,
-                                                                                    {
-                                                                                        flex: 1,
-                                                                                        flexDirection: 'row',
-                                                                                        borderColor:
-                                                                                            errors.siblings &&
-                                                                                                errors.siblings[index] &&
-                                                                                                touched.siblings &&
-                                                                                                touched.siblings[index] &&
-                                                                                                errors.siblings[index]!
-                                                                                                    .classes_id &&
-                                                                                                touched.siblings[index]!
-                                                                                                    .classes_id
-                                                                                                ? '#ff0000'
-                                                                                                : '#888',
-                                                                                    },
-                                                                                ]}
-                                                                            >
-                                                                                <Item
-                                                                                    picker
+                                                                                <Icon
+                                                                                    name="trash"
                                                                                     style={{
-                                                                                        borderBottomWidth: 0,
-                                                                                        flex: 1,
+                                                                                        fontSize: 20,
+                                                                                        width: 20,
+                                                                                        color: 'red',
                                                                                     }}
-                                                                                >
-                                                                                    <View style={{ flex: 1 }}>
-                                                                                        <Label
-                                                                                            style={{
-                                                                                                fontSize: 11,
-                                                                                                color: '#555',
-                                                                                                marginTop: 10,
-                                                                                                marginLeft: 10,
-                                                                                            }}
-                                                                                        >
-                                                                                            Class
-                                                                                    </Label>
-                                                                                        <Picker
-                                                                                            mode="dropdown"
-                                                                                            iosIcon={
-                                                                                                <Icon name="arrow-down" />
-                                                                                            }
-                                                                                            style={{
-                                                                                                fontSize: 15,
-                                                                                                height: 30,
-                                                                                            }}
-                                                                                            placeholder="Select"
-                                                                                            placeholderStyle={{
-                                                                                                color: '#bfc6ea',
-                                                                                            }}
-                                                                                            placeholderIconColor="#007aff"
-                                                                                            selectedValue={
-                                                                                                values.siblings[index]
-                                                                                                    .classes_id
-                                                                                            }
-                                                                                            onValueChange={e => {
-                                                                                                setFieldValue(
-                                                                                                    `siblings.${index}.classes_id`,
-                                                                                                    e,
-                                                                                                );
-                                                                                                setFieldTouched(
-                                                                                                    `siblings.${index}.classes_id`,
-                                                                                                );
-                                                                                            }}
-                                                                                        >
-                                                                                            <Picker.Item
-                                                                                                label="Select"
-                                                                                                color="#ccc"
-                                                                                                value=""
-                                                                                            />
-                                                                                            {this.updateClassDropdown()}
-                                                                                        </Picker>
-                                                                                    </View>
-                                                                                </Item>
-                                                                            </View>
-                                                                            {errors.siblings &&
-                                                                                errors.siblings[index] &&
-                                                                                touched.siblings &&
-                                                                                touched.siblings[index] ? (
-                                                                                    <Error
-                                                                                        error={
-                                                                                            errors.siblings[index]!.classes_id
-                                                                                        }
-                                                                                        touched={
-                                                                                            touched.siblings[index]!.classes_id
-                                                                                        }
-                                                                                    />
-                                                                                ) : null}
-                                                                        </View>
-                                                                    </View>
-                                                                ))}
-                                                                <Button style={{ width: 200 }} iconLeft
-                                                                    transparent
-                                                                    onPress={() =>
-                                                                        arrayHelpers.push({ name: '', classes_id: '' })
-                                                                    }
-                                                                    disabled={
-                                                                        values.siblings.length > 0 && errors.siblings
-                                                                            ? true
-                                                                            : false
-                                                                    }
-                                                                >
-                                                                    <Icon style={{ color: values.siblings.length > 0 && errors.siblings ? '#ccc' : "#813588" }} name="add" />
-                                                                    <Text style={{ color: values.siblings.length > 0 && errors.siblings ? '#ccc' : "#813588" }}>Add Sibling Details</Text>
-                                                                </Button>
-                                                            </View>
-                                                        )}
-                                                    ></FieldArray>
-                                                </View>
-                                            </Body>
-                                        </CardItem>
-                                    </Card>
-                                    <Card>
-                                        <CardItem header style={{ paddingBottom: 0 }}>
-                                            <Text style={{ fontWeight: '700', color: '#555' }}>Parent Details</Text>
-                                        </CardItem>
-                                        <CardItem>
-                                            <Body>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            value={values.parent_name}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.parent_name && errors.parent_name
-                                                                            ? '#ff0000'
-                                                                            : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('parent_name')}
-                                                            onBlur={() => setFieldTouched('parent_name')}
-                                                        >
-                                                            Parent Name*
-                                                    </FloatingLabel>
-                                                        <Error error={errors.parent_name} touched={touched.parent_name} />
-                                                    </View>
-                                                </View>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            value={values.phone}
-                                                            keyboardType="phone-pad"
-                                                            maxLength={10}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.phone && errors.phone ? '#ff0000' : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('phone')}
-                                                            onBlur={() => setFieldTouched('phone')}
-                                                        >
-                                                            Mobile Number*
-                                                    </FloatingLabel>
-                                                    </View>
-                                                </View>
-                                                <Error error={errors.phone} touched={touched.phone} />
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            value={values.alternateMobileNumber}
-                                                            keyboardType="phone-pad"
-                                                            maxLength={10}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[style.formInput, {borderColor: '#888'}]}
-                                                            onChangeText={handleChange('alternateMobileNumber')}
-                                                            onBlur={() => setFieldTouched('alternateMobileNumber')}
-                                                        >
-                                                            Alternate Mobile Number
-                                                    </FloatingLabel>
-                                                        <Error
-                                                            error={errors.alternateMobileNumber}
-                                                            touched={touched.alternateMobileNumber}
-                                                        />
-                                                    </View>
-                                                </View>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            keyboardType="email-address"
-                                                            value={values.email}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.email && errors.email ? '#ff0000' : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('email')}
-                                                            onBlur={() => setFieldTouched('email')}
-                                                        >
-                                                            Email*
-                                                    </FloatingLabel>
-                                                        <Error error={errors.email} touched={touched.email} />
-                                                    </View>
-                                                </View>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            value={values.address}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.address && errors.address
-                                                                            ? '#ff0000'
-                                                                            : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('address')}
-                                                            onBlur={() => setFieldTouched('address')}
-                                                        >
-                                                            Address*
-                                                    </FloatingLabel>
-                                                        <Error error={errors.address} touched={touched.address} />
-                                                    </View>
-                                                </View>
-                                                <View style={{ flexDirection: 'row' }}>
-                                                    <View style={style.felxHalf}>
-                                                        <View
-                                                            style={[
-                                                                leadStyle.buttonPickerStyle,
-                                                                {
-                                                                    flex: 1,
-                                                                    flexDirection: 'row',
-                                                                    borderColor:
-                                                                        touched.country && errors.country
-                                                                            ? '#ff0000'
-                                                                            : '#888',
-                                                                },
-                                                            ]}
-                                                        >
-                                                            <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
-                                                                <View style={{ flex: 1, marginBottom: 10 }}>
-                                                                    <Label
-                                                                        style={{
-                                                                            fontSize: 11,
-                                                                            color: '#555',
-                                                                            marginTop: 10,
-                                                                            marginLeft: 10,
-                                                                        }}
-                                                                    >
-                                                                        Country*
-                                                                </Label>
-                                                                    <Picker
-                                                                        mode="dropdown"
-                                                                        iosIcon={<Icon name="arrow-down" />}
-                                                                        placeholder="Select"
-                                                                        placeholderStyle={{ color: '#bfc6ea' }}
-                                                                        placeholderIconColor="#007aff"
-                                                                        style={{ fontSize: 15, height: 30 }}
-                                                                        selectedValue={values.country}
-                                                                        onValueChange={value => {
-                                                                            handleChange('country')(value);
-                                                                            setFieldTouched('country', true);
-                                                                        }}
-                                                                    >
-                                                                        <Picker.Item label="Select" color="#ccc" value="" />
-                                                                        <Picker.Item label="India" value="1" />
-                                                                    </Picker>
-                                                                </View>
-                                                            </Item>
-                                                        </View>
-                                                        <Error error={errors.country} touched={touched.country} />
-                                                    </View>
-                                                    <View style={[style.felxHalf, leadStyle.marginLeft]}>
-                                                        <View
-                                                            style={[
-                                                                leadStyle.buttonPickerStyle,
-                                                                {
-                                                                    flex: 1,
-                                                                    flexDirection: 'row',
-                                                                    borderColor:
-                                                                        touched.state && errors.state ? '#ff0000' : '#888',
-                                                                },
-                                                            ]}
-                                                        >
-                                                            <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
-                                                                <View style={{ flex: 1, marginBottom: 10 }}>
-                                                                    <Label
-                                                                        style={{
-                                                                            fontSize: 11,
-                                                                            color: '#555',
-                                                                            marginTop: 10,
-                                                                            marginLeft: 10,
-                                                                        }}
-                                                                    >
-                                                                        State*
-                                                                </Label>
-                                                                    <Picker
-                                                                        mode="dropdown"
-                                                                        iosIcon={<Icon name="arrow-down" />}
-                                                                        placeholder="Select"
-                                                                        placeholderStyle={{ color: '#bfc6ea' }}
-                                                                        placeholderIconColor="#007aff"
-                                                                        style={{ fontSize: 15, height: 30 }}
-                                                                        selectedValue={values.state}
-                                                                        onValueChange={value => {
-                                                                            handleChange('state')(value);
-                                                                            setFieldTouched('state', true);
-                                                                        }}
-                                                                    >
-                                                                        {values.country ? (
-                                                                            this.updateStatesDropdown()
-                                                                        ) : (
-                                                                                <Picker.Item
-                                                                                    label="Select"
-                                                                                    color="#ccc"
-                                                                                    value=""
                                                                                 />
-                                                                            )}
-                                                                    </Picker>
+                                                                                Remove
+                                                                            </Text>
+                                                                        </View>
+                                                                        <FloatingLabel
+                                                                            value={sibling.name}
+                                                                            labelStyle={style.labelInput}
+                                                                            inputStyle={style.input}
+                                                                            style={[
+                                                                                style.formInput,
+                                                                                {
+                                                                                    borderColor:
+                                                                                        errors.siblings &&
+                                                                                        errors.siblings[index] &&
+                                                                                        touched.siblings &&
+                                                                                        touched.siblings[index] &&
+                                                                                        errors.siblings[index]!.name &&
+                                                                                        touched.siblings[index]!.name
+                                                                                            ? '#ff0000'
+                                                                                            : '#888',
+                                                                                },
+                                                                            ]}
+                                                                            onChangeText={e => {
+                                                                                handleChange(`siblings[${index}}.name`);
+                                                                                setFieldValue(
+                                                                                    `siblings.${index}.name`,
+                                                                                    e,
+                                                                                );
+                                                                            }}
+                                                                            onBlur={() =>
+                                                                                setFieldTouched(
+                                                                                    `siblings[${index}].name`,
+                                                                                )
+                                                                            }
+                                                                        >
+                                                                            Sibling Name
+                                                                        </FloatingLabel>
+                                                                        {errors.siblings &&
+                                                                        errors.siblings[index] &&
+                                                                        touched.siblings &&
+                                                                        touched.siblings[index] ? (
+                                                                            <Error
+                                                                                error={errors.siblings[index]!.name}
+                                                                                touched={touched.siblings[index]!.name}
+                                                                            />
+                                                                        ) : null}
+                                                                    </View>
+                                                                    <View>
+                                                                        <View
+                                                                            style={[
+                                                                                leadStyle.buttonPickerStyle,
+                                                                                {
+                                                                                    flex: 1,
+                                                                                    flexDirection: 'row',
+                                                                                    borderColor:
+                                                                                        errors.siblings &&
+                                                                                        errors.siblings[index] &&
+                                                                                        touched.siblings &&
+                                                                                        touched.siblings[index] &&
+                                                                                        errors.siblings[index]!
+                                                                                            .classes_id &&
+                                                                                        touched.siblings[index]!
+                                                                                            .classes_id
+                                                                                            ? '#ff0000'
+                                                                                            : '#888',
+                                                                                },
+                                                                            ]}
+                                                                        >
+                                                                            <Item
+                                                                                picker
+                                                                                style={{
+                                                                                    borderBottomWidth: 0,
+                                                                                    flex: 1,
+                                                                                }}
+                                                                            >
+                                                                                <View style={{ flex: 1 }}>
+                                                                                    <Label
+                                                                                        style={{
+                                                                                            fontSize: 11,
+                                                                                            color: '#555',
+                                                                                            marginTop: 10,
+                                                                                            marginLeft: 10,
+                                                                                        }}
+                                                                                    >
+                                                                                        Class
+                                                                                    </Label>
+                                                                                    <Picker
+                                                                                        mode="dropdown"
+                                                                                        iosIcon={
+                                                                                            <Icon name="arrow-down" />
+                                                                                        }
+                                                                                        style={{
+                                                                                            fontSize: 15,
+                                                                                            height: 30,
+                                                                                        }}
+                                                                                        placeholder="Select"
+                                                                                        placeholderStyle={{
+                                                                                            color: '#bfc6ea',
+                                                                                        }}
+                                                                                        placeholderIconColor="#007aff"
+                                                                                        selectedValue={
+                                                                                            values.siblings[index]
+                                                                                                .classes_id
+                                                                                        }
+                                                                                        onValueChange={e => {
+                                                                                            setFieldValue(
+                                                                                                `siblings.${index}.classes_id`,
+                                                                                                e,
+                                                                                            );
+                                                                                            setFieldTouched(
+                                                                                                `siblings.${index}.classes_id`,
+                                                                                            );
+                                                                                        }}
+                                                                                    >
+                                                                                        <Picker.Item
+                                                                                            label="Select"
+                                                                                            color="#ccc"
+                                                                                            value=""
+                                                                                        />
+                                                                                        {this.updateClassDropdown()}
+                                                                                    </Picker>
+                                                                                </View>
+                                                                            </Item>
+                                                                        </View>
+                                                                        {errors.siblings &&
+                                                                        errors.siblings[index] &&
+                                                                        touched.siblings &&
+                                                                        touched.siblings[index] ? (
+                                                                            <Error
+                                                                                error={
+                                                                                    errors.siblings[index]!.classes_id
+                                                                                }
+                                                                                touched={
+                                                                                    touched.siblings[index]!.classes_id
+                                                                                }
+                                                                            />
+                                                                        ) : null}
+                                                                    </View>
                                                                 </View>
-                                                            </Item>
+                                                            ))}
+                                                            <Button
+                                                                style={{ width: 200 }}
+                                                                iconLeft
+                                                                transparent
+                                                                onPress={() =>
+                                                                    arrayHelpers.push({ name: '', classes_id: '' })
+                                                                }
+                                                                disabled={
+                                                                    values.siblings.length > 0 && errors.siblings
+                                                                        ? true
+                                                                        : false
+                                                                }
+                                                            >
+                                                                <Icon
+                                                                    style={{
+                                                                        color:
+                                                                            values.siblings.length > 0 &&
+                                                                            errors.siblings
+                                                                                ? '#ccc'
+                                                                                : '#813588',
+                                                                    }}
+                                                                    name="add"
+                                                                />
+                                                                <Text
+                                                                    style={{
+                                                                        color:
+                                                                            values.siblings.length > 0 &&
+                                                                            errors.siblings
+                                                                                ? '#ccc'
+                                                                                : '#813588',
+                                                                    }}
+                                                                >
+                                                                    Add Sibling Details
+                                                                </Text>
+                                                            </Button>
                                                         </View>
-                                                        <Error error={errors.state} touched={touched.state} />
-                                                    </View>
-                                                </View>
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'row',
-                                                        flex: 1,
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                    }}
-                                                >
-                                                    <View style={[style.felxHalf]}>
-                                                        <FloatingLabel
-                                                            value={values.city}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.city && errors.city ? '#ff0000' : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('city')}
-                                                            onBlur={() => setFieldTouched('city')}
-                                                        >
-                                                            City*
+                                                    )}
+                                                ></FieldArray>
+                                            </View>
+                                        </Body>
+                                    </CardItem>
+                                </Card>
+                                <Card>
+                                    <CardItem header style={{ paddingBottom: 0 }}>
+                                        <Text style={{ fontWeight: '700', color: '#555' }}>Parent Details</Text>
+                                    </CardItem>
+                                    <CardItem>
+                                        <Body>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        value={values.parent_name}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.parent_name && errors.parent_name
+                                                                        ? '#ff0000'
+                                                                        : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('parent_name')}
+                                                        onBlur={() => setFieldTouched('parent_name')}
+                                                    >
+                                                        Parent Name*
                                                     </FloatingLabel>
-                                                    </View>
-                                                    <View style={[style.felxHalf, leadStyle.marginLeft]}>
-                                                        <FloatingLabel
-                                                            value={values.pincode}
-                                                            keyboardType="phone-pad"
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.pincode && errors.pincode
-                                                                            ? '#ff0000'
-                                                                            : '#888',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('pincode')}
-                                                            onBlur={() => setFieldTouched('pincode')}
-                                                        >
-                                                            Pin Code*
+                                                    <Error error={errors.parent_name} touched={touched.parent_name} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        value={values.phone}
+                                                        keyboardType="phone-pad"
+                                                        maxLength={10}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.phone && errors.phone ? '#ff0000' : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('phone')}
+                                                        onBlur={() => setFieldTouched('phone')}
+                                                    >
+                                                        Mobile Number*
                                                     </FloatingLabel>
-                                                    </View>
                                                 </View>
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'row',
-                                                        flex: 1,
-                                                        marginBottom: 10,
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                    }}
-                                                >
-                                                    <View style={[style.felxHalf]}>
-                                                        <Error error={errors.city} touched={touched.city} />
-                                                    </View>
-                                                    <View style={[style.felxHalf, leadStyle.marginLeft]}>
-                                                        <Error error={errors.pincode} touched={touched.pincode} />
-                                                    </View>
+                                            </View>
+                                            <Error error={errors.phone} touched={touched.phone} />
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        value={values.alternateMobileNumber}
+                                                        keyboardType="phone-pad"
+                                                        maxLength={10}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[style.formInput, { borderColor: '#888' }]}
+                                                        onChangeText={handleChange('alternateMobileNumber')}
+                                                        onBlur={() => setFieldTouched('alternateMobileNumber')}
+                                                    >
+                                                        Alternate Mobile Number
+                                                    </FloatingLabel>
+                                                    <Error
+                                                        error={errors.alternateMobileNumber}
+                                                        touched={touched.alternateMobileNumber}
+                                                    />
                                                 </View>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <View>{isValid}</View>
-                                                        <Textarea
-                                                            underline={true}
-                                                            style={{ borderRadius: 5, borderColor: '#888' }}
-                                                            rowSpan={5}
-                                                            bordered={true}
-                                                            placeholder="Comments"
-                                                        />
-                                                    </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        keyboardType="email-address"
+                                                        value={values.email}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.email && errors.email ? '#ff0000' : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('email')}
+                                                        onBlur={() => setFieldTouched('email')}
+                                                    >
+                                                        Email*
+                                                    </FloatingLabel>
+                                                    <Error error={errors.email} touched={touched.email} />
                                                 </View>
-                                            </Body>
-                                        </CardItem>
-                                    </Card>
-                                </View>
-                            </Content>
-                            <Footer>
-                                <FooterTab>
-                                    <Button full={true} onPress={handleSubmit} style={{ backgroundColor: '#813588' }}>
-                                        <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Save</Text>
-                                    </Button>
-                                    <RBSheet
-                                        ref={ref => {
-                                            this.RBSheetOtp = ref;
-                                        }}
-                                        closeOnPressMask={false}
-                                        closeOnDragDown={false}
-                                        duration={10}
-                                        customStyles={{
-                                            container: {
-                                                height: 400,
-                                                borderTopRightRadius: 20,
-                                                borderTopLeftRadius: 20,
-                                            },
-                                        }}
-                                    >
-                                        <BottomSheet
-                                            keyBoardStyle="numeric"
-                                            type="inputTypeOTP"
-                                            actionType="Submit"
-                                            currentState={this.props.otpState}
-                                            onChangeText={this.onChangeOtpText}
-                                            data={['OTP']}
-                                            close={this.closeBottomSheet}
-                                            submit={this.submitOtp}
-                                            resend={this.handleResend}
-                                            title="Enter the OTP"
-                                        />
-                                    </RBSheet>
-                                </FooterTab>
-                            </Footer>
-                        </Container>
-                    )}
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        value={values.address}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.address && errors.address
+                                                                        ? '#ff0000'
+                                                                        : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('address')}
+                                                        onBlur={() => setFieldTouched('address')}
+                                                    >
+                                                        Address*
+                                                    </FloatingLabel>
+                                                    <Error error={errors.address} touched={touched.address} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <View style={style.felxHalf}>
+                                                    <View
+                                                        style={[
+                                                            leadStyle.buttonPickerStyle,
+                                                            {
+                                                                flex: 1,
+                                                                flexDirection: 'row',
+                                                                borderColor:
+                                                                    touched.country && errors.country
+                                                                        ? '#ff0000'
+                                                                        : '#888',
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                                            <View style={{ flex: 1, marginBottom: 10 }}>
+                                                                <Label
+                                                                    style={{
+                                                                        fontSize: 11,
+                                                                        color: '#555',
+                                                                        marginTop: 10,
+                                                                        marginLeft: 10,
+                                                                    }}
+                                                                >
+                                                                    Country*
+                                                                </Label>
+                                                                <Picker
+                                                                    mode="dropdown"
+                                                                    iosIcon={<Icon name="arrow-down" />}
+                                                                    placeholder="Select"
+                                                                    placeholderStyle={{ color: '#bfc6ea' }}
+                                                                    placeholderIconColor="#007aff"
+                                                                    style={{ fontSize: 15, height: 30 }}
+                                                                    selectedValue={values.country}
+                                                                    onValueChange={value => {
+                                                                        handleChange('country')(value);
+                                                                        setFieldTouched('country', true);
+                                                                    }}
+                                                                >
+                                                                    <Picker.Item label="Select" color="#ccc" value="" />
+                                                                    <Picker.Item label="India" value="1" />
+                                                                </Picker>
+                                                            </View>
+                                                        </Item>
+                                                    </View>
+                                                    <Error error={errors.country} touched={touched.country} />
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
+                                                    <View
+                                                        style={[
+                                                            leadStyle.buttonPickerStyle,
+                                                            {
+                                                                flex: 1,
+                                                                flexDirection: 'row',
+                                                                borderColor:
+                                                                    touched.state && errors.state ? '#ff0000' : '#888',
+                                                            },
+                                                        ]}
+                                                    >
+                                                        <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                                            <View style={{ flex: 1, marginBottom: 10 }}>
+                                                                <Label
+                                                                    style={{
+                                                                        fontSize: 11,
+                                                                        color: '#555',
+                                                                        marginTop: 10,
+                                                                        marginLeft: 10,
+                                                                    }}
+                                                                >
+                                                                    State*
+                                                                </Label>
+                                                                <Picker
+                                                                    mode="dropdown"
+                                                                    iosIcon={<Icon name="arrow-down" />}
+                                                                    placeholder="Select"
+                                                                    placeholderStyle={{ color: '#bfc6ea' }}
+                                                                    placeholderIconColor="#007aff"
+                                                                    style={{ fontSize: 15, height: 30 }}
+                                                                    selectedValue={values.state}
+                                                                    onValueChange={value => {
+                                                                        handleChange('state')(value);
+                                                                        setFieldTouched('state', true);
+                                                                    }}
+                                                                >
+                                                                    {values.country ? (
+                                                                        this.updateStatesDropdown()
+                                                                    ) : (
+                                                                        <Picker.Item
+                                                                            label="Select"
+                                                                            color="#ccc"
+                                                                            value=""
+                                                                        />
+                                                                    )}
+                                                                </Picker>
+                                                            </View>
+                                                        </Item>
+                                                    </View>
+                                                    <Error error={errors.state} touched={touched.state} />
+                                                </View>
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    flex: 1,
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                }}
+                                            >
+                                                <View style={[style.felxHalf]}>
+                                                    <FloatingLabel
+                                                        value={values.city}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.city && errors.city ? '#ff0000' : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('city')}
+                                                        onBlur={() => setFieldTouched('city')}
+                                                    >
+                                                        City*
+                                                    </FloatingLabel>
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
+                                                    <FloatingLabel
+                                                        value={values.pincode}
+                                                        keyboardType="phone-pad"
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.pincode && errors.pincode
+                                                                        ? '#ff0000'
+                                                                        : '#888',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('pincode')}
+                                                        onBlur={() => setFieldTouched('pincode')}
+                                                    >
+                                                        Pin Code*
+                                                    </FloatingLabel>
+                                                </View>
+                                            </View>
+                                            <View
+                                                style={{
+                                                    flexDirection: 'row',
+                                                    flex: 1,
+                                                    marginBottom: 10,
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                }}
+                                            >
+                                                <View style={[style.felxHalf]}>
+                                                    <Error error={errors.city} touched={touched.city} />
+                                                </View>
+                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
+                                                    <Error error={errors.pincode} touched={touched.pincode} />
+                                                </View>
+                                            </View>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <View>{isValid}</View>
+                                                    <Textarea
+                                                        underline={true}
+                                                        style={{ borderRadius: 5, borderColor: '#888' }}
+                                                        rowSpan={5}
+                                                        bordered={true}
+                                                        placeholder="Comments"
+                                                    />
+                                                </View>
+                                            </View>
+                                        </Body>
+                                    </CardItem>
+                                </Card>
+                            </View>
+                        </Content>
+                        <Footer>
+                            <FooterTab>
+                                <Button full={true} onPress={handleSubmit} style={{ backgroundColor: '#813588' }}>
+                                    <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Save</Text>
+                                </Button>
+                                <RBSheet
+                                    ref={ref => {
+                                        this.RBSheetOtp = ref;
+                                    }}
+                                    closeOnPressMask={false}
+                                    closeOnDragDown={false}
+                                    duration={10}
+                                    customStyles={{
+                                        container: {
+                                            height: 400,
+                                            borderTopRightRadius: 20,
+                                            borderTopLeftRadius: 20,
+                                        },
+                                    }}
+                                >
+                                    <BottomSheet
+                                        keyBoardStyle="numeric"
+                                        type="inputTypeOTP"
+                                        actionType="Submit"
+                                        currentState={this.props.otpState}
+                                        onChangeText={this.onChangeOtpText}
+                                        data={['OTP']}
+                                        close={this.closeBottomSheet}
+                                        submit={this.submitOtp}
+                                        resend={this.handleResend}
+                                        title="Enter the OTP"
+                                    />
+                                </RBSheet>
+                            </FooterTab>
+                        </Footer>
+                    </Container>
+                )}
             </Formik>
         );
     }
