@@ -1,10 +1,10 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
     containerStyle: {
         justifyContent: 'center',
         alignItems: 'stretch',
-        flex: 1
+        flex: 1,
     },
     userName: {
         backgroundColor: 'white',
@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
         marginRight: 20,
         marginLeft: 20,
-        borderBottomWidth:0
+        borderBottomWidth: 0,
     },
     password: {
         backgroundColor: 'white',
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
         marginRight: 20,
         marginLeft: 20,
         marginBottom: 20,
-        borderBottomWidth:0
+        borderBottomWidth: 0,
     },
     submitButton: {
         backgroundColor: '#813588',
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginRight: 20,
         marginLeft: 20,
-        marginBottom: 20
+        marginBottom: 20,
     },
     error: {
         backgroundColor: '#FFCBCB',
@@ -43,6 +43,31 @@ const styles = StyleSheet.create({
         height: 40,
         paddingTop: 8,
     },
-})
+    logoContainer: {
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
+    marginLeft: {
+        marginLeft: 10,
+    },
+    paddingTop: {
+        paddingTop: 0,
+    },
+    loginButtonText: {
+        fontSize: 16,
+    },
+    forgotPasswordContainer: {
+        alignItems: 'center',
+        flexDirection: 'column',
+    },
+    forgotPasswordText: {
+        color: '#fff',
+        fontSize: 14,
+    },
+    imageBg: {
+        width: '100%',
+        height: '100%',
+    },
+});
 
 export default styles;

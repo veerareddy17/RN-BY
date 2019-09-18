@@ -22,11 +22,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#eee',
     },
     cardShadow: {
-        position: 'absolute',
-        top: 100,
-        left: 35,
-        right: 35,
-        bottom: 0,
+        position: 'relative',
+        top: -120,
+        marginLeft: 35,
+        marginRight: 35,
         justifyContent: 'center',
         alignItems: 'center',
         height: 50,
@@ -51,7 +50,7 @@ const styles = StyleSheet.create({
     },
     leadsCard: {
         position: 'relative',
-        top: -120,
+        top: -165,
         marginLeft: 20,
         marginRight: 20,
         marginBottom: 20,
@@ -123,10 +122,10 @@ const styles = StyleSheet.create({
     },
     campaignCard: {
         position: 'relative',
-        top: -120,
+        top: -165,
         marginLeft: 20,
         marginRight: 20,
-        marginBottom: -90,
+        marginBottom: -140,
     },
     campaignCardItem: {
         borderBottomWidth: 1,

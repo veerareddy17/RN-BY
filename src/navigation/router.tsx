@@ -114,7 +114,6 @@ const TabStack = createBottomTabNavigator(
             inactiveTintColor: '#555',
             showLabel: false,
             style: {
-                height: 50,
                 backgroundColor: '#fff',
                 elevation: 25,
                 shadowOffset: { width: 5, height: 5 },
