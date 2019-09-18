@@ -47,13 +47,11 @@ export const authenticate = (
             let isConnected = getState().connectionStateReducer.isConnected;
             let storedUser = getState().userReducer.user;
             dispatch(requestAction());
-            console.log('In user action: ', storedUser.isOfflineLoggedIn);
             if (!isConnected) {
                 if (username == storedUser.email && password === storedUser.offline_pin) {
                     storedUser.isOfflineLoggedIn = true;
                     dispatch(successAction(storedUser));
                 } else {
-                    console.log('Failuer login');
                     storedUser.isOfflineLoggedIn = false;
                     dispatch(failureAction(['Invalid Username/ PIN']));
                 }
@@ -65,13 +63,10 @@ export const authenticate = (
                 response.data.isOfflineLoggedIn = false;
                 dispatch(successAction(response.data));
             } else {
-                //errors = response.errors;
                 dispatch(errorCallAction(response.errors));
                 dispatch(failureAction(response.errors));
             }
         } catch (e) {
-            // dispatch(failureAction(e.message));
-            //let errorVal = new
             let errors = Array<ErrorResponse>();
             errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
@@ -83,8 +78,8 @@ export const logout = (): ((dispatch: Dispatch, getState: any) => Promise<void>)
     return async (dispatch: Dispatch, getState: any) => {
         try {
             let storedUser = getState().userReducer.user;
-            storedUser.token = '';
             storedUser.isOfflineLoggedIn = false;
+            storedUser.token = '';
             dispatch(logoutAction());
         } catch (error) {
             console.log('Logout action', error);

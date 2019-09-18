@@ -56,7 +56,12 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             if (this.context.isConnected && this.props.userState.user.token === '') {
-                this.props.navigation.navigate('Auth');
+                this.logout();
+                return;
+            }
+            if (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn) {
+                this.logout();
+                return;
             }
             await this.fetchLeadsList(this.state.pageNumber, '');
             this.setState({
@@ -82,10 +87,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         });
     };
 
-    logout = async () => {
-        await this.props.logout();
-        this.props.navigation.navigate('Auth');
-    };
     confirmLogout = () => {
         Alert.alert(
             'Confirm Logout',

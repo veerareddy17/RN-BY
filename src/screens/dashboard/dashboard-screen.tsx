@@ -76,7 +76,8 @@ class Dashboard extends React.Component<Props, State> {
 
                 if (this.context.isConnected) {
                     if (this.props.userState.user.token === '') {
-                        this.props.navigation.navigate('Auth');
+                        this.logout();
+                        return;
                     }
                     this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
                     if (this.props.errorState.showAlertError) {
@@ -94,6 +95,10 @@ class Dashboard extends React.Component<Props, State> {
                         this.sync();
                     }
                 } else {
+                    if (!this.props.userState.user.isOfflineLoggedIn) {
+                        this.logout();
+                        return;
+                    }
                     /*
                     show offline
                     */
@@ -160,7 +165,7 @@ class Dashboard extends React.Component<Props, State> {
         return (
             <Container>
                 {Platform.OS === 'ios' ? (
-                    <Header style={styles.headerBackground} androidStatusBarColor="#813588">
+                    <Header style={[styles.headerBackground, { borderBottomWidth: 0 }]} androidStatusBarColor="#813588">
                         <Left />
                         <Body style={{ flex: 3 }}>
                             <Title style={styles.headeriOSTitle}>Dashboard</Title>

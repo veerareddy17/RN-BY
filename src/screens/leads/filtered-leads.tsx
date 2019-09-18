@@ -23,11 +23,13 @@ import { fetchFilteredLeads } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
 import Loader from '../../components/content-loader/content-loader';
+import { logout } from '../../redux/actions/user-actions';
 export interface FLeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
-    fetchFilteredLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     userState: any;
+    fetchFilteredLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface FLeadListState {
@@ -55,6 +57,10 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             let selectedFlag = this.props.navigation.getParam('flag', '');
+            if (this.context.isConnected && this.props.userState.user.token === '') {
+                this.logout();
+                return;
+            }
             await this.fetchLeadsList(this.state.pageNumber, selectedFlag);
             this.setState({
                 pageNumber: this.props.leadState.filteredPaginatedLeadList.current_page,
@@ -63,6 +69,11 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
             });
         });
     }
+
+    logout = async () => {
+        await this.props.logout();
+        this.props.navigation.navigate('Auth');
+    };
 
     componentWillUnmount() {
         if (this.focusLeadListener) this.focusLeadListener.remove();
@@ -197,6 +208,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchFilteredLeads: bindActionCreators(fetchFilteredLeads, dispatch),
+    logout: bindActionCreators(logout, dispatch),
 });
 
 export default connect(
