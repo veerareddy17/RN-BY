@@ -45,7 +45,7 @@ export const otpValidateAction = successData => {
 };
 
 export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: any) => {
-    dispatch(errorCallResetAction())
+    dispatch(errorCallResetAction());
     dispatch(otpStartAction());
     let OTP = await generateOTP();
     console.log('OTP generated - ', OTP);
@@ -54,13 +54,11 @@ export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: a
 
     try {
         if (getState().connectionStateReducer.isConnected) {
-            console.log('otp request', otpRequest)
             let response = await LeadService.sendOTP(otpRequest);
-            console.log('otp response', response)
             if (response && response.data) {
                 dispatch(otpSuccessAction(response.data));
             } else {
-                dispatch(serverErrorCallAction(response.errors))
+                dispatch(serverErrorCallAction(response.errors));
                 dispatch(otpFailureAction(response.errors));
             }
         } else {
@@ -96,7 +94,7 @@ export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: a
         // Error
         console.log(e);
         let errors = Array<ErrorResponse>();
-        errors.push(new ErrorResponse('Server', e.message))
+        errors.push(new ErrorResponse('Server', e.message));
         dispatch(serverErrorCallAction(errors));
         dispatch(otpFailureAction('Some error occured'));
     }
@@ -107,10 +105,9 @@ export const submitOTP = (otp: String) => async (dispatch: Dispatch) => {
     let storedOTP = await StorageService.get<string>(StorageConstants.USER_OTP);
     if (otp === storedOTP) {
         dispatch(otpValidateAction(true));
-        await StorageService.removeKey(StorageConstants.USER_OTP);
-    } else {
-        dispatch(otpFailureAction('Invalid OTP'));
+        return;
     }
+    dispatch(otpFailureAction('Invalid OTP'));
 };
 
 export const otpInit = () => async (dispatch: Dispatch) => {

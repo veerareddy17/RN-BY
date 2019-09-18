@@ -20,6 +20,8 @@ import config from '../../helpers/config';
 import { LeadAllResponse } from '../../models/response/lead-all-response';
 import { LeadFilterResponse } from '../../models/response/lead-filter-response';
 import { PaginatedResponseState } from '../init/lead-initial-state';
+import StorageService from '../../database/storage-service';
+import { StorageConstants } from '../../helpers/storage-constants';
 
 // GET method to fetch all captured leads
 export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
@@ -70,6 +72,7 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch, g
             let response = await LeadService.createLead(leadRequest);
             if (response && response.data) {
                 dispatch(createLeadAction(response.data));
+                await StorageService.removeKey(StorageConstants.USER_OTP);
             } else {
                 dispatch(errorCallAction(response.errors));
                 dispatch(leadFailureAction(response.errors));
