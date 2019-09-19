@@ -357,7 +357,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     </ListItem>
                                 </Left>
                                 <Body style={{ flex: 3, paddingLeft: 20 }}>
-                                    <Title style={{ color: 'white', fontSize: 18 }}>Create Lead</Title>
+                                    <Title style={{ color: 'white', fontSize: 18, fontFamily: '' }}>Create Lead</Title>
                                 </Body>
                                 <Right />
                             </Header>
@@ -366,7 +366,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         <Content>
                             <View style={leadStyle.campaingStyle}>
                                 <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-                                    <Text>Campaign : </Text>
+                                    <Text style={{ fontFamily: '' }}>Campaign : </Text>
                                     {this.props.campaignState.isLoading ? (
                                         <View
                                             style={{
@@ -379,7 +379,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
                                         </View>
                                     ) : (
-                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10 }}>
+                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, fontFamily: '' }}>
                                             {this.state.campaignName}
                                         </Text>
                                     )}
@@ -392,7 +392,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     bordered
                                     style={leadStyle.buttonChangeCampaingStyle}
                                 >
-                                    <Text style={{ color: '#813588', paddingLeft: 8, paddingRight: 8 }}>Change</Text>
+                                    <Text style={{ color: '#813588', paddingLeft: 8, paddingRight: 8, fontFamily: '' }}>
+                                        Change
+                                    </Text>
                                 </Button>
                                 <RBSheet
                                     ref={ref => {
@@ -422,79 +424,83 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                             <View style={{ flex: 1 }}>
                                 <Card>
                                     <CardItem header style={{ paddingBottom: 0 }}>
-
-                                            <Text style={{ fontWeight: '700', color: '#555' }}>
-                                                Mobile Number
-                                            </Text>
-                                        </CardItem>
-                                        <CardItem>
-                                            <Body>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            keyboardType="phone-pad"
-                                                            value={values.phone}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.phone && errors.phone
-                                                                            ? '#ff0000'
-                                                                            : '#333',
-                                                                },
-                                                                {
-                                                                    borderTopRightRadius: 0,
-                                                                    borderBottomRightRadius: 0,
-                                                                    borderRightWidth: 0,
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('phone')}
-                                                            onBlur={() => setFieldTouched('phone')}
-                                                        >
-                                                            Mobile Number*
-                                                        </FloatingLabel>
-                                                    </View>
-                                                    <Button
-                                                        transparent
-                                                        dark
-                                                        bordered
-                                                        disabled={touched.phone && errors.phone ? true : false}
-                                                        onPress={() =>
-                                                            this.onPressSendOtp(values.phone)
-                                                        }
-                                                        style={{
-                                                            borderLeftWidth: 1,
-                                                            borderTopWidth: 1,
-                                                            borderRightWidth: 1,
-                                                            borderBottomWidth: 1,
-                                                            borderColor: "#333",
-                                                            marginTop: 5,
-                                                            height: 50,
-                                                            borderRadius: 3,
-                                                            borderTopLeftRadius: 0,
-                                                            borderBottomLeftRadius: 0
-                                                        }}>
-                                                        <Text style={{ color: "#813588" }}>
-                                                            {this.props.otpState.otp || this.props.otpState.error ? 'Resend OTP' : 'Send OTP'}
-                                                        </Text>
-                                                    </Button>
-
+                                        <Text style={{ fontWeight: '700', color: '#555' }}>Mobile Number</Text>
+                                    </CardItem>
+                                    <CardItem>
+                                        <Body>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        keyboardType="phone-pad"
+                                                        value={values.phone}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.phone && errors.phone ? '#ff0000' : '#333',
+                                                            },
+                                                            {
+                                                                borderTopRightRadius: 0,
+                                                                borderBottomRightRadius: 0,
+                                                                borderRightWidth: 0,
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('phone')}
+                                                        onBlur={() => setFieldTouched('phone')}
+                                                    >
+                                                        Mobile Number*
+                                                    </FloatingLabel>
                                                 </View>
-                                                <Error error={errors.phone} touched={touched.phone} />
-                                                <Text style={{ color: this.props.otpState.otp ? "green" : this.props.otpState.error ? "red" : "" }}>
-                                                    {this.props.otpState.otp ? 'OTP sent successfully' : this.props.otpState.error ? this.props.otpState.error : ""}
-                                                </Text>
-                                            </Body>
-                                        </CardItem>
-                                    </Card>
-                                    <Card>
-                                        <CardItem header style={{ paddingBottom: 0 }}>
-
-                                            <Text style={{ fontWeight: '700', color: '#555' }}>
-                                                Student Details
+                                                <Button
+                                                    transparent
+                                                    dark
+                                                    bordered
+                                                    disabled={touched.phone && errors.phone ? true : false}
+                                                    onPress={() => this.onPressSendOtp(values.phone)}
+                                                    style={{
+                                                        borderLeftWidth: 1,
+                                                        borderTopWidth: 1,
+                                                        borderRightWidth: 1,
+                                                        borderBottomWidth: 1,
+                                                        borderColor: '#333',
+                                                        marginTop: 5,
+                                                        height: 50,
+                                                        borderRadius: 3,
+                                                        borderTopLeftRadius: 0,
+                                                        borderBottomLeftRadius: 0,
+                                                    }}
+                                                >
+                                                    <Text style={{ color: '#813588', fontFamily: '' }}>
+                                                        {this.props.otpState.otp || this.props.otpState.error
+                                                            ? 'Resend OTP'
+                                                            : 'Send OTP'}
+                                                    </Text>
+                                                </Button>
+                                            </View>
+                                            <Error error={errors.phone} touched={touched.phone} />
+                                            <Text
+                                                style={{
+                                                    color: this.props.otpState.otp
+                                                        ? 'green'
+                                                        : this.props.otpState.error
+                                                        ? 'red'
+                                                        : '',
+                                                }}
+                                            >
+                                                {this.props.otpState.otp
+                                                    ? 'OTP sent successfully'
+                                                    : this.props.otpState.error
+                                                    ? this.props.otpState.error
+                                                    : ''}
                                             </Text>
+                                        </Body>
+                                    </CardItem>
+                                </Card>
+                                <Card>
+                                    <CardItem header style={{ paddingBottom: 0 }}>
+                                        <Text style={{ fontWeight: '700', color: '#555' }}>Student Details</Text>
                                     </CardItem>
                                     <CardItem>
                                         <Body>
@@ -660,7 +666,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                         <View style={{ flex: 1, flexDirection: 'row' }}>
                                                                             <Text
                                                                                 style={{
-                                                                                        fontWeight: '700',
+                                                                                    fontWeight: '700',
                                                                                     color: '#555',
                                                                                 }}
                                                                             >
@@ -670,6 +676,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                 style={{
                                                                                     color: 'red',
                                                                                     marginLeft: 'auto',
+                                                                                    fontFamily: '',
                                                                                 }}
                                                                                 onPress={() =>
                                                                                     arrayHelpers.remove(index)
@@ -852,6 +859,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                             errors.siblings
                                                                                 ? '#ccc'
                                                                                 : '#813588',
+                                                                        fontFamily: '',
                                                                     }}
                                                                 >
                                                                     Add Sibling Details
@@ -893,7 +901,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <Error error={errors.parent_name} touched={touched.parent_name} />
                                                 </View>
                                             </View>
-                                                {/* <View style={{ flexDirection: 'row', flex: 1 }}>
+                                            {/* <View style={{ flexDirection: 'row', flex: 1 }}>
                                                 <View style={{ flex: 1 }}>
                                                     <FloatingLabel
                                                         value={values.phone}
@@ -1161,63 +1169,81 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         </Body>
                                     </CardItem>
                                 </Card>
-                                    <Card>
-                                        <CardItem header style={{ paddingBottom: 0 }}>
-                                            <Text style={{ fontWeight: 'bold', color: '#555' }}>OTP Settings</Text>
-                                        </CardItem>
-                                        <CardItem>
-                                            <Body>
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <View style={{ flex: 1 }}>
-                                                        <FloatingLabel
-                                                            keyboardType="numeric"
-                                                            value={values.otp}
-                                                            labelStyle={style.labelInput}
-                                                            inputStyle={style.input}
-                                                            onSubmitEditing={() => this.onPressSubmitOTP(values.otp)}
-                                                            style={[
-                                                                style.formInput,
-                                                                {
-                                                                    borderColor:
-                                                                        touched.otp && errors.otp
-                                                                            ? '#ff0000'
-                                                                            : '#333',
-                                                                },
-                                                            ]}
-                                                            onChangeText={handleChange('otp')}
-                                                            onBlur={() => {
-                                                                this.onPressSubmitOTP(values.otp)
-                                                                setFieldTouched('otp');
-                                                            }}
-                                                        >
-                                                            OTP
-                                                        </FloatingLabel>
-                                                    </View>
-
+                                <Card style={{ marginBottom: 20 }}>
+                                    <CardItem header style={{ paddingBottom: 0 }}>
+                                        <Text style={{ fontWeight: 'bold', color: '#555' }}>OTP Settings</Text>
+                                    </CardItem>
+                                    <CardItem>
+                                        <Body>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View style={{ flex: 1 }}>
+                                                    <FloatingLabel
+                                                        keyboardType="numeric"
+                                                        value={values.otp}
+                                                        labelStyle={style.labelInput}
+                                                        inputStyle={style.input}
+                                                        onSubmitEditing={() => this.onPressSubmitOTP(values.otp)}
+                                                        style={[
+                                                            style.formInput,
+                                                            {
+                                                                borderColor:
+                                                                    touched.otp && errors.otp ? '#ff0000' : '#333',
+                                                            },
+                                                        ]}
+                                                        onChangeText={handleChange('otp')}
+                                                        onBlur={() => {
+                                                            this.onPressSubmitOTP(values.otp);
+                                                            setFieldTouched('otp');
+                                                        }}
+                                                    >
+                                                        OTP
+                                                    </FloatingLabel>
                                                 </View>
-                                                {
-                                                    errors.otp && touched.otp ? <Error error={errors.otp} touched={touched.otp} />
-                                                        : this.props.otpState.validated != "" ? <Text style={{ color: "green" }}>Valid OTP</Text>
-                                                            : this.props.otpState.error ? <Text style={{ color: "red" }}>Invalid OTP</Text>
-                                                                : <Text />
-                                                }
+                                            </View>
+                                            {errors.otp && touched.otp ? (
+                                                <Error error={errors.otp} touched={touched.otp} />
+                                            ) : this.props.otpState.validated != '' ? (
+                                                <Text style={{ color: 'green' }}>Valid OTP</Text>
+                                            ) : this.props.otpState.error ? (
+                                                <Text style={{ color: 'red' }}>Invalid OTP</Text>
+                                            ) : (
+                                                <Text />
+                                            )}
 
-                                                <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                    <CheckBox style={{ borderColor: "#ccc" }}
-                                                        checked={this.state.proceedWithoutOtp}
-                                                        onPress={e => {
-                                                            e.preventDefault();
-                                                            handleChange('proceedWithoutOtp')(!this.state.proceedWithoutOtp);
-                                                            setFieldTouched('proceedWithoutOtp', true);
-                                                            this.onPressCheckBoxAlert();
-                                                        }} />
-                                                    <Text style={leadStyle.marginLeft}>Proceed without OTP </Text>
-                                                </View>
-                                            </Body>
-                                        </CardItem>
-                                    </Card>
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <CheckBox
+                                                    style={{ borderColor: '#ccc' }}
+                                                    checked={this.state.proceedWithoutOtp}
+                                                    onPress={e => {
+                                                        e.preventDefault();
+                                                        handleChange('proceedWithoutOtp')(
+                                                            !this.state.proceedWithoutOtp,
+                                                        );
+                                                        setFieldTouched('proceedWithoutOtp', true);
+                                                        this.onPressCheckBoxAlert();
+                                                    }}
+                                                />
+                                                <Text style={[leadStyle.marginLeft, {fontFamily: ''}]}>Proceed without OTP </Text>
+                                            </View>
+                                        </Body>
+                                    </CardItem>
+                                </Card>
                             </View>
                         </Content>
+                        {!this.context.isConnected && (
+                            <View
+                                style={{
+                                    backgroundColor: '#555',
+                                    bottom: 55,
+                                    position: 'absolute',
+                                    padding: 2,
+                                    paddingLeft: 20,
+                                    width: '100%',
+                                }}
+                            >
+                                <Text style={{ color: '#fff', fontSize: 12, fontFamily: '' }}>No Internet</Text>
+                            </View>
+                        )}
                         <Footer>
                             <FooterTab>
                                 <Button full={true} onPress={handleSubmit} style={{ backgroundColor: '#813588' }}>
@@ -1254,8 +1280,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                             </FooterTab>
                         </Footer>
                     </Container>
-                    )
-                }
+                )}
             </Formik>
         );
     }

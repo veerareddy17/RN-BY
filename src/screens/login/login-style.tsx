@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         height: 40,
         paddingTop: 8,
+        fontFamily: '',
     },
     logoContainer: {
         alignItems: 'center',
@@ -55,6 +56,7 @@ const styles = StyleSheet.create({
     },
     loginButtonText: {
         fontSize: 16,
+        fontFamily: '',
     },
     forgotPasswordContainer: {
         alignItems: 'center',
@@ -63,6 +65,7 @@ const styles = StyleSheet.create({
     forgotPasswordText: {
         color: '#fff',
         fontSize: 14,
+        fontFamily: '',
     },
     imageBg: {
         width: '100%',

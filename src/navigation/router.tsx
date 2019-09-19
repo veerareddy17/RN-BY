@@ -71,6 +71,7 @@ const TabStack = createBottomTabNavigator(
                                 color: tintColor,
                                 fontSize: focused ? 16 : 15,
                                 fontWeight: focused ? '700' : '100',
+                                fontFamily: '',
                             }}
                         >
                             Dashboard
@@ -97,6 +98,7 @@ const TabStack = createBottomTabNavigator(
                                 color: tintColor,
                                 fontSize: focused ? 16 : 15,
                                 fontWeight: focused ? '700' : '100',
+                                fontFamily: '',
                             }}
                         >
                             Leads

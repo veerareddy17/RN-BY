@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 18,
         marginLeft: 10,
+        fontFamily: '',
     },
     contentBg: {
         backgroundColor: '#eee',
@@ -107,11 +108,13 @@ const styles = StyleSheet.create({
         paddingLeft: 0,
         fontSize: 16,
         flex: 1,
+        fontFamily: '',
     },
     leadCardItemNumber: {
         color: '#555',
         paddingLeft: 0,
         fontSize: 24,
+        fontFamily: '',
     },
     leadCardItemIcon: {
         color: '#813588',
@@ -146,6 +149,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginRight: 10,
         color: '#555',
+        fontFamily: '',
     },
     campaignCardButton: {
         borderColor: '#813588',
@@ -154,6 +158,7 @@ const styles = StyleSheet.create({
         color: '#813588',
         paddingLeft: 8,
         paddingRight: 8,
+        fontFamily: '',
     },
     bottomSheetContainer: {
         flex: 1,

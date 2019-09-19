@@ -146,7 +146,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         borderRadius: 5,
                     }}
                 >
-                    <Text>No Data to Display</Text>
+                    <Text style={{ fontFamily: '' }}>No Data to Display</Text>
                     {/* <ImageBackground source={images.noData} style={{ width, height }}></ImageBackground> */}
                 </Card>
             </View>
@@ -190,7 +190,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 ) : (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Body>
-                            <Title style={{ color: 'white', marginLeft: 10, fontSize: 18 }}>Leads</Title>
+                            <Title style={{ color: 'white', marginLeft: 10, fontSize: 18, fontFamily: '' }}>
+                                Leads
+                            </Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
@@ -231,6 +233,20 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         )}
                     </View>
                 </Content>
+                {!this.context.isConnected && (
+                    <View
+                        style={{
+                            backgroundColor: '#555',
+                            bottom: 0,
+                            position: 'absolute',
+                            padding: 2,
+                            paddingLeft: 20,
+                            width: '100%',
+                        }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 12, fontFamily: '' }}>No Internet</Text>
+                    </View>
+                )}
             </Container>
         );
     }

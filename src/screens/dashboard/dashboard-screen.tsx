@@ -318,6 +318,20 @@ class Dashboard extends React.Component<Props, State> {
                         </CardItem>
                     </Card>
                 </Content>
+                {!this.context.isConnected && (
+                    <View
+                        style={{
+                            backgroundColor: '#555',
+                            bottom: 0,
+                            position: 'absolute',
+                            padding: 2,
+                            paddingLeft: 20,
+                            width: '100%',
+                        }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 12, fontFamily: '' }}>No Internet</Text>
+                    </View>
+                )}
             </Container>
         );
     }

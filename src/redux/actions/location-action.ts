@@ -35,7 +35,6 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                 const granted = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION, {
                     title: 'Location Permission',
                     message: 'Need Permission to access your location',
-                    buttonNegative: 'Cancel',
                     buttonPositive: 'OK',
                 });
                 console.log('granted android', granted);

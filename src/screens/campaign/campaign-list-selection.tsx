@@ -79,7 +79,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Left />
                         <Body style={{ flex: 3 }}>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18 }}>Select Campaign</Title>
+                            <Title style={{ color: 'white', fontSize: 18 }}>Select Campaign</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
@@ -90,7 +90,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                 ) : (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Body>
-                            <Title style={{ color: 'white', fontWeight: 'bold', fontSize: 18, marginLeft: 10 }}>
+                            <Title style={{ color: 'white', fontSize: 18, marginLeft: 10, fontFamily: '' }}>
                                 Select Campaign
                             </Title>
                         </Body>
@@ -118,7 +118,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                                             onPress={() => this.handleSelections(campaign)}
                                         >
                                             <Left>
-                                                <Text>{campaign.name}</Text>
+                                                <Text style={{ fontFamily: '' }}>{campaign.name}</Text>
                                             </Left>
                                         </ListItem>
                                     );
@@ -127,6 +127,20 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                         </View>
                     )}
                 </Content>
+                {!this.context.isConnected && (
+                    <View
+                        style={{
+                            backgroundColor: '#555',
+                            bottom: 0,
+                            position: 'absolute',
+                            padding: 2,
+                            paddingLeft: 20,
+                            width: '100%',
+                        }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 12, fontFamily: '' }}>No Internet</Text>
+                    </View>
+                )}
             </Container>
         );
     }
