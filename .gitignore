@@ -49,8 +49,6 @@ android/app/*
 android/app/debug.keystore
 !android/app/byjus*.keystore
 
-ios/*
-
 # node.js
 #
 node_modules/
