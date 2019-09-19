@@ -32,7 +32,7 @@ DerivedData
 project.xcworkspace
 
 # CocoaPods
-/ios/Pods/
+#/ios/Pods/
 
 # Gradle
 /build/
