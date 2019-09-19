@@ -207,7 +207,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                             width: '100%',
                         }}
                     >
-                        <Text style={{ color: '#fff', fontSize: 12, fontFamily: '' }}>No Internet</Text>
+                        <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'system font' }}>No Internet</Text>
                     </View>
                 )}
             </Container>

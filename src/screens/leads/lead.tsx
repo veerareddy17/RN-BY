@@ -18,7 +18,7 @@ const Lead = ({ lead }) => {
                 }}
             >
                 <CardItem header style={{ paddingBottom: 0, paddingTop: 12, paddingLeft: 12, paddingRight: 12 }}>
-                    <Text style={{ fontWeight: '700', fontSize: 16, color: '#555', fontFamily: '' }}>{lead.name}</Text>
+                    <Text style={{ fontWeight: '700', fontSize: 16, color: '#555', fontFamily: 'system font' }}>{lead.name}</Text>
                     <Button
                         rounded
                         small
@@ -32,7 +32,7 @@ const Lead = ({ lead }) => {
                             height: 25,
                         }}
                     >
-                        <Text style={{ textTransform: 'capitalize', fontSize: 12, fontFamily: '' }}>
+                        <Text style={{ textTransform: 'capitalize', fontSize: 12, fontFamily: 'system font' }}>
                             {lead.classes.name}
                         </Text>
                     </Button>
@@ -51,11 +51,11 @@ const Lead = ({ lead }) => {
                     <Grid>
                         <Col style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <Icon name="phone-portrait" style={{ fontSize: 20, width: 20, color: '#555' }} />
-                            <Text style={{ marginRight: 10, fontSize: 14, color: '#555', fontFamily: '' }}>
+                            <Text style={{ marginRight: 10, fontSize: 14, color: '#555', fontFamily: 'system font' }}>
                                 {lead.phone}
                             </Text>
                             <Icon name="mail" style={{ fontSize: 20, width: 25, color: '#555' }} />
-                            <Text style={{ flex: 1, fontSize: 14, color: '#555', fontFamily: '' }} numberOfLines={1}>
+                            <Text style={{ flex: 1, fontSize: 14, color: '#555', fontFamily: 'system font' }} numberOfLines={1}>
                                 {lead.email}
                             </Text>
                         </Col>
@@ -65,10 +65,10 @@ const Lead = ({ lead }) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Grid>
                             <Col>
-                                <Text style={{ fontSize: 10, color: '#555', fontFamily: '' }}>School Board</Text>
+                                <Text style={{ fontSize: 10, color: '#555', fontFamily: 'system font' }}>School Board</Text>
                             </Col>
                             <Col style={{ marginLeft: 20 }}>
-                                <Text style={{ fontSize: 10, color: '#555', fontFamily: '' }}>School</Text>
+                                <Text style={{ fontSize: 10, color: '#555', fontFamily: 'system font' }}>School</Text>
                             </Col>
                         </Grid>
                     </View>
@@ -77,12 +77,12 @@ const Lead = ({ lead }) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Grid>
                             <Col>
-                                <Text style={{ flex: 1, color: '#555', fontFamily: '' }} numberOfLines={1}>
+                                <Text style={{ flex: 1, color: '#555', fontFamily: 'system font' }} numberOfLines={1}>
                                     {lead.board.name}
                                 </Text>
                             </Col>
                             <Col style={{ marginLeft: 20 }}>
-                                <Text style={{ flex: 1, color: '#555', fontFamily: '' }} numberOfLines={1}>
+                                <Text style={{ flex: 1, color: '#555', fontFamily: 'system font' }} numberOfLines={1}>
                                     {lead.school_name}
                                 </Text>
                             </Col>

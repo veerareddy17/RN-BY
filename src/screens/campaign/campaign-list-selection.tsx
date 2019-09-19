@@ -90,7 +90,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                 ) : (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Body>
-                            <Title style={{ color: 'white', fontSize: 18, marginLeft: 10, fontFamily: '' }}>
+                            <Title style={{ color: 'white', fontSize: 18, marginLeft: 10, fontFamily: 'system font' }}>
                                 Select Campaign
                             </Title>
                         </Body>
@@ -118,7 +118,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                                             onPress={() => this.handleSelections(campaign)}
                                         >
                                             <Left>
-                                                <Text style={{ fontFamily: '' }}>{campaign.name}</Text>
+                                                <Text style={{ fontFamily: 'system font' }}>{campaign.name}</Text>
                                             </Left>
                                         </ListItem>
                                     );
@@ -138,7 +138,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                             width: '100%',
                         }}
                     >
-                        <Text style={{ color: '#fff', fontSize: 12, fontFamily: '' }}>No Internet</Text>
+                        <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'system font' }}>No Internet</Text>
                     </View>
                 )}
             </Container>

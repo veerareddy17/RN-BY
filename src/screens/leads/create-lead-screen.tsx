@@ -199,7 +199,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
     onPressSendOtp = async (phone: string) => {
         await this.props.sendOtp(phone);
-    }
+    };
 
     onPressCheckBoxAlert = async () => {
         await this.setState({ proceedWithoutOtp: !this.state.proceedWithoutOtp });
@@ -207,18 +207,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             Alert.alert(
                 'Alert',
                 'This Lead will be captured without OTP verification',
-                [
-                    { text: 'OK', onPress: () => console.log('OK Pressed') },
-                ],
+                [{ text: 'OK', onPress: () => console.log('OK Pressed') }],
                 { cancelable: false },
             );
         }
-
-    }
+    };
 
     onPressSubmitOTP = async (otp: string) => {
         await this.props.submitOtp(otp);
-    }
+    };
 
     handleSubmit = async values => {
         this.setState({
@@ -253,7 +250,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             };
             this.setState({ location: locObj });
             this.setState({ sync_status: this.context.isConnected ? true : false });
-            this.setState({ is_otp_verified: this.state.proceedWithoutOtp ? false : true })
+            this.setState({ is_otp_verified: this.state.proceedWithoutOtp ? false : true });
 
             let req = this.state;
             this.setState({ leadRequest: req });
@@ -344,7 +341,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         <Icon name="arrow-back" style={{ color: '#fff' }} />
                                     </ListItem>
                                 </Left>
-                                <Body>
+                                <Body style={{ flex: 3 }}>
                                     <Title style={{ color: 'white', fontSize: 18 }}>Create Lead</Title>
                                 </Body>
                                 <Right />
@@ -356,8 +353,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         <Icon name="arrow-back" style={{ color: '#fff' }} />
                                     </ListItem>
                                 </Left>
-                                <Body style={{ flex: 3, paddingLeft: 20 }}>
-                                    <Title style={{ color: 'white', fontSize: 18, fontFamily: '' }}>Create Lead</Title>
+                                <Body style={{ paddingLeft: 20 }}>
+                                    <Title style={{ color: 'white', fontSize: 18, fontFamily: 'system font' }}>
+                                        Create Lead
+                                    </Title>
                                 </Body>
                                 <Right />
                             </Header>
@@ -366,7 +365,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         <Content>
                             <View style={leadStyle.campaingStyle}>
                                 <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
-                                    <Text style={{ fontFamily: '' }}>Campaign : </Text>
+                                    <Text style={{ fontFamily: 'system font' }}>Campaign : </Text>
                                     {this.props.campaignState.isLoading ? (
                                         <View
                                             style={{
@@ -379,7 +378,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
                                         </View>
                                     ) : (
-                                        <Text numberOfLines={1} style={{ flex: 1, marginRight: 10, fontFamily: '' }}>
+                                        <Text
+                                            numberOfLines={1}
+                                            style={{ flex: 1, marginRight: 10, fontFamily: 'system font' }}
+                                        >
                                             {this.state.campaignName}
                                         </Text>
                                     )}
@@ -392,7 +394,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     bordered
                                     style={leadStyle.buttonChangeCampaingStyle}
                                 >
-                                    <Text style={{ color: '#813588', paddingLeft: 8, paddingRight: 8, fontFamily: '' }}>
+                                    <Text
+                                        style={{
+                                            color: '#813588',
+                                            paddingLeft: 8,
+                                            paddingRight: 8,
+                                            fontFamily: 'system font',
+                                        }}
+                                    >
                                         Change
                                     </Text>
                                 </Button>
@@ -472,7 +481,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         borderBottomLeftRadius: 0,
                                                     }}
                                                 >
-                                                    <Text style={{ color: '#813588', fontFamily: '' }}>
+                                                    <Text style={{ color: '#813588', fontFamily: 'system font' }}>
                                                         {this.props.otpState.otp || this.props.otpState.error
                                                             ? 'Resend OTP'
                                                             : 'Send OTP'}
@@ -676,7 +685,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                 style={{
                                                                                     color: 'red',
                                                                                     marginLeft: 'auto',
-                                                                                    fontFamily: '',
+                                                                                    fontFamily: 'system font',
                                                                                 }}
                                                                                 onPress={() =>
                                                                                     arrayHelpers.remove(index)
@@ -859,7 +868,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                             errors.siblings
                                                                                 ? '#ccc'
                                                                                 : '#813588',
-                                                                        fontFamily: '',
+                                                                        fontFamily: 'system font',
                                                                     }}
                                                                 >
                                                                     Add Sibling Details
@@ -1223,7 +1232,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         this.onPressCheckBoxAlert();
                                                     }}
                                                 />
-                                                <Text style={[leadStyle.marginLeft, {fontFamily: ''}]}>Proceed without OTP </Text>
+                                                <Text style={[leadStyle.marginLeft, { fontFamily: 'system font' }]}>
+                                                    Proceed without OTP{' '}
+                                                </Text>
                                             </View>
                                         </Body>
                                     </CardItem>
@@ -1241,7 +1252,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     width: '100%',
                                 }}
                             >
-                                <Text style={{ color: '#fff', fontSize: 12, fontFamily: '' }}>No Internet</Text>
+                                <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'system font' }}>
+                                    No Internet
+                                </Text>
                             </View>
                         )}
                         <Footer>
