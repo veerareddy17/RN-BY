@@ -16,7 +16,7 @@ import {
     Spinner,
 } from 'native-base';
 import { NavigationScreenProp } from 'react-navigation';
-import { View, Platform, Dimensions, StyleSheet, Alert } from 'react-native';
+import { View, Platform, Dimensions, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { logout } from '../../redux/actions/user-actions';
@@ -285,16 +285,16 @@ class Dashboard extends React.Component<Props, State> {
                                     {this.state.campaignName}
                                 </Text>
                             )}
-                            <Button
-                                small
-                                bordered
+                            <TouchableOpacity
                                 onPress={() => {
                                     this.onPressOpenRBSheet();
                                 }}
                                 style={styles.campaignCardButton}
                             >
-                                <Text style={styles.campaignCardButtonText}>Change</Text>
-                            </Button>
+                                <Text uppercase={false} style={styles.campaignCardButtonText}>
+                                    Change
+                                </Text>
+                            </TouchableOpacity>
                             <RBSheet
                                 ref={ref => {
                                     this.RBSheet = ref;

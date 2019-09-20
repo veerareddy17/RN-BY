@@ -57,7 +57,7 @@ import { logout } from '../../redux/actions/user-actions';
 import { CONSTANTS } from '../../helpers/app-constants';
 import { Utility } from '../utils/utility';
 import { MetaResponse } from '../../models/response/meta-response';
-import { Alert } from 'react-native';
+import { Alert, TouchableOpacity } from 'react-native';
 import { Platform } from 'react-native';
 
 export interface CreateLeadProps {
@@ -353,7 +353,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         <Icon name="arrow-back" style={{ color: '#fff' }} />
                                     </ListItem>
                                 </Left>
-                                <Body style={{ paddingLeft: 20 }}>
+                                <Body style={{flex: 3, paddingLeft: 20 }}>
                                     <Title style={{ color: 'white', fontSize: 18, fontFamily: 'system font' }}>
                                         Create Lead
                                     </Title>
@@ -386,25 +386,21 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         </Text>
                                     )}
                                 </View>
-                                <Button
+                                <TouchableOpacity
                                     onPress={() => {
                                         this.onPressOpenRBSheet();
                                     }}
-                                    small
-                                    bordered
                                     style={leadStyle.buttonChangeCampaingStyle}
                                 >
                                     <Text
-                                        style={{
-                                            color: '#813588',
-                                            paddingLeft: 8,
-                                            paddingRight: 8,
+                                        uppercase={false}
+                                        style={{ color: '#813588', paddingLeft: 8, paddingRight: 8, 
                                             fontFamily: 'system font',
                                         }}
                                     >
                                         Change
                                     </Text>
-                                </Button>
+                                </TouchableOpacity>
                                 <RBSheet
                                     ref={ref => {
                                         this.RBSheet = ref;
@@ -435,8 +431,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     <CardItem header style={{ paddingBottom: 0 }}>
                                         <Text style={{ fontWeight: '700', color: '#555' }}>Mobile Number</Text>
                                     </CardItem>
-                                    <CardItem>
-                                        <Body>
+                                    <CardItem style={{ paddingBottom: 0 }}>
+                                        <Body style={{}}>
                                             <View style={{ flexDirection: 'row', flex: 1 }}>
                                                 <View style={{ flex: 1 }}>
                                                     <FloatingLabel
@@ -462,31 +458,34 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         Mobile Number*
                                                     </FloatingLabel>
                                                 </View>
-                                                <Button
-                                                    transparent
-                                                    dark
-                                                    bordered
+                                                <TouchableOpacity
                                                     disabled={touched.phone && errors.phone ? true : false}
                                                     onPress={() => this.onPressSendOtp(values.phone)}
                                                     style={{
-                                                        borderLeftWidth: 1,
-                                                        borderTopWidth: 1,
-                                                        borderRightWidth: 1,
-                                                        borderBottomWidth: 1,
+                                                        borderWidth: 1,
+                                                        // borderTopWidth: 1,
+                                                        // borderRightWidth: 1,
+                                                        // borderBottomWidth: 1,
                                                         borderColor: '#333',
                                                         marginTop: 5,
                                                         height: 50,
                                                         borderRadius: 3,
                                                         borderTopLeftRadius: 0,
                                                         borderBottomLeftRadius: 0,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        paddingLeft: 10,
+                                                        paddingRight: 10
                                                     }}
                                                 >
-                                                    <Text style={{ color: '#813588', fontFamily: 'system font' }}>
+                                                    <Text style={{ color: '#813588', fontFamily: 'system font' }}
+                                                        uppercase={false}
+                                                    >
                                                         {this.props.otpState.otp || this.props.otpState.error
                                                             ? 'Resend OTP'
                                                             : 'Send OTP'}
                                                     </Text>
-                                                </Button>
+                                                </TouchableOpacity>
                                             </View>
                                             <Error error={errors.phone} touched={touched.phone} />
                                             <Text
@@ -496,6 +495,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         : this.props.otpState.error
                                                         ? 'red'
                                                         : '',
+                                                    marginBottom: 5,
                                                 }}
                                             >
                                                 {this.props.otpState.otp
@@ -593,6 +593,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     touched.school_name && errors.school_name
                                                                         ? '#ff0000'
                                                                         : '#888',
+                                                                marginBottom: 0,
                                                             },
                                                         ]}
                                                         onChangeText={handleChange('school_name')}
@@ -612,11 +613,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     touched.classes_id && errors.classes_id
                                                                         ? '#ff0000'
                                                                         : '#888',
+                                                                marginBottom: 0,
                                                             },
                                                         ]}
                                                     >
                                                         <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
-                                                            <View style={{ flex: 1, marginBottom: 10 }}>
+                                                            <View style={{ flex: 1 }}>
                                                                 <Label
                                                                     style={{
                                                                         fontSize: 11,
@@ -672,7 +674,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             {values.siblings.map((sibling, index) => (
                                                                 <View key={index} style={{ flex: 1, marginBottom: 10 }}>
                                                                     <View style={{ flex: 1 }}>
-                                                                        <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                                        <View
+                                                                            style={{
+                                                                                flex: 1,
+                                                                                flexDirection: 'row',
+                                                                            }}
+                                                                        >
                                                                             <Text
                                                                                 style={{
                                                                                     fontWeight: '700',
@@ -681,15 +688,16 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                             >
                                                                                 Sibling {index + 1}
                                                                             </Text>
-                                                                            <Text
-                                                                                style={{
-                                                                                    color: 'red',
-                                                                                    marginLeft: 'auto',
-                                                                                    fontFamily: 'system font',
-                                                                                }}
+                                                                            <TouchableOpacity
                                                                                 onPress={() =>
                                                                                     arrayHelpers.remove(index)
                                                                                 }
+                                                                                style={{
+                                                                                    justifyContent: 'flex-end',
+                                                                                    flex: 1,
+                                                                                    flexDirection: 'row',
+                                                                                    alignItems: 'center',
+                                                                                }}
                                                                             >
                                                                                 <Icon
                                                                                     name="trash"
@@ -697,10 +705,19 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                         fontSize: 20,
                                                                                         width: 20,
                                                                                         color: 'red',
+                                                                                        marginRight: 2,
                                                                                     }}
                                                                                 />
-                                                                                Remove
-                                                                            </Text>
+                                                                                <Text
+                                                                                    style={{
+                                                                                        color: 'red',
+                                                                                        fontFamily: 'system font',
+                                                                                        fontSize: 14,
+                                                                                    }}
+                                                                                >
+                                                                                    Remove
+                                                                                </Text>
+                                                                            </TouchableOpacity>
                                                                         </View>
                                                                         <FloatingLabel
                                                                             value={sibling.name}
@@ -763,6 +780,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                             .classes_id
                                                                                             ? '#ff0000'
                                                                                             : '#888',
+                                                                                    marginBottom: 0,
                                                                                 },
                                                                             ]}
                                                                         >
@@ -838,10 +856,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                     </View>
                                                                 </View>
                                                             ))}
-                                                            <Button
-                                                                style={{ width: 200 }}
-                                                                iconLeft
-                                                                transparent
+                                                            <TouchableOpacity
                                                                 onPress={() =>
                                                                     arrayHelpers.push({ name: '', classes_id: '' })
                                                                 }
@@ -850,6 +865,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                         ? true
                                                                         : false
                                                                 }
+                                                                style={{
+                                                                    flexDirection: 'row',
+                                                                    alignItems: 'center',
+                                                                }}
                                                             >
                                                                 <Icon
                                                                     style={{
@@ -858,10 +877,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                             errors.siblings
                                                                                 ? '#ccc'
                                                                                 : '#813588',
+                                                                        marginLeft: 0,
+                                                                        marginRight: 10,
+                                                                        fontSize: 16,
+                                                                        fontWeight: '700',
                                                                     }}
                                                                     name="add"
                                                                 />
                                                                 <Text
+                                                                    uppercase={false}
                                                                     style={{
                                                                         color:
                                                                             values.siblings.length > 0 &&
@@ -869,11 +893,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                 ? '#ccc'
                                                                                 : '#813588',
                                                                         fontFamily: 'system font',
+                                                                        paddingLeft: 0,
+                                                                        fontWeight: '700',
+                                                                        fontSize: 14,
                                                                     }}
                                                                 >
                                                                     Add Sibling Details
                                                                 </Text>
-                                                            </Button>
+                                                            </TouchableOpacity>
                                                         </View>
                                                     )}
                                                 ></FieldArray>
@@ -1197,6 +1224,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             {
                                                                 borderColor:
                                                                     touched.otp && errors.otp ? '#ff0000' : '#333',
+                                                                marginBottom: 0,
                                                             },
                                                         ]}
                                                         onChangeText={handleChange('otp')}
@@ -1219,9 +1247,40 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                 <Text />
                                             )}
 
-                                            <View style={{ flexDirection: 'row', flex: 1 }}>
-                                                <CheckBox
-                                                    style={{ borderColor: '#ccc' }}
+                                            <View style={{ width: '100%' }}>
+                                                <ListItem
+                                                    style={{ marginLeft: 0, paddingTop: 0, borderBottomWidth: 0 }}
+                                                >
+                                                    <CheckBox
+                                                        style={{
+                                                            borderColor: this.state.proceedWithoutOtp
+                                                                ? '#039be5'
+                                                                : '#555',
+                                                            paddingLeft: 0,
+                                                        }}
+                                                        checked={this.state.proceedWithoutOtp}
+                                                        onPress={e => {
+                                                            e.preventDefault();
+                                                            handleChange('proceedWithoutOtp')(
+                                                                !this.state.proceedWithoutOtp,
+                                                            );
+                                                            setFieldTouched('proceedWithoutOtp', true);
+                                                            this.onPressCheckBoxAlert();
+                                                        }}
+                                                    />
+                                                    <Body>
+                                                        <Text
+                                                            style={[
+                                                                leadStyle.marginLeft,
+                                                                { fontFamily: 'system font', color: '#555' },
+                                                            ]}
+                                                        >
+                                                            Proceed without OTP{' '}
+                                                        </Text>
+                                                    </Body>
+                                                </ListItem>
+                                                {/* <CheckBox
+                                                    style={{ borderColor: '#555', paddingLeft: 0 }}
                                                     checked={this.state.proceedWithoutOtp}
                                                     onPress={e => {
                                                         e.preventDefault();
@@ -1232,9 +1291,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         this.onPressCheckBoxAlert();
                                                     }}
                                                 />
-                                                <Text style={[leadStyle.marginLeft, { fontFamily: 'system font' }]}>
+                                                <Text style={[leadStyle.marginLeft, { fontFamily: '', color: '#555' }]}>
                                                     Proceed without OTP{' '}
-                                                </Text>
+                                                </Text> */}
                                             </View>
                                         </Body>
                                     </CardItem>

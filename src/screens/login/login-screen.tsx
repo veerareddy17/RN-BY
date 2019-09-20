@@ -1,7 +1,7 @@
 import { Formik } from 'formik';
 import * as React from 'react';
 import { Container, Content, Text, Button, Form, Item, Input, Label, Icon, Spinner, Toast } from 'native-base';
-import { ImageBackground, Dimensions, Image, View, StatusBar } from 'react-native';
+import { ImageBackground, Dimensions, Image, View, StatusBar, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import images from '../../assets';
 import { NavigationScreenProp } from 'react-navigation';
@@ -251,15 +251,18 @@ class Login extends React.Component<Props, State> {
                                             )}
 
                                             <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                <Text style={loginStyle.loginButtonText}>Login</Text>
+                                                <Text uppercase={false} style={loginStyle.loginButtonText}>
+                                                    Login
+                                                </Text>
                                             </Button>
                                             <SpinnerOverlay visible={this.state.showLoadingSpinner} />
 
-                                            <View style={loginStyle.forgotPasswordContainer}>
-                                                <Text onPress={this.handlePress} style={loginStyle.forgotPasswordText}>
-                                                    Forgot Password?
-                                                </Text>
-                                            </View>
+                                            <TouchableOpacity
+                                                style={loginStyle.forgotPasswordContainer}
+                                                onPress={this.handlePress}
+                                            >
+                                                <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
+                                            </TouchableOpacity>
                                         </Form>
                                     )}
                                 </Formik>

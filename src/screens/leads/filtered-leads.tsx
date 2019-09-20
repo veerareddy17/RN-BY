@@ -40,10 +40,9 @@ export interface FLeadListState {
 
 class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     static contextType = NetworkContext;
-    static navigationOptions = () => {
-        return {
-            title: 'Leads',
-        };
+    static navigationOptions = {
+        title: 'Leads',
+        headerTitleStyle: { color: '#fff' },
     };
     constructor(props: FLeadListProps) {
         super(props);
@@ -177,7 +176,6 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                                         data={this.props.leadState.filteredLeadList}
                                         renderItem={({ item, index }) => this.renderItem(item)}
                                         keyExtractor={(item, index) => `${item.id}+${index}`}
-                                        ListEmptyComponent={this.renderEmptyView}
                                         ListFooterComponent={this.renderFooter}
                                         onEndReached={this.fetchMore}
                                         onEndReachedThreshold={0.1}
@@ -190,7 +188,6 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                                     data={this.props.leadState.offlineLeadList}
                                     renderItem={({ item, index }) => this.renderItem(item)}
                                     keyExtractor={(item, index) => `${item.id}+${index}`}
-                                    ListEmptyComponent={this.renderEmptyView}
                                 />
                             </View>
                         )}

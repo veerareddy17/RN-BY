@@ -13,6 +13,10 @@ const styles = StyleSheet.create({
     buttonChangeCampaingStyle: {
         borderColor: '#813588',
         marginLeft: 'auto',
+        borderWidth: 1,
+        borderRadius: 3,
+        paddingTop: 4,
+        paddingBottom: 4,
     },
     borderStyle: {
         borderColor: 'lightgrey',

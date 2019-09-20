@@ -153,6 +153,10 @@ const styles = StyleSheet.create({
     },
     campaignCardButton: {
         borderColor: '#813588',
+        borderWidth: 1,
+        borderRadius: 3,
+        paddingTop: 4,
+        paddingBottom: 4,
     },
     campaignCardButtonText: {
         color: '#813588',

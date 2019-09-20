@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, ListView, Platform, ActivityIndicator, ImageBackground, Dimensions } from 'react-native';
+import { FlatList, ListView, Platform, ActivityIndicator, ImageBackground, Dimensions, Image } from 'react-native';
 import { connect } from 'react-redux';
 import {
     View,
@@ -15,7 +15,6 @@ import {
     Icon,
     Text,
     Card,
-    Image,
 } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
@@ -130,25 +129,18 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     };
 
     renderEmptyView = () => {
-        const { width, height } = Dimensions.get('window');
+        const SCREEN_HEIGHT = Dimensions.get('window').height - 150;
         return (
-            <View style={{ paddingTop: 0 }}>
-                <Card
-                    style={{
-                        marginTop: 0,
-                        marginBottom: 0,
-                        marginLeft: 0,
-                        marginRight: 0,
-                        borderTopWidth: 0,
-                        borderLeftWidth: 0,
-                        borderBottomWidth: 0,
-                        borderRightWidth: 0,
-                        borderRadius: 5,
-                    }}
-                >
-                    <Text style={{ fontFamily: 'system font' }}>No Data to Display</Text>
-                    {/* <ImageBackground source={images.noData} style={{ width, height }}></ImageBackground> */}
-                </Card>
+            <View
+                style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: SCREEN_HEIGHT, //responsible for 100% height
+                    backgroundColor: '#eee',
+                }}
+            >
+                <Image resizeMode={'contain'} source={images.noData} style={{ width: 240 }} />
+                <Text style={{ fontFamily: 'system font', color: '#555', marginTop: 10 }}>There are no leads</Text>
             </View>
         );
     };
