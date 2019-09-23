@@ -46,7 +46,23 @@ export class AuthenticationService {
             APIConstants.FORGOT_PASSWORD_URL,
             forgotPasswordRequest,
         );
-        console.log('Forgot Password Response : ', response);
+        return response;
+    };
+
+    public static authenticateSSO = async (nonce: string): Promise<ResponseViewModel<AuthenticationResponse>> => {
+        const response = await HttpBaseService._get<AuthenticationResponse>(
+            APIConstants.AUTHENTICATION_SSO_URL + nonce,
+        );
+        if (response && response.data) {
+            try {
+                await StorageService.store(StorageConstants.TOKEN_KEY, response.data.token);
+                await StorageService.store(StorageConstants.USER, response.data);
+            } catch (error) {
+                console.log('Error in storing asyncstorage', error);
+            }
+        } else {
+            console.log('Failure');
+        }
         return response;
     };
 }

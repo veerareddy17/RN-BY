@@ -1,5 +1,6 @@
 export const APIConstants = {
     AUTHENTICATION_URL: '/authenticate',
+    AUTHENTICATION_SSO_URL: '/authenticate/nonce/',
     USER_CAMPAIGNS_URL: '/campaign?page=',
     USER_LEADS_URL: '/lead',
     CAMPAIGNS_URL: '/campaign/lightweight',

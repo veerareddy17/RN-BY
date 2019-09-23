@@ -1,6 +1,5 @@
 import { ErrorResponse } from './../../models/response/error-response';
 import { errorCallResetAction, errorCallAction, serverErrorCallAction } from './error-actions';
-import { SMSService } from './../../services/sendSMS-service';
 import { OTP_SENT, LOAD_OTP_START, LOAD_OTP_FAIL, LOAD_OTP_INIT, OTP_VALIDATE } from './action-types';
 import { OTPRequest } from './../../models/request/otp-request';
 import { LeadService } from './../../services/lead-service';
@@ -61,34 +60,6 @@ export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: a
                 dispatch(serverErrorCallAction(response.errors));
                 dispatch(otpFailureAction(response.errors[0].message));
             }
-        } else {
-            return new Promise((resolve, reject) => {
-                SendSMS.send(
-                    {
-                        //Message body
-                        body: config.offlineMessageBody + otpRequest.code,
-                        //Recipients Number
-                        recipients: [otpRequest.phone],
-                        //An array of types that would trigger a "completed" response when using android
-                        successTypes: ['sent', 'queued'],
-                    },
-                    (completed, cancelled, error) => {
-                        if (completed) {
-                            console.log('SMS Sent Completed');
-                            dispatch(otpSuccessAction({ success: true }));
-                            resolve(true);
-                        } else if (cancelled) {
-                            console.log('SMS Cancelled');
-                            dispatch(otpFailureAction('SMS Sent Cancelled'));
-                            reject(reject);
-                        } else if (error) {
-                            console.log('SMS error');
-                            dispatch(otpFailureAction('Some error occured'));
-                            reject(reject);
-                        }
-                    },
-                );
-            });
         }
     } catch (error) {
         // Error

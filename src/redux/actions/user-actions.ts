@@ -59,7 +59,7 @@ export const authenticate = (
             }
             dispatch(errorCallResetAction());
             const response = await AuthenticationService.authenticate(authRequest);
-            if (response.data !== null) {
+            if (response && response.data) {
                 response.data.isOfflineLoggedIn = false;
                 dispatch(successAction(response.data));
             } else {
@@ -83,6 +83,27 @@ export const logout = (): ((dispatch: Dispatch, getState: any) => Promise<void>)
             dispatch(logoutAction());
         } catch (error) {
             console.log('Logout action', error);
+        }
+    };
+};
+
+export const getTokenForSSO = (nonce: string): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState: any) => {
+        try {
+            dispatch(requestAction());
+            dispatch(errorCallResetAction());
+            const response = await AuthenticationService.authenticateSSO(nonce);
+            if (response && response.data) {
+                response.data.isOfflineLoggedIn = false;
+                dispatch(successAction(response.data));
+            } else {
+                dispatch(errorCallAction(response.errors));
+                dispatch(failureAction(response.errors));
+            }
+        } catch (e) {
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message));
+            dispatch(serverErrorCallAction(errors));
         }
     };
 };

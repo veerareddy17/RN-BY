@@ -15,11 +15,17 @@ import React from 'react';
 import AddNewIcon from './add-new';
 import FilteredLeads from '../screens/leads/filtered-leads';
 
-const AuthStack = createStackNavigator({ Login: Login });
+const AuthStack = createStackNavigator({
+    Login: {
+        screen: Login,
+        path: 'login',
+    },
+});
 
 const CampaignListStack = createStackNavigator({
     CampaignList: {
         screen: CampaignList,
+        path: 'campaignList',
         navigationOptions: {
             header: null,
         },
@@ -30,6 +36,7 @@ const DashboardStack = createStackNavigator(
     {
         Dashboard: {
             screen: Dashboard,
+            path: 'dashboard',
             navigationOptions: {
                 header: null,
             },
@@ -62,6 +69,7 @@ const TabStack = createBottomTabNavigator(
     {
         Dashboard: {
             screen: DashboardStack,
+            path: 'dashboardStack',
             navigationOptions: {
                 tabBarIcon: ({ tintColor, focused }) => (
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -82,6 +90,7 @@ const TabStack = createBottomTabNavigator(
         },
         CreateLead: {
             screen: CreateLead,
+            path: 'createLead',
             navigationOptions: () => ({
                 tabBarIcon: <AddNewIcon />,
                 tabBarVisible: false,
@@ -89,6 +98,7 @@ const TabStack = createBottomTabNavigator(
         },
         LeadList: {
             screen: LeadList,
+            path: 'LeadList',
             navigationOptions: {
                 tabBarIcon: ({ tintColor, focused }) => (
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -132,18 +142,34 @@ const TabStack = createBottomTabNavigator(
     },
 );
 
-const AppContainer = createAppContainer(
+const MainApp = createAppContainer(
     createSwitchNavigator(
         {
-            AuthLoading: Splash,
-            Auth: AuthStack,
-            Campaigns: CampaignListStack,
-            App: TabStack,
+            AuthLoading: {
+                screen: Splash,
+                path: '',
+            },
+            Auth: {
+                screen: AuthStack,
+                path: '',
+            },
+            Campaigns: {
+                screen: CampaignListStack,
+                path: '',
+            },
+            App: {
+                screen: TabStack,
+                path: '',
+            },
         },
         {
             initialRouteName: 'AuthLoading',
         },
     ),
 );
+
+const prefix = 'sso://';
+
+const AppContainer = () => <MainApp uriPrefix={prefix} />;
 
 export default AppContainer;

@@ -1,7 +1,7 @@
 import { Formik } from 'formik';
 import * as React from 'react';
 import { Container, Content, Text, Button, Form, Item, Input, Label, Icon, Spinner, Toast } from 'native-base';
-import { ImageBackground, Dimensions, Image, View, StatusBar, TouchableOpacity } from 'react-native';
+import { ImageBackground, Dimensions, Image, View, StatusBar, TouchableOpacity, Linking, Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import images from '../../assets';
 import { NavigationScreenProp } from 'react-navigation';
@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { NetworkContext } from '../../provider/network-provider';
 import loginStyle from './login-style';
-import { authenticate } from '../../redux/actions/user-actions';
+import { authenticate, getTokenForSSO } from '../../redux/actions/user-actions';
 import { AppState } from '../../redux/store';
 import { loginValidation } from '../../validations/validation-model';
 import { captureLocation } from '../../redux/actions/location-action';
@@ -23,7 +23,7 @@ import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { Utility } from '../utils/utility';
-
+import { CONSTANTS } from '../../helpers/app-constants';
 export interface Props {
     navigation: NavigationScreenProp<any>;
     list: any;
@@ -34,6 +34,8 @@ export interface Props {
     metaData: any;
     campaignState: any;
     errorState: any;
+    userState: any;
+    error: any;
     requestLoginApi(
         email: string,
         password: string,
@@ -45,8 +47,7 @@ export interface Props {
     resetForgotPassword(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     fetchMetaData(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    userState: any;
-    error: any;
+    getTokenForSSO(nonce: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 export interface State {
     showPassword: boolean;
@@ -83,6 +84,16 @@ class Login extends React.Component<Props, State> {
 
     componentDidMount = async () => {
         const selectedCampaign = this.props.campaignState.selectedCampaign;
+        // handle SSO redirect
+        Linking.getInitialURL()
+            .then(url => {
+                if (url) {
+                    this.handleOpenURL(url);
+                }
+            })
+            .catch(err => {});
+        Linking.addEventListener('url', this.handleOpenURL);
+
         let isLoggedIn = false;
         if (this.context.isConnected && this.props.userState.user.token) {
             isLoggedIn = true;
@@ -93,6 +104,40 @@ class Login extends React.Component<Props, State> {
         isLoggedIn
             ? this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App')
             : this.props.navigation.navigate('Auth');
+    };
+
+    componentWillUnmount = () => {
+        Linking.removeEventListener('url', this.handleOpenURL);
+    };
+
+    // handle gateway callbacks
+    handleOpenURL = async url => {
+        const { error, nonce } = this.props.navigation.state.params;
+        if (nonce) {
+            await this.props.getTokenForSSO(nonce);
+            try {
+                this.setState({ showLoadingSpinner: true });
+                await this.props.fetchMetaData();
+                await this.props.fetchCampaigns();
+                if (this.props.errorState.showAlertError) {
+                    AlertError.alertErr(this.props.errorState.error);
+                    this.setState({ showLoadingSpinner: false });
+                }
+                if (this.props.errorState.showToastError) {
+                    ToastError.toastErr(this.props.errorState.error);
+                    this.setState({ showLoadingSpinner: false });
+                }
+                if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
+                    this.setState({ showLoadingSpinner: false });
+                    this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
+                }
+                return;
+            } catch (error) {
+                AlertError.alertErr(error);
+            }
+        }
+        Alert.alert(error);
+        return;
     };
 
     handlePress = () => {
@@ -114,6 +159,16 @@ class Login extends React.Component<Props, State> {
 
     submitForgotPassword = async () => {
         await this.props.forgotPassword(this.state.email);
+    };
+
+    handleSSO = () => {
+        Linking.canOpenURL(CONSTANTS.SSO_URL).then(supported => {
+            if (supported) {
+                Linking.openURL(CONSTANTS.SSO_URL);
+            } else {
+                Alert.alert('Not able to redirect to Single Sign On url ');
+            }
+        });
     };
 
     handleSubmit = async (values: LoginRequestData) => {
@@ -263,6 +318,19 @@ class Login extends React.Component<Props, State> {
                                             </Form>
                                         )}
                                 </Formik>
+                                <View>
+                                    <Button
+                                        block={true}
+                                        onPress={() => {
+                                            this.handleSSO();
+                                        }}
+                                        style={loginStyle.submitSSOButton}
+                                    >
+                                        <Text uppercase={false} style={loginStyle.loginButtonText}>
+                                            Login with Google
+                                        </Text>
+                                    </Button>
+                                </View>
                             </View>
                             <RBSheet
                                 ref={ref => {
@@ -314,6 +382,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchMetaData: bindActionCreators(fetchMetaData, dispatch),
     forgotPassword: bindActionCreators(forgotPassword, dispatch),
     resetForgotPassword: bindActionCreators(initStateForgotPassword, dispatch),
+    getTokenForSSO: bindActionCreators(getTokenForSSO, dispatch),
 });
 
 export default connect(

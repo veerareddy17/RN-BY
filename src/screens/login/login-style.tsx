@@ -71,6 +71,16 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    submitSSOButton: {
+        backgroundColor: '#813588',
+        borderRadius: 5,
+        borderColor: 'white',
+        borderWidth: 1,
+        marginRight: 20,
+        marginLeft: 20,
+        marginBottom: 20,
+        marginTop: 20,
+    },
 });
 
 export default styles;
