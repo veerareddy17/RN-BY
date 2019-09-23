@@ -17,3 +17,10 @@ export const initialState = {
     isLoading: false,
     flag: '',
 };
+
+export const resetLeadState = {
+    paginatedLeadList: PaginatedResponseState,
+    leadList: [],
+    isLoading: false,
+    flag: '',
+};

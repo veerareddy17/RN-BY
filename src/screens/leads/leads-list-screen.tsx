@@ -19,7 +19,7 @@ import {
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
 import Lead from './lead';
-import { fetchAllLeadsApi } from '../../redux/actions/lead-actions';
+import { fetchAllLeadsApi, resetLeads } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
 import { Alert } from 'react-native';
@@ -29,9 +29,11 @@ import images from '../../assets';
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
+    userState: any;
+    leadReportState: any;
     fetchLeads(pageNumber: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
-    userState: any;
+    resetLead(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface LeadListState {
@@ -62,6 +64,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 this.logout();
                 return;
             }
+            await this.props.resetLead();
             await this.fetchLeadsList(this.state.pageNumber, '');
             this.setState({
                 pageNumber: this.props.leadState.paginatedLeadList.current_page,
@@ -194,6 +197,11 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     </Header>
                 )}
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
+                    <View style={{ paddingBottom: 5 }}>
+                        <Text style={{ fontSize: 12, color: '#555' }}>
+                            Total Leads : {this.props.leadReportState.leadReport.total}
+                        </Text>
+                    </View>
                     <View style={{ flex: 1 }}>
                         {this.context.isConnected ? (
                             this.props.leadState.isLoading ? (
@@ -247,11 +255,13 @@ class LeadList extends Component<LeadListProps, LeadListState> {
 const mapStateToProps = (state: AppState) => ({
     leadState: state.leadReducer,
     userState: state.userReducer,
+    leadReportState: state.leadReportReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchLeads: bindActionCreators(fetchAllLeadsApi, dispatch),
     logout: bindActionCreators(logout, dispatch),
+    resetLead: bindActionCreators(resetLeads, dispatch),
 });
 
 export default connect(

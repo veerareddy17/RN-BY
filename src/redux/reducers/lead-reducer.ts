@@ -10,8 +10,9 @@ import {
     SYNC_OFFLINE_LEADS,
     DELETE_SYNCED_LEADS,
     FETCH_FILTERED_LEADS,
+    LEAD_RESET_ACTION,
 } from '../actions/action-types';
-import { initialState } from '../init/lead-initial-state';
+import { initialState, resetLeadState } from '../init/lead-initial-state';
 
 export default function leadReducer(state = initialState, action) {
     switch (action.type) {
@@ -92,6 +93,8 @@ export default function leadReducer(state = initialState, action) {
                 filteredLeadList: [...state.filteredLeadList, ...action.payload.filteredPaginatedLeadList.data],
                 flag: action.payload.flag,
             };
+        case LEAD_RESET_ACTION:
+            return resetLeadState;
         default:
             return state;
     }

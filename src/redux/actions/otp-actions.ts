@@ -7,7 +7,6 @@ import { Dispatch } from 'redux';
 import generateOTP from '../../helpers/otp-creation';
 import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
-import SendSMS from 'react-native-sms';
 import config from '../../helpers/config';
 
 export const otpStartAction = () => {

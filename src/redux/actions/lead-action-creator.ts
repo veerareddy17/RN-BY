@@ -9,6 +9,7 @@ import {
     SYNC_OFFLINE_LEADS,
     DELETE_SYNCED_LEADS,
     FETCH_FILTERED_LEADS,
+    LEAD_RESET_ACTION,
 } from './action-types';
 import { LeadFilterResponse } from '../../models/response/lead-all-response';
 import { LeadAllResponse } from '../../models/response/lead-filter-response';
@@ -78,5 +79,11 @@ export const fetchFilteredLeadsAction = (leads: LeadFilterResponse) => {
     return {
         type: FETCH_FILTERED_LEADS,
         payload: leads,
+    };
+};
+
+export const leadResetAction = () => {
+    return {
+        type: LEAD_RESET_ACTION,
     };
 };

@@ -13,6 +13,7 @@ import {
     syncOfflineLeadsAction,
     leadSuccessAction,
     fetchFilteredLeadsAction,
+    leadResetAction,
 } from './lead-action-creator';
 import { LeadResponse } from '../../models/response';
 import { SyncLeadRequest } from '../../models/request/sync-leads-request';
@@ -219,5 +220,11 @@ export const fetchFilteredLeads = (
             errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
         }
+    };
+};
+
+export const resetLeads = (): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch, getState) => {
+        dispatch(leadResetAction());
     };
 };
