@@ -17,7 +17,7 @@ export const forgotPasswordSuccessAction = (forgotPasswordResponse: ForgotPasswo
     };
 };
 
-export const forgotPasswordfailureAction = (error: string[]) => {
+export const forgotPasswordfailureAction = (error) => {
     return {
         type: FORGOT_PASSWORD_FAILURE,
         payload: error,
@@ -41,7 +41,7 @@ export const forgotPassword = (email: string): ((dispatch: Dispatch) => Promise<
             dispatch(forgotPasswordSuccessAction(response.data));
         } else {
             console.log('error data', response.errors)
-            dispatch(forgotPasswordfailureAction(response.errors));
+            dispatch(forgotPasswordfailureAction(response.errors[0].message));
         }
     };
 };

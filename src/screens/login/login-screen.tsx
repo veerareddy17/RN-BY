@@ -114,9 +114,6 @@ class Login extends React.Component<Props, State> {
 
     submitForgotPassword = async () => {
         await this.props.forgotPassword(this.state.email);
-        if (this.props.forgotPasswordState.forgotPasswordResponse.success) {
-            this.RBSheetForgotPass.close();
-        }
     };
 
     handleSubmit = async (values: LoginRequestData) => {
@@ -186,85 +183,85 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                        <Form>
-                                            <Item floatingLabel style={loginStyle.userName}>
-                                                <Label style={loginStyle.marginLeft}>Email</Label>
-                                                <Input
-                                                    keyboardType="email-address"
-                                                    onChangeText={handleChange('email')}
-                                                    onBlur={() => setFieldTouched('email')}
-                                                    style={loginStyle.marginLeft}
-                                                    returnKeyType="next"
-                                                    blurOnSubmit={false}
-                                                    onSubmitEditing={() => this.focusTheField('password')}
-                                                    autoCapitalize="none"
-                                                />
-                                            </Item>
-                                            <Item floatingLabel style={loginStyle.password}>
-                                                <Label style={loginStyle.marginLeft}>
-                                                    {this.context.isConnected ? 'Password' : 'Offline PIN'}
-                                                </Label>
-                                                <Input
-                                                    secureTextEntry={this.state.showPassword}
-                                                    value={values.password}
-                                                    onChangeText={handleChange('password')}
-                                                    onBlur={() => setFieldTouched('password')}
-                                                    style={loginStyle.marginLeft}
-                                                    returnKeyType="done"
-                                                    getRef={input => {
-                                                        this.state.input['password'] = input;
-                                                    }}
-                                                    onSubmitEditing={() => this.handleSubmit(values)}
-                                                />
-                                                <Icon
-                                                    style={loginStyle.paddingTop}
-                                                    active
-                                                    name={this.state.showPassword ? 'eye-off' : 'eye'}
-                                                    onPress={e => {
-                                                        e.preventDefault();
-                                                        this.setState({ showPassword: !this.state.showPassword });
-                                                    }}
-                                                />
-                                            </Item>
-                                            {errors.password || errors.email || this.props.userState.error ? (
-                                                <View>
-                                                    {!this.context.isConnected ? (
-                                                        <Text style={loginStyle.error}>No Internet Connection</Text>
-                                                    ) : errors.email ? (
-                                                        <Text style={loginStyle.error}>{errors.email}</Text>
-                                                    ) : errors.password ? (
-                                                        <Text style={loginStyle.error}>{errors.password}</Text>
-                                                    ) : this.props.userState.error ? (
-                                                        this.props.errorState.showAlertError ? (
-                                                            <Text style={loginStyle.error}>
-                                                                {this.props.userState.error[0].message}
-                                                            </Text>
+                                            <Form>
+                                                <Item floatingLabel style={loginStyle.userName}>
+                                                    <Label style={loginStyle.marginLeft}>Email</Label>
+                                                    <Input
+                                                        keyboardType="email-address"
+                                                        onChangeText={handleChange('email')}
+                                                        onBlur={() => setFieldTouched('email')}
+                                                        style={loginStyle.marginLeft}
+                                                        returnKeyType="next"
+                                                        blurOnSubmit={false}
+                                                        onSubmitEditing={() => this.focusTheField('password')}
+                                                        autoCapitalize="none"
+                                                    />
+                                                </Item>
+                                                <Item floatingLabel style={loginStyle.password}>
+                                                    <Label style={loginStyle.marginLeft}>
+                                                        {this.context.isConnected ? 'Password' : 'Offline PIN'}
+                                                    </Label>
+                                                    <Input
+                                                        secureTextEntry={this.state.showPassword}
+                                                        value={values.password}
+                                                        onChangeText={handleChange('password')}
+                                                        onBlur={() => setFieldTouched('password')}
+                                                        style={loginStyle.marginLeft}
+                                                        returnKeyType="done"
+                                                        getRef={input => {
+                                                            this.state.input['password'] = input;
+                                                        }}
+                                                        onSubmitEditing={() => this.handleSubmit(values)}
+                                                    />
+                                                    <Icon
+                                                        style={loginStyle.paddingTop}
+                                                        active
+                                                        name={this.state.showPassword ? 'eye-off' : 'eye'}
+                                                        onPress={e => {
+                                                            e.preventDefault();
+                                                            this.setState({ showPassword: !this.state.showPassword });
+                                                        }}
+                                                    />
+                                                </Item>
+                                                {errors.password || errors.email || this.props.userState.error ? (
+                                                    <View>
+                                                        {!this.context.isConnected ? (
+                                                            <Text style={loginStyle.error}>No Internet Connection</Text>
+                                                        ) : errors.email ? (
+                                                            <Text style={loginStyle.error}>{errors.email}</Text>
+                                                        ) : errors.password ? (
+                                                            <Text style={loginStyle.error}>{errors.password}</Text>
+                                                        ) : this.props.userState.error ? (
+                                                            this.props.errorState.showAlertError ? (
+                                                                <Text style={loginStyle.error}>
+                                                                    {this.props.userState.error[0].message}
+                                                                </Text>
+                                                            ) : (
+                                                                    <Text />
+                                                                )
                                                         ) : (
-                                                            <Text />
-                                                        )
-                                                    ) : (
-                                                        <Text />
+                                                                            <Text />
+                                                                        )}
+                                                    </View>
+                                                ) : (
+                                                        <View />
                                                     )}
-                                                </View>
-                                            ) : (
-                                                <View />
-                                            )}
 
-                                            <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                <Text uppercase={false} style={loginStyle.loginButtonText}>
-                                                    Login
+                                                <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
+                                                    <Text uppercase={false} style={loginStyle.loginButtonText}>
+                                                        Login
                                                 </Text>
-                                            </Button>
-                                            <SpinnerOverlay visible={this.state.showLoadingSpinner} />
+                                                </Button>
+                                                <SpinnerOverlay visible={this.state.showLoadingSpinner} />
 
-                                            <TouchableOpacity
-                                                style={loginStyle.forgotPasswordContainer}
-                                                onPress={this.handlePress}
-                                            >
-                                                <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
-                                            </TouchableOpacity>
-                                        </Form>
-                                    )}
+                                                <TouchableOpacity
+                                                    style={loginStyle.forgotPasswordContainer}
+                                                    onPress={this.handlePress}
+                                                >
+                                                    <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
+                                                </TouchableOpacity>
+                                            </Form>
+                                        )}
                                 </Formik>
                             </View>
                             <RBSheet
@@ -275,7 +272,7 @@ class Login extends React.Component<Props, State> {
                                 duration={10}
                                 customStyles={{
                                     container: {
-                                        height: 400,
+                                        height: 900,
                                         borderTopRightRadius: 20,
                                         borderTopLeftRadius: 20,
                                     },
@@ -289,7 +286,7 @@ class Login extends React.Component<Props, State> {
                                     onChangeText={this.onChangeTextBottomSheet}
                                     data={['Email Id']}
                                     close={this.closeBottomSheet}
-                                    description="Enter your registered email id"
+                                    //description="Enter your registered email id"
                                     submit={this.submitForgotPassword}
                                     title="Forgot Password"
                                 />

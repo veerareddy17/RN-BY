@@ -25,7 +25,10 @@ export default function forgotPasswordReducer(state = initialState, action) {
             };
         case FORGOT_PASSWORD_INIT:
             return {
-                state
+                ...state,
+                isLoading: false,
+                forgotPasswordResponse: '',
+                error: '',
             };
         default:
             return state;

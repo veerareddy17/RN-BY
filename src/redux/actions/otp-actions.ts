@@ -37,10 +37,10 @@ export const otpSuccessAction = successData => {
     };
 };
 
-export const otpValidateAction = successData => {
+export const otpValidateAction = validatedData => {
     return {
         type: OTP_VALIDATE,
-        payload: successData,
+        payload: validatedData,
     };
 };
 
@@ -59,7 +59,7 @@ export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: a
                 dispatch(otpSuccessAction(response.data));
             } else {
                 dispatch(serverErrorCallAction(response.errors));
-                dispatch(otpFailureAction(response.errors));
+                dispatch(otpFailureAction(response.errors[0].message));
             }
         } else {
             return new Promise((resolve, reject) => {
@@ -107,7 +107,7 @@ export const submitOTP = (otp: String) => async (dispatch: Dispatch) => {
         dispatch(otpValidateAction(true));
         return;
     }
-    dispatch(otpFailureAction('Invalid OTP'));
+    dispatch(otpValidateAction(false));
 };
 
 export const otpInit = () => async (dispatch: Dispatch) => {

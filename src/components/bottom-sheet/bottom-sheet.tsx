@@ -8,18 +8,20 @@ import {
     ActivityIndicator,
     KeyboardAvoidingView,
     ScrollView,
+    Image,
 } from 'react-native';
 import FloatingLabel from 'react-native-floating-labels';
 import { NavigationScreenProp } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Icon, Spinner } from 'native-base';
 import store from '../../redux/store';
+import images from '../../assets';
 
 export interface Props {
     navigation?: NavigationScreenProp<any>;
     data: Array<Object>;
     statuses?: Array<String>;
-    description?: String;
+    // description?: String;
     title: String;
     actionType?: String;
     type: String;
@@ -32,10 +34,26 @@ export interface Props {
     keyBoardStyle?: string;
     resend?: Function;
 }
-export interface State {}
+export interface State {
+    email: string;
+    error: string;
+    hasError: boolean;
+}
 
 export default class BottomSheet extends React.Component<Props, State> {
-    onBlur() {}
+
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            email: '',
+            hasError: true,
+            error: '',
+        };
+    }
+
+    onBlur() {
+
+    }
     onChangeHandle = (text: String, item: String) => {
         this.props.onChangeText(text, item);
     };
@@ -47,11 +65,35 @@ export default class BottomSheet extends React.Component<Props, State> {
         this.props.close();
     };
     handleSubmit = () => {
-        this.props.submit();
+        if (this.validate(this.state.email)) {
+            this.props.submit();
+        }
     };
     handleResend = () => {
         this.props.resend();
     };
+
+    validate = (text) => {
+        console.log(text);
+        let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (text === '') {
+            this.setState({ error: 'Email Id is a required field' })
+            this.setState({ hasError: true })
+            return false;
+        }
+        if (reg.test(text) === false) {
+            this.setState({ error: 'Email Id must be a valid email' })
+            this.setState({ hasError: true })
+            return false;
+        }
+        else {
+            this.setState({ error: '' })
+            this.setState({ email: text })
+            this.setState({ hasError: false })
+            return true;
+        }
+    }
+
     renderItem(type: String) {
         switch (type) {
             case 'inputType':
@@ -59,6 +101,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                     <KeyboardAwareScrollView style={{ width: '100%' }}>
                         {this.props.data.map((item, index) => {
                             return (
+
                                 <View key={index}>
                                     <View
                                         key={index}
@@ -85,6 +128,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                 labelStyle={styles.labelInput}
                                                 inputStyle={styles.input}
                                                 onChangeText={(text: String) => {
+                                                    this.validate(text)
                                                     this.onChangeHandle(text, item);
                                                 }}
                                                 onBlur={this.onBlur}
@@ -93,16 +137,16 @@ export default class BottomSheet extends React.Component<Props, State> {
                                             </FloatingLabel>
                                         </View>
                                     </View>
-                                    <View style={{ marginLeft: 40, marginRight: 40, borderRadius: 5, marginTop: 5 }}>
+                                    <View style={{ marginLeft: 40, marginRight: 40, borderRadius: 5 }}>
                                         {this.props.currentState.isLoading ? (
                                             <View>
                                                 <Spinner />
                                             </View>
-                                        ) : this.props.currentState.error ? (
-                                            <Text style={{ color: '#ff0000' }}>{this.props.currentState.error}</Text>
+                                        ) : this.props.currentState.error || this.state.hasError ? (
+                                            <Text style={{ color: '#ff0000', fontSize: 11 }}>{this.props.currentState.error || this.state.error}</Text>
                                         ) : (
-                                            <View />
-                                        )}
+                                                    <View />
+                                                )}
                                     </View>
                                 </View>
                             );
@@ -110,67 +154,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                     </KeyboardAwareScrollView>
                 );
                 break;
-            case 'inputTypeOTP':
-                return (
-                    <KeyboardAwareScrollView style={{ width: '100%' }}>
-                        {this.props.data.map((item, index) => {
-                            return (
-                                <View key={item}>
-                                    <View
-                                        key={index}
-                                        style={{
-                                            width: '100%',
-                                            flexDirection: 'row',
-                                            height: 65,
-                                        }}
-                                    >
-                                        <View
-                                            style={{
-                                                flex: 1,
-                                                borderWidth: 1,
-                                                borderColor: 'rgba(136,136,136,0.4)',
-                                                backgroundColor: 'rgba(252,252,252,0.6)',
-                                                marginLeft: 40,
-                                                marginRight: 40,
-                                                borderRadius: 5,
-                                                marginTop: 10,
-                                            }}
-                                        >
-                                            <FloatingLabel
-                                                keyboardType={this.props.keyBoardStyle}
-                                                labelStyle={styles.labelInput}
-                                                inputStyle={styles.input}
-                                                onChangeText={(text: String) => {
-                                                    this.onChangeHandle(text, item);
-                                                }}
-                                                onBlur={this.onBlur}
-                                            >
-                                                {item}
-                                            </FloatingLabel>
-                                        </View>
-                                    </View>
-                                    <View style={{ marginLeft: 40, marginRight: 40, borderRadius: 5, marginTop: 5 }}>
-                                        {this.props.currentState.isLoading ? (
-                                            <View>
-                                                <Spinner />
-                                            </View>
-                                        ) : this.props.currentState.error ? (
-                                            <Text style={{ color: '#ff0000' }}>{this.props.currentState.error}</Text>
-                                        ) : (
-                                            <View />
-                                        )}
-                                    </View>
-                                    <View style={{ marginLeft: 'auto', marginRight: 40 }}>
-                                        <Text style={{ color: '#813588' }} onPress={() => this.handleResend()}>
-                                            Resend OTP
-                                        </Text>
-                                    </View>
-                                </View>
-                            );
-                        })}
-                    </KeyboardAwareScrollView>
-                );
-                break;
+
             case 'List':
                 return (
                     <FlatList
@@ -248,36 +232,57 @@ export default class BottomSheet extends React.Component<Props, State> {
                     </View>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ textAlignVertical: 'center', textAlign: 'center', color: '#813588' }}>
-                        {this.props.description}
-                    </Text>
-                    {this.props.data.length == 0 ? (
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    ) : (
-                        this.renderItem(this.props.type)
-                    )}
+                    {this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success
+                        ? <Image source={images.emailBox} />
+                        : <View>
+                            <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, marginBottom: 10, textAlign: 'center', color: '#813588' }}>
+                                We will send you a link to reset your password
+                            </Text>
+                            <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, textAlign: 'center', color: '#813588' }}>
+                                Enter you registered email address
+                            </Text>
+                        </View>
+                    }
+                    {this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success ?
+                        <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, marginTop: 10, textAlign: 'center', color: '#813588' }}>
+                            We have sent a reset password link to your email account
+                            </Text>
+                        : this.props.data.length == 0 ? (
+                            <ActivityIndicator size="large" color="#0000ff" />
+                        ) : (
+                                this.renderItem(this.props.type)
+                            )
+
+                    }
                 </View>
-                {this.props.actionType != null ? (
-                    <TouchableOpacity
-                        onPress={() => this.handleSubmit()}
-                        style={{
-                            height: 50,
-                            backgroundColor: 'purple',
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                            {this.props.actionType}
-                        </Text>
-                    </TouchableOpacity>
-                ) : (
-                    <Text></Text>
-                )}
+                {
+                    this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success ?
+                        <Text /> : this.props.actionType != null ? (
+                            <TouchableOpacity
+                                disabled={this.state.hasError}
+                                onPress={() => this.handleSubmit()}
+                                style={{
+                                    height: 50,
+                                    backgroundColor: !this.state.hasError ? 'purple' : '#9A9A9A',
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                                    {this.props.actionType}
+                                </Text>
+                            </TouchableOpacity>
+                        ) : (
+                                <Text />
+                            )
+                }
+
+
+
             </View>
         );
     }
