@@ -162,7 +162,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                         data={this.props.data}
                         renderItem={({ item, index }) => (
                             <View key={item.id} style={{ flexDirection: 'row' }}>
-                                <TouchableOpacity
+                                <TouchableOpacity disabled={this.props.data[index].id == this.props.currentcampaign ? true : false}
                                     onPress={() => this._selectCard(index, item)}
                                     style={{ borderBottomWidth: 0.2, width: '100%' }}
                                 >
@@ -232,18 +232,18 @@ export default class BottomSheet extends React.Component<Props, State> {
                     </View>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    {this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success
+                    {this.props.currentState && this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success
                         ? <Image source={images.emailBox} />
-                        : <View>
+                        : this.props.type == "inputType" ? <View>
                             <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, marginBottom: 10, textAlign: 'center', color: '#813588' }}>
                                 We will send you a link to reset your password
                             </Text>
                             <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, textAlign: 'center', color: '#813588' }}>
                                 Enter you registered email address
                             </Text>
-                        </View>
+                        </View> : <View />
                     }
-                    {this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success ?
+                    {this.props.currentState && this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success ?
                         <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, marginTop: 10, textAlign: 'center', color: '#813588' }}>
                             We have sent a reset password link to your email account
                             </Text>
@@ -255,30 +255,30 @@ export default class BottomSheet extends React.Component<Props, State> {
 
                     }
                 </View>
-                {
+                {this.props.currentState &&
                     this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success ?
-                        <Text /> : this.props.actionType != null ? (
-                            <TouchableOpacity
-                                disabled={this.state.hasError}
-                                onPress={() => this.handleSubmit()}
-                                style={{
-                                    height: 50,
-                                    backgroundColor: !this.state.hasError ? 'purple' : '#9A9A9A',
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                }}
-                            >
-                                <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                                    {this.props.actionType}
-                                </Text>
-                            </TouchableOpacity>
-                        ) : (
-                                <Text />
-                            )
+                    <Text /> : this.props.actionType != null ? (
+                        <TouchableOpacity
+                            disabled={this.state.hasError}
+                            onPress={() => this.handleSubmit()}
+                            style={{
+                                height: 50,
+                                backgroundColor: !this.state.hasError ? 'purple' : '#9A9A9A',
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                                {this.props.actionType}
+                            </Text>
+                        </TouchableOpacity>
+                    ) : (
+                            <Text />
+                        )
                 }
 
 
