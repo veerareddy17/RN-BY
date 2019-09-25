@@ -109,6 +109,7 @@ export const syncOfflineLeads = (): ((dispatch: Dispatch, getState: any) => Prom
                     let batchLeads = getLeadsByBatch(leadsToSync);
                     let response = await LeadService.syncLeads(batchLeads);
                     if (response && response.data) {
+                        leadsToSync.splice(0, batchLeads.leads.length);
                         dispatch(syncOfflineLeadsAction(response.data.success));
                     } else {
                         dispatch(leadFailureAction(response.errors));
@@ -146,7 +147,7 @@ export const getLeadsByBatch = (totalLeads: LeadResponse[]): SyncLeadRequest => 
     let syncLeads = new SyncLeadRequest();
     syncLeads.leads = [];
     let batchSize = config.OFFLINE_LEAD_BATCH_SIZE;
-    let filteredLeads = totalLeads.splice(0, batchSize);
+    let filteredLeads = totalLeads.slice(0, batchSize);
     filteredLeads.forEach(leadRes => {
         syncLeads.leads.push(transformResponseToRequest(leadRes));
     });

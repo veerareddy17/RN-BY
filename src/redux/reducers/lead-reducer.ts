@@ -12,7 +12,7 @@ import {
     FETCH_FILTERED_LEADS,
     LEAD_RESET_ACTION,
 } from '../actions/action-types';
-import { initialState, resetLeadState } from '../init/lead-initial-state';
+import { initialState, resetLeadState, PaginatedResponseState } from '../init/lead-initial-state';
 
 export default function leadReducer(state = initialState, action) {
     switch (action.type) {
@@ -94,7 +94,14 @@ export default function leadReducer(state = initialState, action) {
                 flag: action.payload.flag,
             };
         case LEAD_RESET_ACTION:
-            return resetLeadState;
+            return {
+                ...state,
+                paginatedLeadList: PaginatedResponseState,
+                leadList: [],
+                filteredPaginatedLeadList: PaginatedResponseState,
+                filteredLeadList: [],
+                offlineLeadList: state.offlineLeadList,
+            };
         default:
             return state;
     }

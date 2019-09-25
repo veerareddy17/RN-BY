@@ -49,13 +49,10 @@ import { Error } from '../error/error';
 import { submitOTP, otpInitAction, sendOTP } from '../../redux/actions/otp-actions';
 import { LeadRequest } from '../../models/request';
 import { withNavigation } from 'react-navigation';
-import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { SiblingRequest } from '../../models/request/lead-request';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import { logout } from '../../redux/actions/user-actions';
-import { CONSTANTS } from '../../helpers/app-constants';
-import { Utility } from '../utils/utility';
 import { MetaResponse } from '../../models/response/meta-response';
 import { Alert, TouchableOpacity } from 'react-native';
 import { Platform } from 'react-native';
@@ -252,7 +249,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             pin_code: values.pincode,
             siblings: values.siblings,
         });
-        console.log('lead values', values);
         try {
             this.setState({ showLoadingSpinner: true });
             await this.props.captureLocation();
@@ -272,7 +268,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             };
             this.setState({ location: locObj });
             this.setState({ sync_status: this.context.isConnected ? true : false });
-            this.setState({ is_otp_verified: this.state.proceedWithoutOtp ? false : true });
+            this.setState({
+                is_otp_verified: !this.context.isConnected ? false : this.state.proceedWithoutOtp ? false : true,
+            });
 
             let req = this.state;
             this.setState({ leadRequest: req });

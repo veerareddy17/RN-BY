@@ -59,6 +59,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             if (this.context.isConnected && this.props.userState.user.token === '') {
+                await this.props.resetLead();
                 this.logout();
                 return;
             }
@@ -67,7 +68,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 return;
             }
             await this.props.fetchLeadReport();
-            await this.props.resetLead();
             await this.fetchLeadsList(this.state.pageNumber, '');
             this.setState({
                 pageNumber: this.props.leadState.paginatedLeadList.current_page,
@@ -202,7 +202,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
                     <View style={{ paddingBottom: 5 }}>
                         <Text style={{ fontSize: 15, color: '#555' }}>
-                            Total Leads : {this.props.leadReportState.leadReport.total}
+                            Total Leads :{' '}
+                            {this.context.isConnected
+                                ? this.props.leadReportState.leadReport.total
+                                : this.props.leadState.offlineLeadList.length}
                         </Text>
                     </View>
                     <View style={{ flex: 1 }}>

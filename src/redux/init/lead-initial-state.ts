@@ -21,6 +21,9 @@ export const initialState = {
 export const resetLeadState = {
     paginatedLeadList: PaginatedResponseState,
     leadList: [],
+    offlineLeadList: [],
+    filteredPaginatedLeadList: PaginatedResponseState,
+    filteredLeadList: [],
     isLoading: false,
     flag: '',
 };
