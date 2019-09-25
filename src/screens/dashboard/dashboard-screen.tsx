@@ -204,7 +204,9 @@ class Dashboard extends React.Component<Props, State> {
                                 <View style={styles.leadCountCircle}>
                                     <Text style={styles.leadCountNumber}>
                                         {!this.context.isConnected
-                                            ? this.props.leadState.offlineLeadList.length
+                                            ? this.props.leadState.offlineLeadList
+                                                ? this.props.leadState.offlineLeadList.length
+                                                : 0
                                             : this.props.leadReportState.leadReport.total}
                                     </Text>
                                 </View>

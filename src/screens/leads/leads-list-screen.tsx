@@ -203,9 +203,11 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     <View style={{ paddingBottom: 5 }}>
                         <Text style={{ fontSize: 15, color: '#555' }}>
                             Total Leads :{' '}
-                            {this.context.isConnected
-                                ? this.props.leadReportState.leadReport.total
-                                : this.props.leadState.offlineLeadList.length}
+                            {!this.context.isConnected
+                                ? this.props.leadState.offlineLeadList
+                                    ? this.props.leadState.offlineLeadList.length
+                                    : 0
+                                : this.props.leadReportState.leadReport.total}
                         </Text>
                     </View>
                     <View style={{ flex: 1 }}>
