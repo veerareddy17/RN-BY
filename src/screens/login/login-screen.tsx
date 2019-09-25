@@ -12,6 +12,7 @@ import {
     Alert,
     ActivityIndicator,
     Keyboard,
+    Platform,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import images from '../../assets';
@@ -130,7 +131,9 @@ class Login extends React.Component<Props, State> {
     };
 
     _keyboardDidShow = async e => {
-        await this.setState({ keyboardHeight: e.endCoordinates.height });
+        if (Platform.OS === 'ios') {
+            await this.setState({ keyboardHeight: e.endCoordinates.height });
+        }
     };
 
     _keyboardDidHide = async e => {
