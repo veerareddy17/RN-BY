@@ -23,6 +23,7 @@ import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { Utility } from '../utils/utility';
+import FloatLabelTextInput from '../../components/floating-label/floating-label';
 import { CONSTANTS } from '../../helpers/app-constants';
 export interface Props {
     navigation: NavigationScreenProp<any>;
@@ -79,7 +80,8 @@ class Login extends React.Component<Props, State> {
         };
     }
     focusTheField = (id: string) => {
-        this.state.input[id]._root.focus();
+        // this.state.input[id]._root.focus();
+        this.state.input[id].refs.input.focus();
     };
 
     componentDidMount = async () => {
@@ -172,6 +174,11 @@ class Login extends React.Component<Props, State> {
     };
 
     handleSubmit = async (values: LoginRequestData) => {
+        console.log('values', values);
+        if (values.email === '' || values.password === '' || values.password.length < 5) {
+            console.log('empty field');
+            return;
+        }
         await this.props.captureLocation();
         if (this.context.isConnected) {
             this.setState({ showLoadingSpinner: true });
@@ -183,35 +190,37 @@ class Login extends React.Component<Props, State> {
             );
             if (this.props.errorState.showAlertError) {
                 AlertError.alertErr(this.props.errorState.error);
+                this.setState({ showLoadingSpinner: false });
+                return;
             }
             if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
-            }
-            if (this.props.errorState.showAlertError && this.props.errorState.showToastError) {
                 this.setState({ showLoadingSpinner: false });
                 return;
             }
             await this.props.fetchMetaData();
-            await this.props.fetchCampaigns();
-            if (this.props.errorState.showAlertError) {
-                AlertError.alertErr(this.props.errorState.error);
-            }
             if (this.props.errorState.showToastError) {
                 ToastError.toastErr(this.props.errorState.error);
+                this.setState({ showLoadingSpinner: false });
+                return;
             }
-            if (!this.props.errorState.showAlertError && !this.props.errorState.showToastError) {
-                this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
+            await this.props.fetchCampaigns();
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(this.props.errorState.error);
+                this.setState({ showLoadingSpinner: false });
+                return;
             }
             this.setState({ showLoadingSpinner: false });
-            return;
+            this.props.navigation.navigate(this.props.userState.user.token ? 'Campaigns' : 'Auth');
+        } else {
+            await this.props.requestLoginApi(
+                values.email,
+                values.password,
+                this.props.locationState.location.latitude,
+                this.props.locationState.location.longitude,
+            );
+            this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
         }
-        await this.props.requestLoginApi(
-            values.email,
-            values.password,
-            this.props.locationState.location.latitude,
-            this.props.locationState.location.longitude,
-        );
-        this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
     };
     render() {
         return (
@@ -223,9 +232,9 @@ class Login extends React.Component<Props, State> {
                             <View style={loginStyle.logoContainer}>
                                 <Image source={images.logo} />
                             </View>
-                            <View>
+                            <View style={loginStyle.formConatiner}>
                                 <Formik
-                                    initialValues={{ email: '', password: '' }}
+                                    initialValues={{ email: '' || this.props.userState.user.email, password: '' }}
                                     onSubmit={values => this.handleSubmit(values)}
                                     validationSchema={loginValidation}
                                 >
@@ -238,38 +247,37 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                            <Form>
-                                                <Item floatingLabel style={loginStyle.userName}>
-                                                    <Label style={loginStyle.marginLeft}>Email</Label>
-                                                    <Input
-                                                        keyboardType="email-address"
-                                                        onChangeText={handleChange('email')}
-                                                        onBlur={() => setFieldTouched('email')}
-                                                        style={loginStyle.marginLeft}
-                                                        returnKeyType="next"
-                                                        blurOnSubmit={false}
-                                                        onSubmitEditing={() => this.focusTheField('password')}
-                                                        autoCapitalize="none"
-                                                    />
-                                                </Item>
-                                                <Item floatingLabel style={loginStyle.password}>
-                                                    <Label style={loginStyle.marginLeft}>
-                                                        {this.context.isConnected ? 'Password' : 'Offline PIN'}
-                                                    </Label>
-                                                    <Input
-                                                        secureTextEntry={this.state.showPassword}
-                                                        value={values.password}
-                                                        onChangeText={handleChange('password')}
-                                                        onBlur={() => setFieldTouched('password')}
-                                                        style={loginStyle.marginLeft}
-                                                        returnKeyType="done"
-                                                        getRef={input => {
-                                                            this.state.input['password'] = input;
-                                                        }}
-                                                        onSubmitEditing={() => this.handleSubmit(values)}
-                                                    />
+                                        <Form>
+                                            <View style={loginStyle.userName}>
+                                                <FloatLabelTextInput
+                                                    placeholder={'Email'}
+                                                    value={values.email}
+                                                    keyboardType="email-address"
+                                                    onChangeText={handleChange('email')}
+                                                    onBlur={() => setFieldTouched('email')}
+                                                    style={loginStyle.marginLeft}
+                                                    returnKeyType="next"
+                                                    blurOnSubmit={false}
+                                                    onSubmitEditing={() => this.focusTheField('password')}
+                                                    autoCapitalize="none"
+                                                />
+                                                <View style={loginStyle.iconContainer} />
+                                            </View>
+                                            <View style={loginStyle.password}>
+                                                <FloatLabelTextInput
+                                                    placeholder={this.context.isConnected ? 'Password' : 'Offline PIN'}
+                                                    secureTextEntry={this.state.showPassword}
+                                                    value={values.password}
+                                                    onChangeText={handleChange('password')}
+                                                    onBlur={() => setFieldTouched('password')}
+                                                    returnKeyType="done"
+                                                    ref={input => {
+                                                        this.state.input['password'] = input;
+                                                    }}
+                                                    onSubmitEditing={() => this.handleSubmit(values)}
+                                                />
+                                                <View style={loginStyle.iconContainer}>
                                                     <Icon
-                                                        style={loginStyle.paddingTop}
                                                         active
                                                         name={this.state.showPassword ? 'eye-off' : 'eye'}
                                                         onPress={e => {
@@ -277,46 +285,48 @@ class Login extends React.Component<Props, State> {
                                                             this.setState({ showPassword: !this.state.showPassword });
                                                         }}
                                                     />
-                                                </Item>
-                                                {errors.password || errors.email || this.props.userState.error ? (
-                                                    <View>
-                                                        {!this.context.isConnected ? (
-                                                            <Text style={loginStyle.error}>No Internet Connection</Text>
-                                                        ) : errors.email ? (
-                                                            <Text style={loginStyle.error}>{errors.email}</Text>
-                                                        ) : errors.password ? (
-                                                            <Text style={loginStyle.error}>{errors.password}</Text>
-                                                        ) : this.props.userState.error ? (
-                                                            this.props.errorState.showAlertError ? (
-                                                                <Text style={loginStyle.error}>
-                                                                    {this.props.userState.error[0].message}
-                                                                </Text>
-                                                            ) : (
-                                                                    <Text />
-                                                                )
-                                                        ) : (
-                                                                            <Text />
-                                                                        )}
-                                                    </View>
-                                                ) : (
-                                                        <View />
-                                                    )}
-
-                                                <Button block={true} onPress={handleSubmit} style={loginStyle.submitButton}>
-                                                    <Text uppercase={false} style={loginStyle.loginButtonText}>
-                                                        Login
+                                                </View>
+                                            </View>
+                                            <View>
+                                                {!this.context.isConnected ? (
+                                                    <Text style={loginStyle.error}>No Internet Connection</Text>
+                                                ) : null}
+                                            </View>
+                                            <View>
+                                                {errors.email && touched.email ? (
+                                                    <Text style={loginStyle.error}>{errors.email}</Text>
+                                                ) : null}
+                                            </View>
+                                            <View>
+                                                {errors.password && touched.password ? (
+                                                    <Text style={loginStyle.error}>{errors.password}</Text>
+                                                ) : null}
+                                            </View>
+                                            <Button
+                                                block={true}
+                                                disabled={!isValid ? true : false}
+                                                onPress={handleSubmit}
+                                                style={[
+                                                    loginStyle.submitButton,
+                                                    {
+                                                        backgroundColor: !isValid ? '#ccc' : '#813588',
+                                                    },
+                                                ]}
+                                            >
+                                                <Text uppercase={false} style={loginStyle.loginButtonText}>
+                                                    Login
                                                 </Text>
-                                                </Button>
-                                                <SpinnerOverlay visible={this.state.showLoadingSpinner} />
+                                            </Button>
+                                            <SpinnerOverlay visible={this.state.showLoadingSpinner} />
 
-                                                <TouchableOpacity
-                                                    style={loginStyle.forgotPasswordContainer}
-                                                    onPress={this.handlePress}
-                                                >
-                                                    <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
-                                                </TouchableOpacity>
-                                            </Form>
-                                        )}
+                                            <TouchableOpacity
+                                                style={loginStyle.forgotPasswordContainer}
+                                                onPress={this.handlePress}
+                                            >
+                                                <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
+                                            </TouchableOpacity>
+                                        </Form>
+                                    )}
                                 </Formik>
                                 <View>
                                     <Button
@@ -357,6 +367,7 @@ class Login extends React.Component<Props, State> {
                                     //description="Enter your registered email id"
                                     submit={this.submitForgotPassword}
                                     title="Forgot Password"
+                                    value={this.state.email}
                                 />
                             </RBSheet>
                         </Content>

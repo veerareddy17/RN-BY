@@ -58,7 +58,7 @@ export const fetchCampaigns = (): ((dispatch: Dispatch, getState: any) => Promis
 
         try {
             const response = await CampaignService.fetchCampaigns();
-            console.log('response', response.data && response.data ? response.data : "");
+            console.log('response', response.data && response.data ? response.data : '');
             if (response && response.data) {
                 dispatch(fetchCampaignsAction(response.data));
             } else {
@@ -67,6 +67,7 @@ export const fetchCampaigns = (): ((dispatch: Dispatch, getState: any) => Promis
             }
         } catch (e) {
             let errors = Array<ErrorResponse>();
+            console.log('error from campagin action', errors);
             errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
             dispatch(campaignFailureAction(e.message));

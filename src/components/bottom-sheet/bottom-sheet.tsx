@@ -15,6 +15,7 @@ import { NavigationScreenProp } from 'react-navigation';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Icon, Spinner } from 'native-base';
 import store from '../../redux/store';
+import FloatLabelTextInput from '../floating-label/floating-label';
 import images from '../../assets';
 
 export interface Props {
@@ -33,6 +34,7 @@ export interface Props {
     currentState: any;
     keyBoardStyle?: string;
     resend?: Function;
+    value?: string;
 }
 export interface State {
     email: string;
@@ -114,16 +116,47 @@ export default class BottomSheet extends React.Component<Props, State> {
                                         <View
                                             style={{
                                                 flex: 1,
-                                                borderWidth: 1,
-                                                borderColor: 'rgba(136,136,136,0.4)',
-                                                backgroundColor: 'rgba(252,252,252,0.6)',
-                                                marginLeft: 40,
-                                                marginRight: 40,
-                                                borderRadius: 5,
-                                                marginTop: 10,
+                                                // backgroundColor: 'rgba(252,252,252,0.6)',
+                                                // marginLeft: 40,
+                                                // marginRight: 40,
+                                                // borderRadius: 5,
+                                                // marginTop: 10,
                                             }}
                                         >
-                                            <FloatingLabel
+                                            <View
+                                                style={{
+                                                    // marginBottom: 10,
+                                                    marginTop: 10,
+                                                    marginLeft: 20,
+                                                    marginRight: 20,
+                                                    flexDirection: 'row',
+                                                    borderColor: '#555',
+                                                    borderRadius: 5,
+                                                    borderWidth: 1,
+                                                }}
+                                            >
+                                                <FloatLabelTextInput
+                                                    placeholder={item}
+                                                    keyboardType={this.props.keyBoardStyle}
+                                                    onChangeText={(text: String) => {
+                                                        this.validate(text);
+                                                        this.onChangeHandle(text, item);
+                                                    }}
+                                                    onBlur={this.onBlur}
+                                                    value={this.props.value}
+                                                />
+                                                <View
+                                                    style={{
+                                                        padding: 8,
+                                                        backgroundColor: '#fff',
+                                                        borderTopRightRadius: 5,
+                                                        borderBottomRightRadius: 5,
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                    }}
+                                                />
+                                            </View>
+                                            {/* <FloatingLabel
                                                 keyboardType={this.props.keyBoardStyle}
                                                 labelStyle={styles.labelInput}
                                                 inputStyle={styles.input}
@@ -134,7 +167,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                 onBlur={this.onBlur}
                                             >
                                                 {item}
-                                            </FloatingLabel>
+                                            </FloatingLabel> */}
                                         </View>
                                     </View>
                                     <View style={{ marginLeft: 40, marginRight: 40, borderRadius: 5 }}>

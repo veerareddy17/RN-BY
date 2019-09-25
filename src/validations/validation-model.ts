@@ -9,6 +9,7 @@ export const loginValidation = yup.object().shape({
     password: yup
         .string()
         .label('Password')
+        .min(5)
         .required(),
 });
 
@@ -74,8 +75,14 @@ export const leadValidation = yup.object().shape({
         .required(),
     siblings: yup.array().of(
         yup.object().shape({
-            name: yup.string().label('Sibling Name').required(),
-            classes_id: yup.string().label('Sibling Class').required(),
+            name: yup
+                .string()
+                .label('Sibling Name')
+                .required(),
+            classes_id: yup
+                .string()
+                .label('Sibling Class')
+                .required(),
         }),
     ),
     otp: yup
@@ -83,9 +90,7 @@ export const leadValidation = yup.object().shape({
         .max(4)
         .min(4)
         .label('OTP')
-        .when(
-            'proceedWithoutOtp', (proceedWithoutOtp, schema) => {
-                return !proceedWithoutOtp ? schema.required() : schema;
-            }
-        ),
+        .when('proceedWithoutOtp', (proceedWithoutOtp, schema) => {
+            return !proceedWithoutOtp ? schema.required() : schema;
+        }),
 });

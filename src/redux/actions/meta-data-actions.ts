@@ -60,6 +60,7 @@ export const fetchMetaData = () => async (dispatch: Dispatch) => {
     } catch (e) {
         console.log(e);
         let errors = Array<ErrorResponse>();
+        console.log('error from metadata action', errors);
         errors.push(new ErrorResponse('Server', e.message));
         dispatch(serverErrorCallAction(errors));
         dispatch(metaDataFailureAction(e));

@@ -198,7 +198,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 )}
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
                     <View style={{ paddingBottom: 5 }}>
-                        <Text style={{ fontSize: 12, color: '#555' }}>
+                        <Text style={{ fontSize: 15, color: '#555' }}>
                             Total Leads : {this.props.leadReportState.leadReport.total}
                         </Text>
                     </View>

@@ -68,6 +68,7 @@ export const authenticate = (
             }
         } catch (e) {
             let errors = Array<ErrorResponse>();
+            console.log('errors from action::', errors);
             errors.push(new ErrorResponse('Server', e.message));
             dispatch(serverErrorCallAction(errors));
         }

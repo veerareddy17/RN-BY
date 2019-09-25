@@ -4,6 +4,8 @@ const images = {
     workProgress: require('../assets/work-in-progress.png'),
     noData: require('../assets/no-leads.png'),
     emailBox: require('../assets/email-box.png'),
+    emailIcon: require('../assets/email.png'),
+    mobileIcon: require('../assets/mobile.png'),
 };
 
 export default images;

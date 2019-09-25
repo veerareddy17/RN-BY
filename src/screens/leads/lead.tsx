@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { View, Text, Card, CardItem, Icon, Button, ListItem, Grid, Col, Row } from 'native-base';
+import images from '../../assets';
+import { Image } from 'react-native';
 
 const Lead = ({ lead }) => {
     return (
@@ -18,7 +20,9 @@ const Lead = ({ lead }) => {
                 }}
             >
                 <CardItem header style={{ paddingBottom: 0, paddingTop: 12, paddingLeft: 12, paddingRight: 12 }}>
-                    <Text style={{ fontWeight: '700', fontSize: 16, color: '#555', fontFamily: 'system font' }}>{lead.name}</Text>
+                    <Text style={{ fontWeight: '700', fontSize: 16, color: '#555', fontFamily: 'system font' }}>
+                        {lead.name}
+                    </Text>
                     <Button
                         rounded
                         small
@@ -36,6 +40,33 @@ const Lead = ({ lead }) => {
                             {lead.classes.name}
                         </Text>
                     </Button>
+                    {lead.is_otp_verified ? (
+                        <View
+                            style={{
+                                backgroundColor: '#48dd43',
+                                marginLeft: 'auto',
+                                marginTop: -33,
+                                marginRight: -12,
+                                paddingHorizontal: 4,
+                                borderTopRightRadius: 3,
+                            }}
+                        >
+                            <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'system font' }}>Verified</Text>
+                        </View>
+                    ) : (
+                        <View
+                            style={{
+                                backgroundColor: '#f1b234',
+                                marginLeft: 'auto',
+                                marginTop: -33,
+                                marginRight: -12,
+                                paddingHorizontal: 4,
+                                borderTopRightRadius: 3,
+                            }}
+                        >
+                            <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'system font' }}>Not Verified</Text>
+                        </View>
+                    )}
                 </CardItem>
 
                 <CardItem
@@ -50,13 +81,32 @@ const Lead = ({ lead }) => {
                 >
                     <Grid>
                         <Col style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Icon name="phone-portrait" style={{ fontSize: 20, width: 20, color: '#555' }} />
-                            <Text style={{ marginRight: 10, fontSize: 14, color: '#555', fontFamily: 'system font' }}>
+                            {/* <Icon name="phone-portrait" style={{ fontSize: 20, width: 20, color: '#555' }} /> */}
+                            <Image resizeMode={'contain'} source={images.emailIcon} style={{ width: 19 }} />
+                            <Text
+                                style={{
+                                    marginRight: 10,
+                                    marginLeft: 7,
+                                    fontSize: 14,
+                                    color: '#555',
+                                    fontFamily: 'system font',
+                                }}
+                            >
                                 {lead.phone}
                             </Text>
-                            <Icon name="mail" style={{ fontSize: 20, width: 25, color: '#555' }} />
-                            <Text style={{ flex: 1, fontSize: 14, color: '#555', fontFamily: 'system font' }} numberOfLines={1}>
-                                {lead.email}
+                            {/* <Icon name="mail" style={{ fontSize: 20, width: 25, color: '#555' }} /> */}
+                            <Image resizeMode={'contain'} source={images.mobileIcon} style={{ width: 10 }} />
+                            <Text
+                                style={{
+                                    flex: 1,
+                                    fontSize: 14,
+                                    marginLeft: 7,
+                                    color: '#555',
+                                    fontFamily: 'system font',
+                                }}
+                                numberOfLines={1}
+                            >
+                                {lead.email} some text to test
                             </Text>
                         </Col>
                     </Grid>
@@ -65,7 +115,9 @@ const Lead = ({ lead }) => {
                     <View style={{ flexDirection: 'row' }}>
                         <Grid>
                             <Col>
-                                <Text style={{ fontSize: 10, color: '#555', fontFamily: 'system font' }}>School Board</Text>
+                                <Text style={{ fontSize: 10, color: '#555', fontFamily: 'system font' }}>
+                                    School Board
+                                </Text>
                             </Col>
                             <Col style={{ marginLeft: 20 }}>
                                 <Text style={{ fontSize: 10, color: '#555', fontFamily: 'system font' }}>School</Text>
