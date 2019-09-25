@@ -26,6 +26,7 @@ import { Alert } from 'react-native';
 import { logout } from '../../redux/actions/user-actions';
 import Loader from '../../components/content-loader/content-loader';
 import images from '../../assets';
+import { fetchLeadReport } from '../../redux/actions/lead-report-action';
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
@@ -34,6 +35,7 @@ export interface LeadListProps {
     fetchLeads(pageNumber: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     resetLead(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchLeadReport(): (dispatch: Dispatch, getState: any) => Promise<void>;
 }
 
 export interface LeadListState {
@@ -64,6 +66,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 this.logout();
                 return;
             }
+            await this.props.fetchLeadReport();
             await this.props.resetLead();
             await this.fetchLeadsList(this.state.pageNumber, '');
             this.setState({
@@ -262,6 +265,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchLeads: bindActionCreators(fetchAllLeadsApi, dispatch),
     logout: bindActionCreators(logout, dispatch),
     resetLead: bindActionCreators(resetLeads, dispatch),
+    fetchLeadReport: bindActionCreators(fetchLeadReport, dispatch),
 });
 
 export default connect(

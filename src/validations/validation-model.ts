@@ -18,6 +18,7 @@ export const leadValidation = yup.object().shape({
     name: yup
         .string()
         .label('Student Name')
+        .min(3)
         .required(),
     board_id: yup
         .string()
@@ -34,6 +35,7 @@ export const leadValidation = yup.object().shape({
     parent_name: yup
         .string()
         .label('Parent Name')
+        .min(3)
         .required(),
     phone: yup
         .string()
@@ -66,6 +68,7 @@ export const leadValidation = yup.object().shape({
     city: yup
         .string()
         .label('City')
+        .min(3)
         .required(),
     pincode: yup
         .string()
@@ -78,6 +81,7 @@ export const leadValidation = yup.object().shape({
             name: yup
                 .string()
                 .label('Sibling Name')
+                .min(3)
                 .required(),
             classes_id: yup
                 .string()

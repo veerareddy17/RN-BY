@@ -169,6 +169,37 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
     },
+    headeriOS: {
+        flex: 3,
+    },
+    noInternetImageWidth: {
+        width: 200,
+    },
+    offlineText: {
+        color: '#555',
+        fontSize: 16,
+        fontWeight: '700',
+        fontFamily: 'system font',
+    },
+    offlineSubText: {
+        color: '#555',
+        fontSize: 14,
+        fontFamily: 'system font',
+        textAlign: 'center',
+    },
+    noInternetContainer: {
+        backgroundColor: '#555',
+        bottom: 0,
+        position: 'absolute',
+        padding: 2,
+        paddingLeft: 20,
+        width: '100%',
+    },
+    noInternetText: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: 'system font',
+    },
 });
 
 export default styles;

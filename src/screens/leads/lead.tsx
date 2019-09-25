@@ -106,7 +106,7 @@ const Lead = ({ lead }) => {
                                 }}
                                 numberOfLines={1}
                             >
-                                {lead.email} some text to test
+                                {lead.email}
                             </Text>
                         </Col>
                     </Grid>

@@ -107,6 +107,7 @@ export interface CreateLeadState {
     location: { latitude: number; longitude: number };
     sync_status: boolean;
     siblings: Array<SiblingRequest>;
+    showLoadingSpinner: boolean;
 }
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
@@ -140,6 +141,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             location: { latitude: 0, longitude: 0 },
             sync_status: false,
             siblings: Array<SiblingRequest>(),
+            showLoadingSpinner: false,
         };
     }
 
@@ -151,7 +153,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.setState({ campaignList: compaignList });
                 this.setState({ campaign_id: selectedCampaign.id });
                 this.setState({ campaignName: selectedCampaign.name });
-
+                this.formik.resetForm();
                 // The screen is focused call any action
                 if (this.context.isConnected && this.props.userState.user.token === '') {
                     this.props.navigation.navigate('Auth');
@@ -205,19 +207,24 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     onPressCheckBoxAlert = () => {
         let name: string;
         if (this.context.isConnected) {
-            name = 'OK'
+            name = 'OK';
         } else {
-            name = 'Submit'
+            name = 'Submit';
         }
         Alert.alert(
             'Alert',
             'This Lead will be captured without OTP verification',
             [
-                { text: name, onPress: () => { this.context.isConnected ? null : this.submitOffline() } },
+                {
+                    text: name,
+                    onPress: () => {
+                        this.context.isConnected ? null : this.submitOffline();
+                    },
+                },
             ],
             { cancelable: false },
         );
-    }
+    };
 
     onPressSubmitOTP = async (otp: string) => {
         await this.props.submitOtp(otp);
@@ -227,7 +234,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         await this.props.createLead(this.state.leadRequest);
         this.props.navigation.navigate('LeadList');
         return;
-    }
+    };
 
     handleSubmit = async values => {
         this.setState({
@@ -247,12 +254,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         });
         console.log('lead values', values);
         try {
+            this.setState({ showLoadingSpinner: true });
             await this.props.captureLocation();
             if (this.props.errorState.showAlertError) {
+                this.setState({ showLoadingSpinner: false });
                 AlertError.alertErr(this.props.errorState.error);
                 return;
             }
             if (this.props.errorState.showToastError) {
+                this.setState({ showLoadingSpinner: false });
                 ToastError.toastErr(this.props.errorState.error);
                 return;
             }
@@ -270,16 +280,17 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             //If app offline then no OTP verification
 
             if (!this.context.isConnected) {
+                this.setState({ showLoadingSpinner: true });
                 this.onPressCheckBoxAlert();
                 return;
             }
             await this.props.createLead(this.state.leadRequest);
             if (!this.props.leadState.error) {
+                this.setState({ showLoadingSpinner: false });
                 this.props.navigation.navigate('LeadList');
             }
-        }
-        catch (error) {
-        /*
+        } catch (error) {
+            /*
             error to be handled
             */
         }
@@ -312,6 +323,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     render() {
         return (
             <Formik
+                ref={ref => (this.formik = ref)}
                 enableReinitialize
                 initialValues={{
                     name: '',
@@ -379,33 +391,19 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         <Content>
                             <View style={leadStyle.campaingStyle}>
                                 <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
+                                    <SpinnerOverlay visible={this.state.showLoadingSpinner} />
                                     <Text style={{ fontFamily: 'system font' }}>Campaign : </Text>
-                                    {this.props.campaignState.isLoading ? (
-                                        <View
-                                            style={{
-                                                flex: 1,
-                                                height: 30,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                            }}
-                                        >
-                                            <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
-                                        </View>
-                                    ) : (
-                                        <Text
-                                            numberOfLines={1}
-                                            style={{ flex: 1, marginRight: 10, fontFamily: 'system font' }}
-                                        >
-                                            {this.state.campaignName}
-                                        </Text>
-                                    )}
+                                    <Text
+                                        numberOfLines={1}
+                                        style={{ flex: 1, marginRight: 10, fontFamily: 'system font' }}
+                                    >
+                                        {this.state.campaignName}
+                                    </Text>
                                 </View>
                                 <TouchableOpacity
                                     onPress={() => {
                                         this.onPressOpenRBSheet();
                                     }}
-                                    small
-                                    bordered
                                     style={leadStyle.buttonChangeCampaingStyle}
                                 >
                                     <Text
@@ -550,7 +548,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     placeholder={'Student Name*'}
                                                     value={values.name}
                                                     onChangeText={handleChange('name')}
-                                                    onBlur={() => handleBlur('name')}
+                                                    onBlur={() => setFieldTouched('name')}
                                                 />
                                                 <View
                                                     style={{
@@ -1348,17 +1346,17 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             />
                                                         </View>
                                                         {errors.otp && touched.otp ? (
-                                                         <View style={{ marginVertical: 5 }}>
-                                                            <Error error={errors.otp} touched={touched.otp} />
-                                                        </View>
-                                                    ) : this.props.otpState.validated === true ? (
-                                                        <Text style={{ color: 'green' }}>Valid OTP</Text>
-                                                    ) : this.props.otpState.validated === false ? (
-                                                        <Text style={{ color: 'red' }}>Invalid OTP</Text>
-                                                    ) : (
-                                                        <Text />
-                                                    )}
-                                                    </View>                                                    
+                                                            <View style={{ marginVertical: 5 }}>
+                                                                <Error error={errors.otp} touched={touched.otp} />
+                                                            </View>
+                                                        ) : this.props.otpState.validated === true ? (
+                                                            <Text style={{ color: 'green' }}>Valid OTP</Text>
+                                                        ) : this.props.otpState.validated === false ? (
+                                                            <Text style={{ color: 'red' }}>Invalid OTP</Text>
+                                                        ) : (
+                                                            <Text />
+                                                        )}
+                                                    </View>
                                                 </View>
                                                 <View style={{ width: '100%' }}>
                                                     <ListItem
@@ -1424,7 +1422,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                         )}
                         <Footer>
                             <FooterTab>
-                                <Button full={true} onPress={handleSubmit} style={{ backgroundColor: '#813588' }}>
+                                <Button
+                                    disabled={!isValid ? true : false}
+                                    full={true}
+                                    onPress={handleSubmit}
+                                    style={{ backgroundColor: !isValid ? '#ccc' : '#813588' }}
+                                >
                                     <Text style={{ color: '#fff', fontWeight: '700', fontSize: 14 }}>Save</Text>
                                 </Button>
                                 <RBSheet

@@ -6,6 +6,7 @@ const images = {
     emailBox: require('../assets/email-box.png'),
     emailIcon: require('../assets/email.png'),
     mobileIcon: require('../assets/mobile.png'),
+    noInternet: require('../assets/no-internet.png'),
 };
 
 export default images;
