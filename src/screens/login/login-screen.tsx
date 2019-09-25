@@ -1,7 +1,17 @@
 import { Formik } from 'formik';
 import * as React from 'react';
 import { Container, Content, Text, Button, Form, Item, Input, Label, Icon, Spinner, Toast } from 'native-base';
-import { ImageBackground, Dimensions, Image, View, StatusBar, TouchableOpacity, Linking, Alert } from 'react-native';
+import {
+    ImageBackground,
+    Dimensions,
+    Image,
+    View,
+    StatusBar,
+    TouchableOpacity,
+    Linking,
+    Alert,
+    ActivityIndicator,
+} from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import images from '../../assets';
 import { NavigationScreenProp } from 'react-navigation';
@@ -21,7 +31,6 @@ import { fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { fetchMetaData } from '../../redux/actions/meta-data-actions';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
-import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { Utility } from '../utils/utility';
 import FloatLabelTextInput from '../../components/floating-label/floating-label';
 import { CONSTANTS } from '../../helpers/app-constants';
@@ -189,25 +198,25 @@ class Login extends React.Component<Props, State> {
                 this.props.locationState.location.longitude,
             );
             if (this.props.errorState.showAlertError) {
-                AlertError.alertErr(this.props.errorState.error);
                 this.setState({ showLoadingSpinner: false });
+                AlertError.alertErr(this.props.errorState.error);
                 return;
             }
             if (this.props.errorState.showToastError) {
-                ToastError.toastErr(this.props.errorState.error);
                 this.setState({ showLoadingSpinner: false });
+                ToastError.toastErr(this.props.errorState.error);
                 return;
             }
             await this.props.fetchMetaData();
             if (this.props.errorState.showToastError) {
-                ToastError.toastErr(this.props.errorState.error);
                 this.setState({ showLoadingSpinner: false });
+                ToastError.toastErr(this.props.errorState.error);
                 return;
             }
             await this.props.fetchCampaigns();
             if (this.props.errorState.showToastError) {
-                ToastError.toastErr(this.props.errorState.error);
                 this.setState({ showLoadingSpinner: false });
+                ToastError.toastErr(this.props.errorState.error);
                 return;
             }
             this.setState({ showLoadingSpinner: false });
@@ -317,8 +326,9 @@ class Login extends React.Component<Props, State> {
                                                     Login
                                                 </Text>
                                             </Button>
-                                            <SpinnerOverlay visible={this.state.showLoadingSpinner} />
-
+                                            {this.state.showLoadingSpinner && (
+                                                <ActivityIndicator animating size="large" />
+                                            )}
                                             <TouchableOpacity
                                                 style={loginStyle.forgotPasswordContainer}
                                                 onPress={this.handlePress}

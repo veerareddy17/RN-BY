@@ -91,7 +91,7 @@ class Dashboard extends React.Component<Props, State> {
                     await this.props.fetchLeadReport();
 
                     //Run background task to sync offline leads
-                    if (this.props.leadState.offlineLeadList.length > 0) {
+                    if (this.props.leadState.offlineLeadList && this.props.leadState.offlineLeadList.length > 0) {
                         this.sync();
                     }
                 } else {
