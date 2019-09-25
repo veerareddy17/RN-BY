@@ -43,7 +43,6 @@ export interface State {
 }
 
 export default class BottomSheet extends React.Component<Props, State> {
-
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -53,9 +52,7 @@ export default class BottomSheet extends React.Component<Props, State> {
         };
     }
 
-    onBlur() {
-
-    }
+    onBlur() {}
     onChangeHandle = (text: String, item: String) => {
         this.props.onChangeText(text, item);
     };
@@ -75,35 +72,33 @@ export default class BottomSheet extends React.Component<Props, State> {
         this.props.resend();
     };
 
-    validate = (text) => {
+    validate = text => {
         console.log(text);
         let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (text === '') {
-            this.setState({ error: 'Email Id is a required field' })
-            this.setState({ hasError: true })
+            this.setState({ error: 'Email Id is a required field' });
+            this.setState({ hasError: true });
             return false;
         }
         if (reg.test(text) === false) {
-            this.setState({ error: 'Email Id must be a valid email' })
-            this.setState({ hasError: true })
+            this.setState({ error: 'Email Id must be a valid email' });
+            this.setState({ hasError: true });
             return false;
-        }
-        else {
-            this.setState({ error: '' })
-            this.setState({ email: text })
-            this.setState({ hasError: false })
+        } else {
+            this.setState({ error: '' });
+            this.setState({ email: text });
+            this.setState({ hasError: false });
             return true;
         }
-    }
+    };
 
     renderItem(type: String) {
         switch (type) {
             case 'inputType':
                 return (
-                    <KeyboardAwareScrollView style={{ width: '100%' }}>
+                    <View style={{ width: '100%' }}>
                         {this.props.data.map((item, index) => {
                             return (
-
                                 <View key={index}>
                                     <View
                                         key={index}
@@ -176,15 +171,17 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                 <Spinner />
                                             </View>
                                         ) : this.props.currentState.error || this.state.hasError ? (
-                                            <Text style={{ color: '#ff0000', fontSize: 11 }}>{this.props.currentState.error || this.state.error}</Text>
+                                            <Text style={{ color: '#ff0000', fontSize: 11 }}>
+                                                {this.props.currentState.error || this.state.error}
+                                            </Text>
                                         ) : (
-                                                    <View />
-                                                )}
+                                            <View />
+                                        )}
                                     </View>
                                 </View>
                             );
                         })}
-                    </KeyboardAwareScrollView>
+                    </View>
                 );
                 break;
 
@@ -195,7 +192,8 @@ export default class BottomSheet extends React.Component<Props, State> {
                         data={this.props.data}
                         renderItem={({ item, index }) => (
                             <View key={item.id} style={{ flexDirection: 'row' }}>
-                                <TouchableOpacity disabled={this.props.data[index].id == this.props.currentcampaign ? true : false}
+                                <TouchableOpacity
+                                    disabled={this.props.data[index].id == this.props.currentcampaign ? true : false}
                                     onPress={() => this._selectCard(index, item)}
                                     style={{ borderBottomWidth: 0.2, width: '100%' }}
                                 >
@@ -265,57 +263,86 @@ export default class BottomSheet extends React.Component<Props, State> {
                     </View>
                 </View>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                    {this.props.currentState && this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success
-                        ? <Image source={images.emailBox} />
-                        : this.props.type == "inputType" ? <View>
-                            <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, marginBottom: 10, textAlign: 'center', color: '#813588' }}>
+                    {this.props.currentState &&
+                    this.props.currentState.forgotPasswordResponse &&
+                    this.props.currentState.forgotPasswordResponse.success ? (
+                        <Image source={images.emailBox} />
+                    ) : this.props.type == 'inputType' ? (
+                        <View>
+                            <Text
+                                style={{
+                                    textAlignVertical: 'center',
+                                    marginLeft: 60,
+                                    marginRight: 60,
+                                    marginBottom: 10,
+                                    textAlign: 'center',
+                                    color: '#813588',
+                                }}
+                            >
                                 We will send you a link to reset your password
                             </Text>
-                            <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, textAlign: 'center', color: '#813588' }}>
+                            <Text
+                                style={{
+                                    textAlignVertical: 'center',
+                                    marginLeft: 60,
+                                    marginRight: 60,
+                                    textAlign: 'center',
+                                    color: '#813588',
+                                }}
+                            >
                                 Enter you registered email address
                             </Text>
-                        </View> : <View />
-                    }
-                    {this.props.currentState && this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success ?
-                        <Text style={{ textAlignVertical: 'center', marginLeft: 60, marginRight: 60, marginTop: 10, textAlign: 'center', color: '#813588' }}>
-                            We have sent a reset password link to your email account
-                            </Text>
-                        : this.props.data.length == 0 ? (
-                            <ActivityIndicator size="large" color="#0000ff" />
-                        ) : (
-                                this.renderItem(this.props.type)
-                            )
-
-                    }
-                </View>
-                {this.props.currentState &&
-                    this.props.currentState.forgotPasswordResponse && this.props.currentState.forgotPasswordResponse.success ?
-                    <Text /> : this.props.actionType != null ? (
-                        <TouchableOpacity
-                            disabled={this.state.hasError}
-                            onPress={() => this.handleSubmit()}
+                        </View>
+                    ) : (
+                        <View />
+                    )}
+                    {this.props.currentState &&
+                    this.props.currentState.forgotPasswordResponse &&
+                    this.props.currentState.forgotPasswordResponse.success ? (
+                        <Text
                             style={{
-                                height: 50,
-                                backgroundColor: !this.state.hasError ? 'purple' : '#9A9A9A',
-                                position: 'absolute',
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                justifyContent: 'center',
-                                alignItems: 'center',
+                                textAlignVertical: 'center',
+                                marginLeft: 60,
+                                marginRight: 60,
+                                marginTop: 10,
+                                textAlign: 'center',
+                                color: '#813588',
                             }}
                         >
-                            <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                                {this.props.actionType}
-                            </Text>
-                        </TouchableOpacity>
+                            We have sent a reset password link to your email account
+                        </Text>
+                    ) : this.props.data.length == 0 ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
                     ) : (
-                            <Text />
-                        )
-                }
-
-
-
+                        this.renderItem(this.props.type)
+                    )}
+                </View>
+                {this.props.currentState &&
+                this.props.currentState.forgotPasswordResponse &&
+                this.props.currentState.forgotPasswordResponse.success ? (
+                    <Text />
+                ) : this.props.actionType != null ? (
+                    <TouchableOpacity
+                        disabled={this.state.hasError}
+                        onPress={() => this.handleSubmit()}
+                        style={{
+                            height: 50,
+                            backgroundColor: !this.state.hasError ? 'purple' : '#9A9A9A',
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
+                            {this.props.actionType}
+                        </Text>
+                    </TouchableOpacity>
+                ) : (
+                    <Text />
+                )}
             </View>
         );
     }

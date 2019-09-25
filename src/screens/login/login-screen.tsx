@@ -11,6 +11,7 @@ import {
     Linking,
     Alert,
     ActivityIndicator,
+    Keyboard,
 } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import images from '../../assets';
@@ -67,6 +68,7 @@ export interface State {
     longitude: number;
     input: any;
     showLoadingSpinner: boolean;
+    keyboardHeight: number;
 }
 export interface LoginRequestData {
     email: string;
@@ -86,6 +88,7 @@ class Login extends React.Component<Props, State> {
             longitude: 0,
             input: {},
             showLoadingSpinner: false,
+            keyboardHeight: 0,
         };
     }
     focusTheField = (id: string) => {
@@ -94,6 +97,9 @@ class Login extends React.Component<Props, State> {
     };
 
     componentDidMount = async () => {
+        this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+        this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+
         const selectedCampaign = this.props.campaignState.selectedCampaign;
         // handle SSO redirect
         Linking.getInitialURL()
@@ -119,6 +125,16 @@ class Login extends React.Component<Props, State> {
 
     componentWillUnmount = () => {
         Linking.removeEventListener('url', this.handleOpenURL);
+        this.keyboardDidShowListener.remove();
+        this.keyboardDidHideListener.remove();
+    };
+
+    _keyboardDidShow = async e => {
+        await this.setState({ keyboardHeight: e.endCoordinates.height });
+    };
+
+    _keyboardDidHide = async e => {
+        await this.setState({ keyboardHeight: 0 });
     };
 
     // handle gateway callbacks
@@ -360,9 +376,9 @@ class Login extends React.Component<Props, State> {
                                 duration={10}
                                 customStyles={{
                                     container: {
-                                        height: 900,
                                         borderTopRightRadius: 20,
                                         borderTopLeftRadius: 20,
+                                        bottom: this.state.keyboardHeight,
                                     },
                                 }}
                             >
@@ -374,7 +390,6 @@ class Login extends React.Component<Props, State> {
                                     onChangeText={this.onChangeTextBottomSheet}
                                     data={['Email Id']}
                                     close={this.closeBottomSheet}
-                                    //description="Enter your registered email id"
                                     submit={this.submitForgotPassword}
                                     title="Forgot Password"
                                     value={this.state.email}
