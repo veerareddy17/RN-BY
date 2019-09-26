@@ -135,7 +135,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     };
 
     renderEmptyView = () => {
-        const SCREEN_HEIGHT = Dimensions.get('window').height - 150;
+        const SCREEN_HEIGHT = Dimensions.get('window').height - 180;
         return (
             <View
                 style={{
@@ -177,7 +177,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Left />
                         <Body style={{ flex: 3 }}>
-                            <Title style={{ color: 'white', fontSize: 18 }}>Leads</Title>
+                            <Title style={{ color: '#fff', fontWeight: '700', fontSize: 18 }}>Leads</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
@@ -188,7 +188,15 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 ) : (
                         <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                             <Body>
-                            <Title style={{ color: 'white', marginLeft: 10, fontSize: 18, fontFamily: 'system font' }}>
+                            <Title
+                                style={{
+                                    color: '#fff',
+                                    fontWeight: '700',
+                                    marginLeft: 10,
+                                    fontSize: 18,
+                                    fontFamily: 'system font',
+                                }}
+                            >
                                 Leads
                             </Title>
                             </Body>
@@ -199,7 +207,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                             </Right>
                         </Header>
                     )}
-                <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
+                <Content
+                    style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}
+                    contentContainerStyle={{ flex: 1 }}
+                >
                     <View style={{ paddingBottom: 5 }}>
                         <Text style={{ fontSize: 15, color: '#555' }}>
                             Total Leads :{' '}

@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
     headeriOSTitle: {
         color: '#fff',
         fontSize: 18,
+        fontWeight: '700',
     },
     whiteColor: {
         color: '#fff',
@@ -18,9 +19,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginLeft: 10,
         fontFamily: 'system font',
+        fontWeight: '700',
     },
     contentBg: {
-        backgroundColor: '#eee',
+        backgroundColor: '#f6f6f6',
     },
     cardShadow: {
         position: 'relative',
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: '700',
         marginBottom: 10,
+        textAlign: 'center',
     },
     leadCountCircle: {
         backgroundColor: '#fbd4ff',
@@ -157,6 +160,7 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         paddingTop: 4,
         paddingBottom: 4,
+        width: 75,
     },
     campaignCardButtonText: {
         color: '#813588',
@@ -173,7 +177,8 @@ const styles = StyleSheet.create({
         flex: 3,
     },
     noInternetImageWidth: {
-        width: 200,
+        width: 190,
+        height: 125,
     },
     offlineText: {
         color: '#555',

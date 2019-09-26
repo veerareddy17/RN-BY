@@ -119,6 +119,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                                                 button={true}
                                                 key={campaign.id}
                                                 onPress={() => this.handleSelections(campaign)}
+                                            style={{ marginRight: 17 }}
                                             >
                                                 <Left>
                                                     <Text style={{ fontFamily: 'system font' }}>{campaign.name}</Text>

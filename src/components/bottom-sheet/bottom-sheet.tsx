@@ -9,6 +9,7 @@ import {
     KeyboardAvoidingView,
     ScrollView,
     Image,
+    Platform,
 } from 'react-native';
 import FloatingLabel from 'react-native-floating-labels';
 import { NavigationScreenProp } from 'react-navigation';
@@ -188,36 +189,54 @@ export default class BottomSheet extends React.Component<Props, State> {
             case 'List':
                 return (
                     <FlatList
-                        style={{ marginBottom: 70 }}
+                        style={{}}
                         data={this.props.data}
                         renderItem={({ item, index }) => (
-                            <View key={item.id} style={{ flexDirection: 'row' }}>
+                            <View key={item.id} style={{ flexDirection: 'row', flex: 1 }}>
                                 <TouchableOpacity disabled={this.props.data[index].id == this.props.currentcampaign ? true : false}
                                     disabled={this.props.data[index].id == this.props.currentcampaign ? true : false}
                                     onPress={() => this._selectCard(index, item)}
-                                    style={{ borderBottomWidth: 0.2, width: '100%' }}
+                                    style={{
+                                        borderBottomWidth: 1,
+                                        borderColor: '#f3f3f3',
+                                        flex: 1,
+                                        marginHorizontal: 10,
+                                    }}
                                 >
                                     <View
                                         style={{
                                             height: 50,
-                                            justifyContent: 'space-between',
                                             alignItems: 'center',
                                             flexDirection: 'row',
                                         }}
                                     >
-                                        <Text
-                                            style={{
-                                                marginLeft: 30,
-                                                color:
-                                                    this.props.data[index].id == this.props.currentcampaign
-                                                        ? '#813588'
-                                                        : '#333',
-                                            }}
-                                        >
-                                            {item.name}
-                                        </Text>
+                                        <View style={{ flex: 0.9 }}>
+                                            <Text
+                                                style={{
+                                                    color:
+                                                        this.props.data[index].id == this.props.currentcampaign
+                                                            ? '#813588'
+                                                            : '#333',
+                                                }}
+                                            >
+                                                {item.name}
+                                            </Text>
+                                        </View>
+
                                         {this.props.data[index].id == this.props.currentcampaign ? (
-                                            <Icon name="checkmark" style={{ marginRight: 10, color: '#813588' }}></Icon>
+                                            <View
+                                                style={{
+                                                    flex: 0.1,
+                                                }}
+                                            >
+                                                <Icon
+                                                    name="checkmark"
+                                                    style={{
+                                                        color: '#813588',
+                                                        marginLeft: 10,
+                                                    }}
+                                                ></Icon>
+                                            </View>
                                         ) : null}
                                     </View>
                                 </TouchableOpacity>
@@ -240,7 +259,9 @@ export default class BottomSheet extends React.Component<Props, State> {
                                 width: 60,
                                 height: 60,
                                 borderBottomRightRadius: 60,
-                                backgroundColor: 'purple',
+                                backgroundColor: '#813588',
+                                borderWidth: 1,
+                                borderColor: '#813588',
                             }}
                         >
                             <Text style={{ marginRight: 10 }}>
@@ -251,10 +272,10 @@ export default class BottomSheet extends React.Component<Props, State> {
                     <View style={{ flex: 1, justifyContent: 'center', height: 60 }}>
                         <Text
                             style={{
-                                fontSize: 22,
+                                fontSize: Platform.OS === 'ios' ? 18 : 20,
                                 alignSelf: 'center',
                                 marginRight: 60,
-                                fontWeight: 'bold',
+                                fontWeight: '700',
                                 color: '#555555',
                             }}
                         >
@@ -262,7 +283,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                         </Text>
                     </View>
                 </View>
-                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ flex: 1 }}>
                     {this.props.currentState &&
                         this.props.currentState.forgotPasswordResponse &&
                         this.props.currentState.forgotPasswordResponse.success ? (
@@ -319,15 +340,13 @@ export default class BottomSheet extends React.Component<Props, State> {
                 </View>
                 {this.props.currentState &&
                     this.props.currentState.forgotPasswordResponse &&
-                    this.props.currentState.forgotPasswordResponse.success ? (
-                        <Text />
-                    ) : this.props.actionType != null ? (
+                this.props.currentState.forgotPasswordResponse.success ? null : this.props.actionType != null ? (
                         <TouchableOpacity
                             disabled={this.state.hasError}
                             onPress={() => this.handleSubmit()}
                             style={{
                                 height: 50,
-                                backgroundColor: !this.state.hasError ? 'purple' : '#9A9A9A',
+                            backgroundColor: !this.state.hasError ? '#813588' : '#9A9A9A',
                                 position: 'absolute',
                                 left: 0,
                                 right: 0,
@@ -340,9 +359,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                                 {this.props.actionType}
                             </Text>
                         </TouchableOpacity>
-                    ) : (
-                            <Text />
-                        )}
+                ) : null}
             </View>
         );
     }

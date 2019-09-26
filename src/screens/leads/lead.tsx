@@ -45,9 +45,10 @@ const Lead = ({ lead }) => {
                             style={{
                                 backgroundColor: '#48dd43',
                                 marginLeft: 'auto',
-                                marginTop: -33,
+                                marginTop: -25,
                                 marginRight: -12,
-                                paddingHorizontal: 4,
+                                paddingHorizontal: 8,
+                                paddingVertical: 4,
                                 borderTopRightRadius: 3,
                             }}
                         >
@@ -58,9 +59,10 @@ const Lead = ({ lead }) => {
                             style={{
                                 backgroundColor: '#f1b234',
                                 marginLeft: 'auto',
-                                marginTop: -33,
+                                marginTop: -25,
                                 marginRight: -12,
-                                paddingHorizontal: 4,
+                                paddingHorizontal: 8,
+                                paddingVertical: 4,
                                 borderTopRightRadius: 3,
                             }}
                         >
@@ -82,7 +84,7 @@ const Lead = ({ lead }) => {
                     <Grid>
                         <Col style={{ flexDirection: 'row', alignItems: 'center' }}>
                             {/* <Icon name="phone-portrait" style={{ fontSize: 20, width: 20, color: '#555' }} /> */}
-                            <Image resizeMode={'contain'} source={images.emailIcon} style={{ width: 19 }} />
+                            <Image resizeMode={'contain'} source={images.mobileIcon} style={{ width: 10 }} />
                             <Text
                                 style={{
                                     marginRight: 10,
@@ -95,7 +97,7 @@ const Lead = ({ lead }) => {
                                 {lead.phone}
                             </Text>
                             {/* <Icon name="mail" style={{ fontSize: 20, width: 25, color: '#555' }} /> */}
-                            <Image resizeMode={'contain'} source={images.mobileIcon} style={{ width: 10 }} />
+                            <Image resizeMode={'contain'} source={images.emailIcon} style={{ width: 19 }} />
                             <Text
                                 style={{
                                     flex: 1,

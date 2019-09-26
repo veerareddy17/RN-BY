@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     },
     password: {
         marginTop: 10,
-        marginBottom: 20,
+        marginBottom: 10,
         flexDirection: 'row',
     },
     submitButton: {
@@ -22,13 +22,15 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderWidth: 1,
         marginBottom: 20,
+        marginTop: 10,
     },
     error: {
         backgroundColor: '#FFCBCB',
         color: '#FF0000',
         textAlign: 'center',
         borderRadius: 5,
-        marginBottom: 20,
+        marginBottom: 10,
+        marginTop: 10,
         paddingTop: 10,
         paddingBottom: 10,
         fontFamily: 'system font',
@@ -47,7 +49,8 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     formConatiner: {
-        width: 290,
+        width: '100%',
+        paddingHorizontal: 20,
     },
     marginLeft: {
         marginLeft: 10,
@@ -59,8 +62,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'system font',
     },
+    loginWithGoogleButtonText: {
+        fontSize: 16,
+        fontFamily: 'system font',
+        color: '#888',
+    },
     forgotPasswordContainer: {
-        alignItems: 'center',
+        alignItems: 'flex-end',
         flexDirection: 'column',
     },
     forgotPasswordText: {
@@ -73,12 +81,28 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     submitSSOButton: {
-        backgroundColor: '#813588',
+        backgroundColor: '#fff',
         borderRadius: 5,
-        borderColor: 'white',
+        borderColor: '#fff',
         borderWidth: 1,
         marginBottom: 20,
         marginTop: 20,
+    },
+    orTextContainer: {
+        alignItems: 'center',
+    },
+    noInternetContainer: {
+        backgroundColor: '#555',
+        bottom: 0,
+        position: 'absolute',
+        padding: 2,
+        paddingLeft: 20,
+        width: '100%',
+    },
+    noInternetText: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: 'system font',
     },
 });
 
