@@ -17,6 +17,7 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         paddingTop: 4,
         paddingBottom: 4,
+        width: 75,
     },
     borderStyle: {
         borderColor: 'lightgrey',

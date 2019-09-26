@@ -207,9 +207,9 @@ class Login extends React.Component<Props, State> {
             console.log('empty field');
             return;
         }
+        this.setState({ showLoadingSpinner: true });
         await this.props.captureLocation();
         if (this.context.isConnected) {
-            this.setState({ showLoadingSpinner: true });
             await this.props.requestLoginApi(
                 values.email,
                 values.password,
@@ -247,6 +247,7 @@ class Login extends React.Component<Props, State> {
                 this.props.locationState.location.latitude,
                 this.props.locationState.location.longitude,
             );
+            this.setState({ showLoadingSpinner: false });
             this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
         }
     };
@@ -262,7 +263,11 @@ class Login extends React.Component<Props, State> {
                             </View>
                             <View style={loginStyle.formConatiner}>
                                 <Formik
-                                    initialValues={{ email: '' || this.props.userState.user.email, password: '' }}
+                                    initialValues={{
+                                        email: '' || this.props.userState.user.email,
+                                        password: '',
+                                        noInternet: this.context.isConnected,
+                                    }}
                                     onSubmit={values => this.handleSubmit(values)}
                                     validationSchema={loginValidation}
                                 >
@@ -316,11 +321,6 @@ class Login extends React.Component<Props, State> {
                                                 </View>
                                             </View>
                                             <View>
-                                                {!this.context.isConnected ? (
-                                                    <Text style={loginStyle.error}>No Internet Connection</Text>
-                                                ) : null}
-                                            </View>
-                                            <View>
                                                 {errors.email && touched.email ? (
                                                     <Text style={loginStyle.error}>{errors.email}</Text>
                                                 ) : null}
@@ -330,6 +330,12 @@ class Login extends React.Component<Props, State> {
                                                     <Text style={loginStyle.error}>{errors.password}</Text>
                                                 ) : null}
                                             </View>
+                                            <TouchableOpacity
+                                                style={loginStyle.forgotPasswordContainer}
+                                                onPress={this.handlePress}
+                                            >
+                                                <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
+                                            </TouchableOpacity>
                                             <Button
                                                 block={true}
                                                 disabled={!isValid ? true : false}
@@ -348,28 +354,34 @@ class Login extends React.Component<Props, State> {
                                             {this.state.showLoadingSpinner && (
                                                 <ActivityIndicator animating size="large" />
                                             )}
-                                            <TouchableOpacity
-                                                style={loginStyle.forgotPasswordContainer}
-                                                onPress={this.handlePress}
-                                            >
-                                                <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
-                                            </TouchableOpacity>
+                                            {!this.context.isConnected ? null : (
+                                                <View style={loginStyle.orTextContainer}>
+                                                    <Text style={loginStyle.forgotPasswordText}>- Or -</Text>
+                                                </View>
+                                            )}
                                         </Form>
                                     )}
                                 </Formik>
-                                <View>
-                                    <Button
-                                        block={true}
-                                        onPress={() => {
-                                            this.handleSSO();
-                                        }}
-                                        style={loginStyle.submitSSOButton}
-                                    >
-                                        <Text uppercase={false} style={loginStyle.loginButtonText}>
-                                            Login with Google
-                                        </Text>
-                                    </Button>
-                                </View>
+                                {!this.context.isConnected ? null : (
+                                    <View>
+                                        <Button
+                                            block={true}
+                                            onPress={() => {
+                                                this.handleSSO();
+                                            }}
+                                            style={loginStyle.submitSSOButton}
+                                        >
+                                            <Image
+                                                resizeMode={'contain'}
+                                                source={images.google}
+                                                style={{ width: 40 }}
+                                            />
+                                            <Text uppercase={false} style={loginStyle.loginWithGoogleButtonText}>
+                                                Sign in with Google
+                                            </Text>
+                                        </Button>
+                                    </View>
+                                )}
                             </View>
                             <RBSheet
                                 ref={ref => {
@@ -399,6 +411,11 @@ class Login extends React.Component<Props, State> {
                                 />
                             </RBSheet>
                         </Content>
+                        {!this.context.isConnected && (
+                            <View style={loginStyle.noInternetContainer}>
+                                <Text style={loginStyle.noInternetText}>No Internet</Text>
+                            </View>
+                        )}
                     </ImageBackground>
                 </ScrollView>
             </Container>

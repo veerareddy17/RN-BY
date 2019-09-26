@@ -230,6 +230,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
     submitOffline = async () => {
         await this.props.createLead(this.state.leadRequest);
+        this.setState({ showLoadingSpinner: false });
         this.props.navigation.navigate('LeadList');
         return;
     };
@@ -368,7 +369,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     </ListItem>
                                 </Left>
                                 <Body style={{ flex: 3 }}>
-                                    <Title style={{ color: 'white', fontSize: 18 }}>Create Lead</Title>
+                                    <Title style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>
+                                        Create Lead
+                                    </Title>
                                 </Body>
                                 <Right />
                             </Header>
@@ -380,7 +383,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     </ListItem>
                                 </Left>
                                 <Body style={{ flex: 3, paddingLeft: 20 }}>
-                                    <Title style={{ color: 'white', fontSize: 18, fontFamily: 'system font' }}>
+                                    <Title style={{ color: '#fff', fontSize: 18,fontWeight: '700', fontFamily: 'system font' }}>
                                         Create Lead
                                     </Title>
                                 </Body>
@@ -388,7 +391,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                             </Header>
                         )}
 
-                        <Content>
+                        <Content style={{ backgroundColor: '#f6f6f6' }}>
                             <View style={leadStyle.campaingStyle}>
                                 <View style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}>
                                     <SpinnerOverlay visible={this.state.showLoadingSpinner} />
@@ -406,17 +409,30 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     }}
                                     style={leadStyle.buttonChangeCampaingStyle}
                                 >
-                                    <Text
-                                        uppercase={false}
-                                        style={{
-                                            color: '#813588',
-                                            paddingLeft: 8,
-                                            paddingRight: 8,
-                                            fontFamily: 'system font',
-                                        }}
-                                    >
-                                        Change
-                                    </Text>
+                                    {this.props.campaignState.isLoading ? (
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                height: 22,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
+                                        </View>
+                                    ) : (
+                                        <Text
+                                            uppercase={false}
+                                            style={{
+                                                color: '#813588',
+                                                paddingLeft: 8,
+                                                paddingRight: 8,
+                                                fontFamily: 'system font',
+                                            }}
+                                        >
+                                            Change
+                                        </Text>
+                                    )}
                                 </TouchableOpacity>
                                 <RBSheet
                                     ref={ref => {
@@ -444,7 +460,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                 </RBSheet>
                             </View>
                             <View style={{ flex: 1 }}>
-                                <Card>
+                                <Card style={{ marginBottom: 20, marginLeft: 0, marginRight: 0, marginTop: 0 }}>
                                     <CardItem header style={{ paddingBottom: 0 }}>
                                         <Text style={{ fontWeight: '700', color: '#555' }}>Mobile Number</Text>
                                     </CardItem>
@@ -529,7 +545,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         </Body>
                                     </CardItem>
                                 </Card>
-                                <Card>
+                                <Card style={{ marginBottom: 20, marginLeft: 0, marginRight: 0, marginTop: 0 }}>
                                     <CardItem header style={{ paddingBottom: 0 }}>
                                         <Text style={{ fontWeight: '700', color: '#555' }}>Student Details</Text>
                                     </CardItem>
@@ -964,7 +980,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         </Body>
                                     </CardItem>
                                 </Card>
-                                <Card>
+                                <Card style={{ marginBottom: 20, marginLeft: 0, marginRight: 0, marginTop: 0 }}>
                                     <CardItem header style={{ paddingBottom: 0 }}>
                                         <Text style={{ fontWeight: '700', color: '#555' }}>Parent Details</Text>
                                     </CardItem>
@@ -1305,7 +1321,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     </CardItem>
                                 </Card>
                                 {this.context.isConnected && (
-                                    <Card style={{ marginBottom: 20 }}>
+                                    <Card style={{ marginBottom: 20, marginLeft: 0, marginRight: 0, marginTop: 0 }}>
                                         <CardItem header style={{ paddingBottom: 0 }}>
                                             <Text style={{ fontWeight: 'bold', color: '#555' }}>OTP Settings</Text>
                                         </CardItem>

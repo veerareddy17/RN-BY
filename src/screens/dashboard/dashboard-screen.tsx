@@ -239,7 +239,7 @@ class Dashboard extends React.Component<Props, State> {
                                     source={images.noInternet}
                                     style={styles.noInternetImageWidth}
                                 />
-                                <Text style={styles.offlineText}>You are Offline</Text>
+                                <Text style={styles.offlineText}>You're Offline</Text>
                                 <Text style={styles.offlineSubText}>Please get back online to view more details</Text>
                             </CardItem>
                         ) : (
@@ -321,9 +321,22 @@ class Dashboard extends React.Component<Props, State> {
                                 }}
                                 style={styles.campaignCardButton}
                             >
-                                <Text uppercase={false} style={styles.campaignCardButtonText}>
-                                    Change
-                                </Text>
+                                {this.props.campaignState.isLoading ? (
+                                    <View
+                                        style={{
+                                            flex: 1,
+                                            height: 22,
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
+                                    >
+                                        <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
+                                    </View>
+                                ) : (
+                                    <Text uppercase={false} style={styles.campaignCardButtonText}>
+                                        Change
+                                    </Text>
+                                )}
                             </TouchableOpacity>
                             <RBSheet
                                 ref={ref => {

@@ -42,7 +42,8 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     static contextType = NetworkContext;
     static navigationOptions = {
         title: 'Leads',
-        headerTitleStyle: { color: '#fff' },
+        headerTitleStyle: { color: '#fff', fontWeight: '700' },
+        headerBackTitle: '',
     };
     constructor(props: FLeadListProps) {
         super(props);
