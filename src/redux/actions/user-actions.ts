@@ -8,6 +8,7 @@ import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-ty
 import { AuthenticationService } from '../../services/authentication-service';
 import { AuthenticationRequest } from '../../models/request/authentication-request';
 import { AuthenticationResponse } from '../../models/response/authentication-response';
+import { leadResetAction } from './lead-action-creator';
 // The action creators
 export const requestAction = () => {
     return {
@@ -79,8 +80,12 @@ export const logout = (): ((dispatch: Dispatch, getState: any) => Promise<void>)
     return async (dispatch: Dispatch, getState: any) => {
         try {
             let storedUser = getState().userReducer.user;
+            let isConnected = getState().connectionStateReducer.isConnected;
             storedUser.isOfflineLoggedIn = false;
             storedUser.token = '';
+            if (isConnected) {
+                dispatch(leadResetAction());
+            }
             dispatch(logoutAction());
         } catch (error) {
             console.log('Logout action', error);
