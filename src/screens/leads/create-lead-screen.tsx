@@ -305,8 +305,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         this.setState({ otp: text });
     };
 
-    onPressCampaign = (index: number, selectedCampaign: MetaResponse) => {
-        this.props.selectCampaign(selectedCampaign);
+    onPressCampaign = async (index: number, selectedCampaign: MetaResponse) => {
+        await this.props.captureLocation();
+        await this.props.selectCampaign(selectedCampaign);
         this.setState({
             campaign_id: selectedCampaign.id,
             campaignName: selectedCampaign.name,

@@ -25,22 +25,25 @@ import { StatusBar, Alert, Platform } from 'react-native';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
 import { logout } from '../../redux/actions/user-actions';
+import { captureLocation } from '../../redux/actions/location-action';
 
 export interface CampaignListProps {
     navigation: NavigationScreenProp<any>;
     campaignState: any;
     errorState: any;
+    captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     selectCampaign(campaignId: any): void;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
-export interface CampaignListState {}
+export interface CampaignListState { }
 
 class CampaignList extends Component<CampaignListProps, CampaignListState> {
     static contextType = NetworkContext;
 
-    handleSelections = (campaignId: any) => {
-        this.props.selectCampaign(campaignId);
+    handleSelections = async (campaignId: any) => {
+        await this.props.captureLocation();
+        await this.props.selectCampaign(campaignId);
         if (this.props.errorState.showAlertError) {
             AlertError.alertErr(this.props.errorState.error);
         }
@@ -88,19 +91,19 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                         </Right>
                     </Header>
                 ) : (
-                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
-                            <Title style={{ color: 'white', fontSize: 18, marginLeft: 10, fontFamily: 'system font' }}>
-                                Select Campaign
+                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                            <Body>
+                                <Title style={{ color: 'white', fontSize: 18, marginLeft: 10, fontFamily: 'system font' }}>
+                                    Select Campaign
                             </Title>
-                        </Body>
-                        <Right>
-                            <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
-                            </Button>
-                        </Right>
-                    </Header>
-                )}
+                            </Body>
+                            <Right>
+                                <Button transparent onPress={this.confirmLogout}>
+                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                </Button>
+                            </Right>
+                        </Header>
+                    )}
                 <Content>
                     {this.props.campaignState.isLoading ? (
                         <View>
@@ -108,24 +111,24 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                             <Text style={{ textAlign: 'center' }}>Fetching Campaigns...</Text>
                         </View>
                     ) : (
-                        <View>
-                            <List>
-                                {this.props.campaignState.campaignList.map(campaign => {
-                                    return (
-                                        <ListItem
-                                            button={true}
-                                            key={campaign.id}
-                                            onPress={() => this.handleSelections(campaign)}
-                                        >
-                                            <Left>
-                                                <Text style={{ fontFamily: 'system font' }}>{campaign.name}</Text>
-                                            </Left>
-                                        </ListItem>
-                                    );
-                                })}
-                            </List>
-                        </View>
-                    )}
+                            <View>
+                                <List>
+                                    {this.props.campaignState.campaignList.map(campaign => {
+                                        return (
+                                            <ListItem
+                                                button={true}
+                                                key={campaign.id}
+                                                onPress={() => this.handleSelections(campaign)}
+                                            >
+                                                <Left>
+                                                    <Text style={{ fontFamily: 'system font' }}>{campaign.name}</Text>
+                                                </Left>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
+                            </View>
+                        )}
                 </Content>
                 {!this.context.isConnected && (
                     <View
@@ -153,6 +156,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
+    captureLocation: bindActionCreators(captureLocation, dispatch),
     logout: bindActionCreators(logout, dispatch),
 });
 

@@ -1,3 +1,4 @@
+import { ATTENDANCE_UPDATE, SYNC_ATTENDANCE_SUCCESS, SYNC_ATTENDANCE_FAILURE, CAMPAIGN_SELECTED_ONLINE, CAMPAIGN_SELECTED_OFFLINE } from './../actions/action-types';
 import {
     CAMPAIGN_SELECTED,
     LOAD_CAMPAIGN_START,
@@ -41,6 +42,26 @@ export default function campaignReducer(state = initialState, action) {
                 isLoading: false,
                 selectedCampaign: action.payload,
             };
+        case CAMPAIGN_SELECTED_ONLINE:
+            return {
+                ...state,
+                isLoading: false,
+                onlineSelection: action.payload,
+            };
+        case CAMPAIGN_SELECTED_OFFLINE:
+            return {
+                ...state,
+                isLoading: false,
+                attendance: action.payload,
+                onlineSelection: ''
+            };
+        case SYNC_ATTENDANCE_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                attendance: action.payload,
+            };
+
         default:
             return state;
     }

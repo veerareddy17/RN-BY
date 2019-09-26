@@ -186,19 +186,19 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         </Right>
                     </Header>
                 ) : (
-                    <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
+                        <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                            <Body>
                             <Title style={{ color: 'white', marginLeft: 10, fontSize: 18, fontFamily: 'system font' }}>
                                 Leads
                             </Title>
-                        </Body>
-                        <Right>
-                            <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
-                            </Button>
-                        </Right>
-                    </Header>
-                )}
+                            </Body>
+                            <Right>
+                                <Button transparent onPress={this.confirmLogout}>
+                                    <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                </Button>
+                            </Right>
+                        </Header>
+                    )}
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
                     <View style={{ paddingBottom: 5 }}>
                         <Text style={{ fontSize: 15, color: '#555' }}>
@@ -217,28 +217,28 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     <Loader />
                                 </View>
                             ) : (
+                                    <View style={{ flex: 1 }}>
+                                        <FlatList
+                                            data={this.props.leadState.leadList}
+                                            renderItem={({ item, index }) => this.renderItem(item)}
+                                            keyExtractor={(item, index) => `${item.id}+${index}`}
+                                            ListFooterComponent={this.renderFooter}
+                                        ListEmptyComponent={this.renderEmptyView}
+                                            onEndReached={this.fetchMore}
+                                            onEndReachedThreshold={0.1}
+                                        />
+                                    </View>
+                                )
+                        ) : (
                                 <View style={{ flex: 1 }}>
                                     <FlatList
-                                        data={this.props.leadState.leadList}
+                                        data={this.props.leadState.offlineLeadList}
                                         renderItem={({ item, index }) => this.renderItem(item)}
                                         keyExtractor={(item, index) => `${item.id}+${index}`}
-                                        ListFooterComponent={this.renderFooter}
-                                        ListEmptyComponent={this.renderEmptyView}
-                                        onEndReached={this.fetchMore}
-                                        onEndReachedThreshold={0.1}
+                                    ListEmptyComponent={this.renderEmptyView}
                                     />
                                 </View>
-                            )
-                        ) : (
-                            <View style={{ flex: 1 }}>
-                                <FlatList
-                                    data={this.props.leadState.offlineLeadList}
-                                    renderItem={({ item, index }) => this.renderItem(item)}
-                                    keyExtractor={(item, index) => `${item.id}+${index}`}
-                                    ListEmptyComponent={this.renderEmptyView}
-                                />
-                            </View>
-                        )}
+                            )}
                     </View>
                 </Content>
                 {!this.context.isConnected && (

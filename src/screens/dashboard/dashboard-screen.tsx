@@ -23,7 +23,7 @@ import { logout } from '../../redux/actions/user-actions';
 import { AppState } from '../../redux/store';
 import RBSheet from 'react-native-raw-bottom-sheet';
 import BottomSheet from '../../components/bottom-sheet/bottom-sheet';
-import { selectedCampaign, fetchCampaigns } from '../../redux/actions/campaign-actions';
+import { selectedCampaign, syncOfflineAttendance, fetchCampaigns } from '../../redux/actions/campaign-actions';
 import { withNavigation } from 'react-navigation';
 import { NetworkContext } from '../../provider/network-provider';
 import { fetchLeadReport } from '../../redux/actions/lead-report-action';
@@ -31,6 +31,8 @@ import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { syncOfflineLeads } from '../../redux/actions/lead-actions';
 import { AlertError } from '../error/alert-error';
 import { ToastError } from '../error/toast-error';
+import { captureLocation } from '../../redux/actions/location-action';
+
 import { MetaResponse } from '../../models/response/meta-response';
 import styles from './dashboard-style';
 import images from '../../assets';
@@ -42,8 +44,11 @@ export interface Props {
     metaData: any;
     errorState: any;
     leadReportState: any;
+    locationState: any;
     leadState: any;
+    sysnAttendance(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     fetchCampaigns(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     selectCampaign(campaignId: any): void;
     fetchLeadReport(): (dispatch: Dispatch, getState: any) => Promise<void>;
     syncOfflineLeads(): (dispatch: Dispatch, getState: any) => Promise<void>;
@@ -74,26 +79,28 @@ class Dashboard extends React.Component<Props, State> {
                 this.setState({ campaignList: compaignList });
                 this.setState({ campaignId: selectedCampaign.id });
                 this.setState({ campaignName: selectedCampaign.name });
-
                 if (this.context.isConnected) {
                     if (this.props.userState.user.token === '') {
                         this.logout();
                         return;
                     }
-                    this.props.navigation.navigate(selectedCampaign === null ? 'Campaigns' : 'App');
+                    this.props.navigation.navigate(selectedCampaign === "" ? 'Campaigns' : 'App');
+
+
+                    await this.props.fetchLeadReport();
                     if (this.props.errorState.showAlertError) {
                         AlertError.alertErr(this.props.errorState.error);
                         return;
-                    }
-                    if (this.props.errorState.showToastError) {
+                    } else if (this.props.errorState.showToastError) {
                         ToastError.toastErr(this.props.errorState.error);
                         return;
                     }
-                    await this.props.fetchLeadReport();
-
                     //Run background task to sync offline leads
                     if (this.props.leadState.offlineLeadList && this.props.leadState.offlineLeadList.length > 0) {
                         this.sync();
+                    }
+                    if (this.props.campaignState.attendance.length > 0) {
+                        this.props.sysnAttendance();
                     }
                 } else {
                     if (!this.props.userState.user.isOfflineLoggedIn) {
@@ -144,12 +151,20 @@ class Dashboard extends React.Component<Props, State> {
         this.RBSheet.close();
     };
 
-    onPressCampaign = (index: number, selectedCampaign: MetaResponse) => {
-        this.props.selectCampaign(selectedCampaign);
-        this.setState({
-            campaignName: selectedCampaign.name,
-            campaignId: selectedCampaign.id,
-        });
+    onPressCampaign = async (index: number, selectedCampaign: MetaResponse) => {
+        await this.props.captureLocation();
+        await this.props.selectCampaign(selectedCampaign);
+        if (this.props.errorState.showAlertError) {
+            AlertError.alertErr(this.props.errorState.error);
+        } if (this.props.errorState.showToastError) {
+            ToastError.toastErr(this.props.errorState.error);
+        } else {
+            this.setState({
+                campaignName: selectedCampaign.name,
+                campaignId: selectedCampaign.id,
+            });
+        }
+
     };
 
     sync = () => {
@@ -178,17 +193,17 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 ) : (
-                    <Header style={styles.headerBackground} androidStatusBarColor="#813588">
-                        <Body>
-                            <Title style={styles.headerAndroidTitle}>Dashboard</Title>
-                        </Body>
-                        <Right>
-                            <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={styles.whiteColor} />
-                            </Button>
-                        </Right>
-                    </Header>
-                )}
+                        <Header style={styles.headerBackground} androidStatusBarColor="#813588">
+                            <Body>
+                                <Title style={styles.headerAndroidTitle}>Dashboard</Title>
+                            </Body>
+                            <Right>
+                                <Button transparent onPress={this.confirmLogout}>
+                                    <Icon name="ios-log-out" style={styles.whiteColor} />
+                                </Button>
+                            </Right>
+                        </Header>
+                    )}
 
                 <Content style={styles.contentBg}>
                     <View style={styles.containerStyle}>
@@ -348,6 +363,7 @@ const mapStateToProps = (state: AppState) => ({
     campaignState: state.campaignReducer,
     errorState: state.errorReducer,
     leadReportState: state.leadReportReducer,
+    locationState: state.locationReducer,
     leadState: state.leadReducer,
 });
 
@@ -357,6 +373,8 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     selectCampaign: bindActionCreators(selectedCampaign, dispatch),
     fetchLeadReport: bindActionCreators(fetchLeadReport, dispatch),
     syncOfflineLeads: bindActionCreators(syncOfflineLeads, dispatch),
+    captureLocation: bindActionCreators(captureLocation, dispatch),
+    sysnAttendance: bindActionCreators(syncOfflineAttendance, dispatch),
 });
 
 export default withNavigation(

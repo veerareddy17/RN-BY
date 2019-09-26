@@ -12,4 +12,6 @@ export const APIConstants = {
     CLASSES_URL: '/meta/classes',
     LEAD_REPORT_URL: '/lead/count',
     LEAD_OFFLINE_SYNC: '/lead/offline-sync',
+    ATTENDANCE: '/attendance',
+    ATTENDANCE_OFFLINE_SYNC: '/attendance/offline-sync'
 };
