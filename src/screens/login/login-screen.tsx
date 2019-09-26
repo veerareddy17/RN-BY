@@ -202,7 +202,6 @@ class Login extends React.Component<Props, State> {
     };
 
     handleSubmit = async (values: LoginRequestData) => {
-        console.log('values', values);
         if (values.email === '' || values.password === '' || values.password.length < 5) {
             console.log('empty field');
             return;
