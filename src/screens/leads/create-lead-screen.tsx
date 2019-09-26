@@ -383,7 +383,14 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     </ListItem>
                                 </Left>
                                 <Body style={{ flex: 3, paddingLeft: 20 }}>
-                                    <Title style={{ color: '#fff', fontSize: 18,fontWeight: '700', fontFamily: 'system font' }}>
+                                    <Title
+                                        style={{
+                                            color: '#fff',
+                                            fontSize: 18,
+                                            fontWeight: '700',
+                                            fontFamily: 'system font',
+                                        }}
+                                    >
                                         Create Lead
                                     </Title>
                                 </Body>
@@ -425,8 +432,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             uppercase={false}
                                             style={{
                                                 color: '#813588',
-                                                paddingLeft: 8,
-                                                paddingRight: 8,
+                                                paddingLeft: 9,
+                                                fontSize: 14,
                                                 fontFamily: 'system font',
                                             }}
                                         >

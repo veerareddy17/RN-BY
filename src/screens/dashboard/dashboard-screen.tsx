@@ -84,8 +84,7 @@ class Dashboard extends React.Component<Props, State> {
                         this.logout();
                         return;
                     }
-                    this.props.navigation.navigate(selectedCampaign === "" ? 'Campaigns' : 'App');
-
+                    this.props.navigation.navigate(selectedCampaign === '' ? 'Campaigns' : 'App');
 
                     await this.props.fetchLeadReport();
                     if (this.props.errorState.showAlertError) {
@@ -156,7 +155,8 @@ class Dashboard extends React.Component<Props, State> {
         await this.props.selectCampaign(selectedCampaign);
         if (this.props.errorState.showAlertError) {
             AlertError.alertErr(this.props.errorState.error);
-        } if (this.props.errorState.showToastError) {
+        }
+        if (this.props.errorState.showToastError) {
             ToastError.toastErr(this.props.errorState.error);
         } else {
             this.setState({
@@ -164,7 +164,6 @@ class Dashboard extends React.Component<Props, State> {
                 campaignId: selectedCampaign.id,
             });
         }
-
     };
 
     sync = () => {
@@ -193,17 +192,17 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 ) : (
-                        <Header style={styles.headerBackground} androidStatusBarColor="#813588">
-                            <Body>
-                                <Title style={styles.headerAndroidTitle}>Dashboard</Title>
-                            </Body>
-                            <Right>
-                                <Button transparent onPress={this.confirmLogout}>
-                                    <Icon name="ios-log-out" style={styles.whiteColor} />
-                                </Button>
-                            </Right>
-                        </Header>
-                    )}
+                    <Header style={styles.headerBackground} androidStatusBarColor="#813588">
+                        <Body>
+                            <Title style={styles.headerAndroidTitle}>Dashboard</Title>
+                        </Body>
+                        <Right>
+                            <Button transparent onPress={this.confirmLogout}>
+                                <Icon name="ios-log-out" style={styles.whiteColor} />
+                            </Button>
+                        </Right>
+                    </Header>
+                )}
 
                 <Content style={styles.contentBg}>
                     <View style={styles.containerStyle}>

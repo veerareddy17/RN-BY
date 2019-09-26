@@ -164,8 +164,8 @@ const styles = StyleSheet.create({
     },
     campaignCardButtonText: {
         color: '#813588',
-        paddingLeft: 8,
-        paddingRight: 8,
+        paddingLeft: 9,
+        fontSize: 14,
         fontFamily: 'system font',
     },
     bottomSheetContainer: {
