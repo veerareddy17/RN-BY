@@ -30,6 +30,7 @@
         "react-native-keyboard-aware-scroll-view": "^0.9.1",
         "react-native-loading-spinner-overlay": "^1.0.1",
         "react-native-raw-bottom-sheet": "^2.0.2",
+        "react-native-splash-screen": "^3.2.0",
         "react-native-svg": "^9.8.3",
         "react-native-system-setting": "^1.7.2",
         "react-navigation": "^3.11.1",
