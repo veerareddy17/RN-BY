@@ -47,6 +47,7 @@ local.properties
 android/.*
 android/app/*
 android/app/debug.keystore
+!android/app/src/*
 !android/app/byjus*.keystore
 
 # node.js
