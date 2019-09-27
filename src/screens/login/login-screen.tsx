@@ -247,6 +247,11 @@ class Login extends React.Component<Props, State> {
                 this.props.locationState.location.longitude,
             );
             this.setState({ showLoadingSpinner: false });
+            if (this.props.errorState.showAlertError) {
+                this.setState({ showLoadingSpinner: false });
+                AlertError.alertErr(this.props.errorState.error);
+                return;
+            }
             this.props.navigation.navigate(this.props.userState.error ? 'Auth' : 'Campaigns');
         }
     };
@@ -388,6 +393,7 @@ class Login extends React.Component<Props, State> {
                                 }}
                                 closeOnPressMask={false}
                                 duration={10}
+                                height={300}
                                 customStyles={{
                                     container: {
                                         borderTopRightRadius: 20,

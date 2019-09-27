@@ -79,11 +79,11 @@ class Dashboard extends React.Component<Props, State> {
                 this.setState({ campaignList: compaignList });
                 this.setState({ campaignId: selectedCampaign.id });
                 this.setState({ campaignName: selectedCampaign.name });
+
+                // check for user login
+                this.checkUserLogIn();
+
                 if (this.context.isConnected) {
-                    if (this.props.userState.user.token === '') {
-                        this.logout();
-                        return;
-                    }
                     this.props.navigation.navigate(selectedCampaign === '' ? 'Campaigns' : 'App');
 
                     await this.props.fetchLeadReport();
@@ -101,20 +101,21 @@ class Dashboard extends React.Component<Props, State> {
                     if (this.props.campaignState.attendance.length > 0) {
                         this.props.sysnAttendance();
                     }
-                } else {
-                    if (!this.props.userState.user.isOfflineLoggedIn) {
-                        this.logout();
-                        return;
-                    }
-                    /*
-                    show offline
-                    */
                 }
             });
         } catch (error) {
             /*
             error to be handled
             */
+        }
+    };
+
+    checkUserLogIn = () => {
+        if (
+            (this.context.isConnected && this.props.userState.user.token === '') ||
+            (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn)
+        ) {
+            this.logout(true);
         }
     };
 
@@ -126,9 +127,11 @@ class Dashboard extends React.Component<Props, State> {
         this.props.navigation.navigate('FilteredLeads', { flag: flag }); // Can be set to 'FilteredLeads' screen
     };
 
-    logout = async () => {
+    logout = async (isAutoLogOff: boolean) => {
         await this.props.logout();
-        this.props.navigation.navigate('Auth');
+        isAutoLogOff
+            ? AlertError.reLoginAlert(this.context.isConnected, this.props.navigation)
+            : this.props.navigation.navigate('Auth');
     };
 
     confirmLogout = () => {
@@ -140,7 +143,7 @@ class Dashboard extends React.Component<Props, State> {
                     text: 'Cancel',
                     style: 'cancel',
                 },
-                { text: 'Ok', onPress: () => this.logout() },
+                { text: 'Ok', onPress: () => this.logout(false) },
             ],
             { cancelable: false },
         );

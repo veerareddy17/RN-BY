@@ -31,6 +31,7 @@ export interface CampaignListProps {
     navigation: NavigationScreenProp<any>;
     campaignState: any;
     errorState: any;
+    userState: any;
     captureLocation(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     selectCampaign(campaignId: any): void;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -40,6 +41,16 @@ export interface CampaignListState {}
 
 class CampaignList extends Component<CampaignListProps, CampaignListState> {
     static contextType = NetworkContext;
+
+    async componentDidMount() {
+        this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
+            this.checkUserLogIn();
+        });
+    }
+
+    componentWillUnmount() {
+        if (this.focusLeadListener) this.focusLeadListener.remove();
+    }
 
     handleSelections = async (campaignId: any) => {
         await this.props.captureLocation();
@@ -54,9 +65,20 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
         }
     };
 
-    logout = async () => {
+    checkUserLogIn = () => {
+        if (
+            (this.context.isConnected && this.props.userState.user.token === '') ||
+            (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn)
+        ) {
+            this.logout(true);
+        }
+    };
+
+    logout = async (isAutoLogOff: boolean) => {
         await this.props.logout();
-        this.props.navigation.navigate('Auth');
+        isAutoLogOff
+            ? AlertError.reLoginAlert(this.context.isConnected, this.props.navigation)
+            : this.props.navigation.navigate('Auth');
     };
 
     confirmLogout = () => {
@@ -68,7 +90,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                     text: 'Cancel',
                     style: 'cancel',
                 },
-                { text: 'Ok', onPress: () => this.logout() },
+                { text: 'Ok', onPress: () => this.logout(false) },
             ],
             { cancelable: false },
         );
@@ -150,6 +172,7 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
 const mapStateToProps = (state: AppState) => ({
     campaignState: state.campaignReducer,
     errorState: state.errorReducer,
+    userState: state.userReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

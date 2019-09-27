@@ -153,9 +153,15 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.setState({ campaignName: selectedCampaign.name });
                 this.formik.resetForm();
                 // The screen is focused call any action
-                if (this.context.isConnected && this.props.userState.user.token === '') {
-                    this.props.navigation.navigate('Auth');
-                }
+                // if (this.context.isConnected && this.props.userState.user.token === '') {
+                //     this.logout();
+                //     return;
+                // }
+                // if (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn) {
+                //     this.logout();
+                //     return;
+                // }
+                this.checkUserLogIn();
             });
         } catch (error) {
             /*
@@ -163,6 +169,27 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             */
         }
     }
+
+    checkUserLogIn = () => {
+        if (
+            (this.context.isConnected && this.props.userState.user.token === '') ||
+            (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn)
+        ) {
+            this.logout(true);
+        }
+    };
+
+    // logout = async () => {
+    //     await this.props.logout();
+    //     AlertError.reLoginAlert(this.context.isConnected, this.props.navigation);
+    // };
+
+    logout = async (isAutoLogOff: boolean) => {
+        await this.props.logout();
+        isAutoLogOff
+            ? AlertError.reLoginAlert(this.context.isConnected, this.props.navigation)
+            : this.props.navigation.navigate('Auth');
+    };
 
     updateClassDropdown = () => {
         const all_items = this.props.metaData.classesResponse.map((_class, i) => {

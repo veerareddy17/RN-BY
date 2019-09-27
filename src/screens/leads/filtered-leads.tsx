@@ -24,6 +24,7 @@ import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
 import Loader from '../../components/content-loader/content-loader';
 import { logout } from '../../redux/actions/user-actions';
+import { AlertError } from '../error/alert-error';
 export interface FLeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
@@ -43,7 +44,6 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     static navigationOptions = {
         title: 'Leads',
         headerTitleStyle: { color: '#fff', fontWeight: '700' },
-        headerBackTitle: '',
     };
     constructor(props: FLeadListProps) {
         super(props);
@@ -57,10 +57,8 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             let selectedFlag = this.props.navigation.getParam('flag', '');
-            if (this.context.isConnected && this.props.userState.user.token === '') {
-                this.logout();
-                return;
-            }
+
+            this.checkUserLogIn();
             await this.fetchLeadsList(this.state.pageNumber, selectedFlag);
             this.setState({
                 pageNumber: this.props.leadState.filteredPaginatedLeadList.current_page,
@@ -70,9 +68,20 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         });
     }
 
-    logout = async () => {
+    checkUserLogIn = () => {
+        if (
+            (this.context.isConnected && this.props.userState.user.token === '') ||
+            (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn)
+        ) {
+            this.logout(true);
+        }
+    };
+
+    logout = async (isAutoLogOff: boolean) => {
         await this.props.logout();
-        this.props.navigation.navigate('Auth');
+        isAutoLogOff
+            ? AlertError.reLoginAlert(this.context.isConnected, this.props.navigation)
+            : this.props.navigation.navigate('Auth');
     };
 
     componentWillUnmount() {
