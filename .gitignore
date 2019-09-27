@@ -45,7 +45,7 @@ project.xcworkspace
 local.properties
 *.iml
 android/.*
-android/app/*
+android/app/.*
 android/app/debug.keystore
 !android/app/src/*
 !android/app/byjus*.keystore
