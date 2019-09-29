@@ -29,6 +29,7 @@ export interface FLeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
     userState: any;
+    leadReportState: any;
     fetchFilteredLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
@@ -127,30 +128,6 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         );
     };
 
-    renderEmptyView = () => {
-        const { width, height } = Dimensions.get('window');
-        return (
-            <View style={{ paddingTop: 0 }}>
-                <Card
-                    style={{
-                        marginTop: 0,
-                        marginBottom: 0,
-                        marginLeft: 0,
-                        marginRight: 0,
-                        borderTopWidth: 0,
-                        borderLeftWidth: 0,
-                        borderBottomWidth: 0,
-                        borderRightWidth: 0,
-                        borderRadius: 5,
-                    }}
-                >
-                    <Text>No Data to Display</Text>
-                    {/* <ImageBackground source={images.noData} style={{ width, height }}></ImageBackground> */}
-                </Card>
-            </View>
-        );
-    };
-
     renderItem(item) {
         return (
             <ListItem
@@ -171,9 +148,17 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         );
     }
     render() {
+        const leadCount = !this.context.isConnected
+            ? this.props.leadState.offlineLeadList.length
+            : this.props.leadReportState.leadReport[this.state.flag];
         return (
             <Container>
                 <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
+                    <View style={{ paddingBottom: 5 }}>
+                        {leadCount > 0 && (
+                            <Text style={{ fontSize: 15, color: '#555' }}>Total Leads : {leadCount}</Text>
+                        )}
+                    </View>
                     <View style={{ flex: 1 }}>
                         {this.context.isConnected ? (
                             this.props.leadState.isLoading ? (
@@ -225,6 +210,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
 const mapStateToProps = (state: AppState) => ({
     leadState: state.leadReducer,
     userState: state.userReducer,
+    leadReportState: state.leadReportReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

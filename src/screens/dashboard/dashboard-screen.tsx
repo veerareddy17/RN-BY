@@ -323,7 +323,7 @@ class Dashboard extends React.Component<Props, State> {
                                 }}
                                 style={styles.campaignCardButton}
                             >
-                                {this.props.campaignState.isLoading ? (
+                                {this.context.isConnected && this.props.campaignState.isLoading ? (
                                     <View
                                         style={{
                                             flex: 1,

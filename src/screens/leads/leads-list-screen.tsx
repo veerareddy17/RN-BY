@@ -175,6 +175,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         );
     }
     render() {
+        const leadCount = !this.context.isConnected
+            ? this.props.leadState.offlineLeadList.length
+            : this.props.leadReportState.leadReport.total;
+
         return (
             <Container>
                 {Platform.OS === 'ios' ? (
@@ -216,14 +220,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     contentContainerStyle={{ flex: 1 }}
                 >
                     <View style={{ paddingBottom: 5 }}>
-                        <Text style={{ fontSize: 15, color: '#555' }}>
-                            Total Leads :{' '}
-                            {!this.context.isConnected
-                                ? this.props.leadState.offlineLeadList
-                                    ? this.props.leadState.offlineLeadList.length
-                                    : 0
-                                : this.props.leadReportState.leadReport.total}
-                        </Text>
+                        {leadCount > 0 && (
+                            <Text style={{ fontSize: 15, color: '#555' }}>Total Leads : {leadCount}</Text>
+                        )}
                     </View>
                     <View style={{ flex: 1 }}>
                         {this.context.isConnected ? (
