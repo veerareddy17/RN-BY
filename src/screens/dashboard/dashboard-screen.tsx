@@ -345,7 +345,8 @@ class Dashboard extends React.Component<Props, State> {
                                     this.RBSheet = ref;
                                 }}
                                 height={400}
-                                duration={150}
+                                animationType="fade"
+                                duration={100}
                                 closeOnDragDown={false}
                                 customStyles={{
                                     container: styles.bottomSheetContainer,

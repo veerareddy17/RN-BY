@@ -176,6 +176,7 @@ class Login extends React.Component<Props, State> {
             return;
         }
         this.RBSheetForgotPass.open();
+        this.setState({ email: '' });
     };
 
     closeBottomSheet = () => {
@@ -189,6 +190,7 @@ class Login extends React.Component<Props, State> {
 
     submitForgotPassword = async () => {
         await this.props.forgotPassword(this.state.email);
+        this.setState({ email: '' });
     };
 
     handleSSO = () => {
@@ -203,7 +205,6 @@ class Login extends React.Component<Props, State> {
 
     handleSubmit = async (values: LoginRequestData) => {
         if (values.email === '' || values.password === '' || values.password.length < 5) {
-            console.log('empty field');
             return;
         }
         this.setState({ showLoadingSpinner: true });
@@ -302,6 +303,7 @@ class Login extends React.Component<Props, State> {
                                             </View>
                                             <View style={loginStyle.password}>
                                                 <FloatLabelTextInput
+                                                    keyboardType={this.context.isConnected ? 'default' : 'number-pad'}
                                                     placeholder={this.context.isConnected ? 'Password' : 'Offline PIN'}
                                                     secureTextEntry={this.state.showPassword}
                                                     value={values.password}
@@ -392,8 +394,9 @@ class Login extends React.Component<Props, State> {
                                     this.RBSheetForgotPass = ref;
                                 }}
                                 closeOnPressMask={false}
-                                duration={10}
-                                height={300}
+                                animationType="fade"
+                                duration={100}
+                                height={280}
                                 customStyles={{
                                     container: {
                                         borderTopRightRadius: 20,
@@ -408,7 +411,7 @@ class Login extends React.Component<Props, State> {
                                     actionType="Submit"
                                     currentState={this.props.forgotPasswordState}
                                     onChangeText={this.onChangeTextBottomSheet}
-                                    data={['Email Id']}
+                                    data={['Email ID']}
                                     close={this.closeBottomSheet}
                                     submit={this.submitForgotPassword}
                                     title="Forgot Password"

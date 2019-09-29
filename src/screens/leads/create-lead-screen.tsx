@@ -277,6 +277,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             city: values.city,
             pin_code: values.pincode,
             siblings: values.siblings,
+            comments: values.comments
         });
         try {
             this.setState({ showLoadingSpinner: true });
@@ -317,7 +318,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.props.navigation.navigate('LeadList');
             }
         } catch (error) {
-            /*
+        /*
             error to be handled
             */
         }
@@ -370,6 +371,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                     otp: '',
                     proceedWithoutOtp: this.context.isConnected ? false : true,
                     siblings: Array<SiblingRequest>(),
+                    comments: '',
                 }}
                 onSubmit={values => {
                     this.handleSubmit(values);
@@ -459,7 +461,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                             uppercase={false}
                                             style={{
                                                 color: '#813588',
-                                                paddingLeft: 9,
+                                                textAlign: 'center',
                                                 fontSize: 14,
                                                 fontFamily: 'system font',
                                             }}
@@ -473,7 +475,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                         this.RBSheet = ref;
                                     }}
                                     height={400}
-                                    duration={150}
+                                    animationType="fade"
+                                    duration={100}
                                     closeOnDragDown={false}
                                     customStyles={{
                                         container: {
@@ -1348,6 +1351,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         rowSpan={5}
                                                         bordered={true}
                                                         placeholder="Comments"
+                                                        onChangeText={handleChange('comments')}
+                                                        value={values.comments}
                                                     />
                                                 </View>
                                             </View>
@@ -1486,7 +1491,8 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                     }}
                                     closeOnPressMask={false}
                                     closeOnDragDown={false}
-                                    duration={10}
+                                    animationType="fade"
+                                    duration={100}
                                     customStyles={{
                                         container: {
                                             height: 400,
