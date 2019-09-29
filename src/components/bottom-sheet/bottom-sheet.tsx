@@ -53,37 +53,41 @@ export default class BottomSheet extends React.Component<Props, State> {
         };
     }
 
-    onBlur() { }
+    onBlur() {}
     onChangeHandle = (text: String, item: String) => {
         this.props.onChangeText(text, item);
     };
     _onPressClose = () => {
         this.props.close();
+        this.setState({ email: '' });
     };
     _selectCard = (index: Number, item: Object) => {
         this.props.onPress(index, item);
         this.props.close();
     };
     handleSubmit = () => {
-        if (this.validate(this.state.email)) {
+        if (this.props.value === '') {
+            this.setState({ error: 'Email Id is a required field' });
+            this.setState({ hasError: true });
+            return;
+        }
+        if (this.validate(this.props.value)) {
             this.props.submit();
+        } else {
+            this.setState({ error: 'Email Id must be a valid email' });
+            this.setState({ hasError: true });
         }
     };
     handleResend = () => {
         this.props.resend();
     };
 
-    validate = text => {
-        console.log(text);
+    validate = (text: string) => {
         let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        if (text === '') {
-            this.setState({ error: 'Email Id is a required field' });
-            this.setState({ hasError: true });
-            return false;
+        if (this.props.currentState.error) {
+            this.props.currentState.error = '';
         }
         if (reg.test(text) === false) {
-            this.setState({ error: 'Email Id must be a valid email' });
-            this.setState({ hasError: true });
             return false;
         } else {
             this.setState({ error: '' });
@@ -112,16 +116,10 @@ export default class BottomSheet extends React.Component<Props, State> {
                                         <View
                                             style={{
                                                 flex: 1,
-                                                // backgroundColor: 'rgba(252,252,252,0.6)',
-                                                // marginLeft: 40,
-                                                // marginRight: 40,
-                                                // borderRadius: 5,
-                                                // marginTop: 10,
                                             }}
                                         >
                                             <View
                                                 style={{
-                                                    // marginBottom: 10,
                                                     marginTop: 10,
                                                     marginLeft: 20,
                                                     marginRight: 20,
@@ -138,8 +136,9 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                         this.validate(text);
                                                         this.onChangeHandle(text, item);
                                                     }}
-                                                    onBlur={this.onBlur}
                                                     value={this.props.value}
+                                                    returnKeyType="done"
+                                                    onSubmitEditing={() => this.handleSubmit()}
                                                 />
                                                 <View
                                                     style={{
@@ -152,40 +151,30 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                     }}
                                                 />
                                             </View>
-                                            {/* <FloatingLabel
-                                                keyboardType={this.props.keyBoardStyle}
-                                                labelStyle={styles.labelInput}
-                                                inputStyle={styles.input}
-                                                onChangeText={(text: String) => {
-                                                    this.validate(text)
-                                                    this.onChangeHandle(text, item);
-                                                }}
-                                                onBlur={this.onBlur}
-                                            >
-                                                {item}
-                                            </FloatingLabel> */}
                                         </View>
                                     </View>
-                                    <View style={{ marginLeft: 40, marginRight: 40, borderRadius: 5 }}>
-                                        {this.props.currentState.isLoading ? (
-                                            <View>
-                                                <Spinner />
-                                            </View>
-                                        ) : this.props.currentState.error || this.state.hasError ? (
+                                    {this.props.currentState.isLoading ? (
+                                        <View style={{ marginTop: 10 }}>
+                                            <ActivityIndicator size="small" />
+                                        </View>
+                                    ) : null}
+                                    {this.props.currentState.error ? (
+                                        <View style={{ marginLeft: 20 }}>
                                             <Text style={{ color: '#ff0000', fontSize: 11 }}>
-                                                {this.props.currentState.error || this.state.error}
+                                                {this.props.currentState.error}
                                             </Text>
-                                        ) : (
-                                                    <View />
-                                                )}
-                                    </View>
+                                        </View>
+                                    ) : null}
+                                    {this.state.hasError ? (
+                                        <View style={{ marginLeft: 20 }}>
+                                            <Text style={{ color: '#ff0000', fontSize: 11 }}>{this.state.error}</Text>
+                                        </View>
+                                    ) : null}
                                 </View>
                             );
                         })}
                     </View>
                 );
-                break;
-
             case 'List':
                 return (
                     <FlatList
@@ -193,7 +182,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                         data={this.props.data}
                         renderItem={({ item, index }) => (
                             <View key={item.id} style={{ flexDirection: 'row', flex: 1 }}>
-                                <TouchableOpacity disabled={this.props.data[index].id == this.props.currentcampaign ? true : false}
+                                <TouchableOpacity
                                     disabled={this.props.data[index].id == this.props.currentcampaign ? true : false}
                                     onPress={() => this._selectCard(index, item)}
                                     style={{
@@ -265,7 +254,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                             }}
                         >
                             <Text style={{ marginRight: 10 }}>
-                                <Icon style={{ color: 'white' }} name="close" />
+                                <Icon style={{ color: '#fff' }} name="close" />
                             </Text>
                         </View>
                     </TouchableOpacity>
@@ -285,80 +274,74 @@ export default class BottomSheet extends React.Component<Props, State> {
                 </View>
                 <View style={{ flex: 1 }}>
                     {this.props.currentState &&
-                        this.props.currentState.forgotPasswordResponse &&
-                        this.props.currentState.forgotPasswordResponse.success ? (
-                            <Image source={images.emailBox} />
-                        ) : this.props.type == 'inputType' ? (
-                            <View>
-                                <Text
-                                    style={{
-                                        textAlignVertical: 'center',
-                                        marginLeft: 60,
-                                        marginRight: 60,
-                                        marginBottom: 10,
-                                        textAlign: 'center',
-                                        color: '#813588',
-                                    }}
-                                >
-                                    We will send you a link to reset your password
-                            </Text>
-                                <Text
-                                    style={{
-                                        textAlignVertical: 'center',
-                                        marginLeft: 60,
-                                        marginRight: 60,
-                                        textAlign: 'center',
-                                        color: '#813588',
-                                    }}
-                                >
-                                    Enter you registered email address
-                            </Text>
-                            </View>
-                        ) : (
-                                <View />
-                            )}
-                    {this.props.currentState &&
-                        this.props.currentState.forgotPasswordResponse &&
-                        this.props.currentState.forgotPasswordResponse.success ? (
+                    this.props.currentState.forgotPasswordResponse &&
+                    this.props.currentState.forgotPasswordResponse.success ? (
+                        <Image source={images.emailBox} />
+                    ) : this.props.type == 'inputType' ? (
+                        <View>
                             <Text
                                 style={{
-                                    textAlignVertical: 'center',
+                                    textAlign: 'center',
                                     marginLeft: 60,
                                     marginRight: 60,
-                                    marginTop: 10,
-                                    textAlign: 'center',
-                                    color: '#813588',
+                                    marginBottom: 5,
+                                    color: '#555',
                                 }}
                             >
-                                We have sent a reset password link to your email account
-                        </Text>
-                        ) : this.props.data.length == 0 ? (
-                            <ActivityIndicator size="large" color="#0000ff" />
-                        ) : (
-                                this.renderItem(this.props.type)
-                            )}
-                </View>
-                {this.props.currentState &&
+                                We will send you a link to reset your password
+                            </Text>
+                            <Text
+                                style={{
+                                    marginLeft: 60,
+                                    marginRight: 60,
+                                    textAlign: 'center',
+                                    color: '#555',
+                                }}
+                            >
+                                Enter you registered email address
+                            </Text>
+                        </View>
+                    ) : null}
+                    {this.props.currentState &&
                     this.props.currentState.forgotPasswordResponse &&
-                this.props.currentState.forgotPasswordResponse.success ? null : this.props.actionType != null ? (
-                        <TouchableOpacity
-                            disabled={this.state.hasError}
-                            onPress={() => this.handleSubmit()}
+                    this.props.currentState.forgotPasswordResponse.success ? (
+                        <Text
                             style={{
-                                height: 50,
-                            backgroundColor: !this.state.hasError ? '#813588' : '#9A9A9A',
-                                position: 'absolute',
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                                justifyContent: 'center',
-                                alignItems: 'center',
+                                textAlignVertical: 'center',
+                                marginLeft: 60,
+                                marginRight: 60,
+                                marginTop: 10,
+                                textAlign: 'center',
+                                color: '#813588',
                             }}
                         >
-                            <Text style={{ color: 'white', fontSize: 16, fontWeight: 'bold' }}>
-                                {this.props.actionType}
-                            </Text>
-                        </TouchableOpacity>
+                            We have sent a reset password link to your email account
+                        </Text>
+                    ) : this.props.data.length == 0 ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    ) : (
+                        this.renderItem(this.props.type)
+                    )}
+                </View>
+                {this.props.currentState &&
+                this.props.currentState.forgotPasswordResponse &&
+                this.props.currentState.forgotPasswordResponse.success ? null : this.props.actionType != null ? (
+                    <TouchableOpacity
+                        disabled={this.state.hasError}
+                        onPress={() => this.handleSubmit()}
+                        style={{
+                            height: 50,
+                            backgroundColor: !this.state.hasError ? '#813588' : '#9A9A9A',
+                            position: 'absolute',
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                        }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{this.props.actionType}</Text>
+                    </TouchableOpacity>
                 ) : null}
             </View>
         );
@@ -373,7 +356,6 @@ var styles = StyleSheet.create({
     formInput: {
         borderWidth: 1.5,
         borderColor: '#333',
-
         paddingBottom: 5,
     },
     input: {
