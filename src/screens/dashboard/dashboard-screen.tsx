@@ -181,7 +181,7 @@ class Dashboard extends React.Component<Props, State> {
 
     render() {
         return (
-            <Container>
+            <Container style={{ backgroundColor: '#813588' }}>
                 {Platform.OS === 'ios' ? (
                     <Header style={[styles.headerBackground, { borderBottomWidth: 0 }]} androidStatusBarColor="#813588">
                         <Left />

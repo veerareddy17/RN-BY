@@ -258,7 +258,7 @@ class Login extends React.Component<Props, State> {
     };
     render() {
         return (
-            <Container>
+            <Container style={{ backgroundColor: '#813588' }}>
                 <StatusBar backgroundColor="#813588" barStyle="light-content" />
                 <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }}>
                     <ImageBackground source={images.background} style={loginStyle.imageBg}>
