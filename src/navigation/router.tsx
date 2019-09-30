@@ -39,6 +39,7 @@ const DashboardStack = createStackNavigator(
             path: 'dashboard',
             navigationOptions: {
                 header: null,
+                headerBackTitle: null,
             },
         },
         FilteredLeads: {

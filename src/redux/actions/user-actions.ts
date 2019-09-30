@@ -48,17 +48,19 @@ export const authenticate = (
             let isConnected = getState().connectionStateReducer.isConnected;
             let storedUser = getState().userReducer.user;
             dispatch(requestAction());
+            dispatch(errorCallResetAction());
+
             if (!isConnected) {
                 if (username == storedUser.email && password === storedUser.offline_pin) {
                     storedUser.isOfflineLoggedIn = true;
                     dispatch(successAction(storedUser));
                 } else {
                     storedUser.isOfflineLoggedIn = false;
-                    dispatch(failureAction(['Invalid Username/ PIN']));
+                    dispatch(failureAction([new ErrorResponse('', 'Invalid Username/ PIN')]));
+                    dispatch(errorCallAction([new ErrorResponse('', 'Invalid Username/ PIN')]));
                 }
                 return;
             }
-            dispatch(errorCallResetAction());
             const response = await AuthenticationService.authenticate(authRequest);
             if (response && response.data) {
                 response.data.isOfflineLoggedIn = false;
@@ -80,9 +82,12 @@ export const logout = (): ((dispatch: Dispatch, getState: any) => Promise<void>)
     return async (dispatch: Dispatch, getState: any) => {
         try {
             let storedUser = getState().userReducer.user;
+            let campReducer = getState().campaignReducer;
             let isConnected = getState().connectionStateReducer.isConnected;
             storedUser.isOfflineLoggedIn = false;
             storedUser.token = '';
+            storedUser.isLoading = false;
+            campReducer.isLoading = false;
             if (isConnected) {
                 dispatch(leadResetAction());
             }

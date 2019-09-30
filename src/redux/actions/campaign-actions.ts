@@ -78,7 +78,6 @@ export const selectedCampaignAction = (campaignSelected: MetaResponse) => {
     };
 };
 
-
 export const fetchCampaigns = (): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState: any) => {
         let isConnected = getState().connectionStateReducer.isConnected;
@@ -132,7 +131,7 @@ export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Disp
                 dispatch(errorCallAction(attendanceResp.errors));
             }
             return;
-        } else if (attendanceArray.length === 0 && previousAttendance !== "") {
+        } else if (attendanceArray.length === 0 && previousAttendance !== '') {
             if (previousAttendance.campaign_id !== selectedCamp.id) {
                 previousAttendance.check_out = formatDate(new Date());
                 attendanceArray.push(previousAttendance);
@@ -147,10 +146,13 @@ export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Disp
             dispatch(selectedCampaignArray(attendanceArray));
             return;
         } else if (attendanceArray.length > 0) {
-            if (attendanceArray.some((x: Attendance) => x.check_out.match("23:59:59")
-                && x.campaign_id !== selectedCamp.id)) {
+            if (
+                attendanceArray.some(
+                    (x: Attendance) => x.check_out.match('23:59:59') && x.campaign_id !== selectedCamp.id,
+                )
+            ) {
                 let attendance = newAttendanceRequestForEodOffline(selectedCamp.id, location);
-                let previousCampaignData = attendanceArray.find((x: Attendance) => x.check_out.match("23:59:59"));
+                let previousCampaignData = attendanceArray.find((x: Attendance) => x.check_out.match('23:59:59'));
                 previousCampaignData.check_out = formatDate(new Date());
                 previousCampaignData.check_out_flag = true;
                 attendanceArray.push(attendance);
@@ -159,8 +161,6 @@ export const selectedCampaign = (selectedCampaign: any) => async (dispatch: Disp
             }
             return;
         }
-
-
     } catch (e) {
         let errors = Array<ErrorResponse>();
         errors.push(new ErrorResponse('Server', e.message));
@@ -175,7 +175,7 @@ export const newAttendanceRequestOnline = (selectedCampaignId: string, location:
     attendance.campaign_id = selectedCampaignId;
     attendance.location = locationReq;
     return attendance;
-}
+};
 
 export const newAttendanceRequestForEodOffline = (selectedCampaignId: string, location: any): Attendance => {
     let attendance = new Attendance();
@@ -188,7 +188,7 @@ export const newAttendanceRequestForEodOffline = (selectedCampaignId: string, lo
     attendance.check_out_flag = false;
     attendance.location = locationReq;
     return attendance;
-}
+};
 
 export const syncOfflineAttendance = () => async (dispatch: Dispatch, getState: any) => {
     try {
@@ -197,15 +197,22 @@ export const syncOfflineAttendance = () => async (dispatch: Dispatch, getState: 
             do {
                 let batch = new BatchOfAttendance();
                 batch.attendances = attendanceArray.slice(0, config.OFFLINE_ATTENDANCE_BATCH_SIZE);
-                const response = await CampaignService.attendance_offlineSync(batch)
+                const response = await CampaignService.attendance_offlineSync(batch);
                 if (response && response.data) {
                     attendanceArray.splice(0, config.OFFLINE_ATTENDANCE_BATCH_SIZE);
-                    if (attendanceArray.length === 1 && attendanceArray.some((x: Attendance) => x.check_out.match("23:59:59"))) {
-                        dispatch(selectedCampaignRecent(attendanceArray.find((x: Attendance) => x.check_out.match("23:59:59"))));
+                    if (
+                        attendanceArray.length === 1 &&
+                        attendanceArray.some((x: Attendance) => x.check_out.match('23:59:59'))
+                    ) {
+                        dispatch(
+                            selectedCampaignRecent(
+                                attendanceArray.find((x: Attendance) => x.check_out.match('23:59:59')),
+                            ),
+                        );
                     }
                     dispatch(syncSuccess(attendanceArray));
                 }
-            } while (attendanceArray.length > 0)
+            } while (attendanceArray.length > 0);
         }
     } catch (e) {
         let errors = Array<ErrorResponse>();
@@ -213,4 +220,4 @@ export const syncOfflineAttendance = () => async (dispatch: Dispatch, getState: 
         dispatch(serverErrorCallAction(errors));
         dispatch(campaignFailureAction(e));
     }
-}
+};

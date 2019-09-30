@@ -27,6 +27,7 @@ import { logout } from '../../redux/actions/user-actions';
 import Loader from '../../components/content-loader/content-loader';
 import images from '../../assets';
 import { fetchLeadReport } from '../../redux/actions/lead-report-action';
+import { AlertError } from '../error/alert-error';
 export interface LeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
@@ -58,15 +59,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
 
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
-            if (this.context.isConnected && this.props.userState.user.token === '') {
-                await this.props.resetLead();
-                this.logout();
-                return;
-            }
-            if (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn) {
-                this.logout();
-                return;
-            }
+            this.checkUserLogIn();
             await this.props.fetchLeadReport();
             await this.fetchLeadsList(this.state.pageNumber, '');
             this.setState({
@@ -76,9 +69,20 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         });
     }
 
-    logout = async () => {
+    checkUserLogIn = () => {
+        if (
+            (this.context.isConnected && this.props.userState.user.token === '') ||
+            (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn)
+        ) {
+            this.logout(true);
+        }
+    };
+
+    logout = async (isAutoLogOff: boolean) => {
         await this.props.logout();
-        this.props.navigation.navigate('Auth');
+        isAutoLogOff
+            ? AlertError.reLoginAlert(this.context.isConnected, this.props.navigation)
+            : this.props.navigation.navigate('Auth');
     };
 
     componentWillUnmount() {
@@ -101,7 +105,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     text: 'Cancel',
                     style: 'cancel',
                 },
-                { text: 'Ok', onPress: () => this.logout() },
+                { text: 'Ok', onPress: () => this.logout(false) },
             ],
             { cancelable: false },
         );
@@ -171,6 +175,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         );
     }
     render() {
+        const leadCount = !this.context.isConnected
+            ? this.props.leadState.offlineLeadList.length
+            : this.props.leadReportState.leadReport.total;
+
         return (
             <Container>
                 {Platform.OS === 'ios' ? (
@@ -212,14 +220,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     contentContainerStyle={{ flex: 1 }}
                 >
                     <View style={{ paddingBottom: 5 }}>
-                        <Text style={{ fontSize: 15, color: '#555' }}>
-                            Total Leads :{' '}
-                            {!this.context.isConnected
-                                ? this.props.leadState.offlineLeadList
-                                    ? this.props.leadState.offlineLeadList.length
-                                    : 0
-                                : this.props.leadReportState.leadReport.total}
-                        </Text>
+                        {leadCount > 0 && (
+                            <Text style={{ fontSize: 15, color: '#555' }}>Total Leads : {leadCount}</Text>
+                        )}
                     </View>
                     <View style={{ flex: 1 }}>
                         {this.context.isConnected ? (
