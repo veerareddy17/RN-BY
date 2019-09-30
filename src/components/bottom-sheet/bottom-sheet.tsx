@@ -124,7 +124,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                     marginLeft: 20,
                                                     marginRight: 20,
                                                     flexDirection: 'row',
-                                                    borderColor: '#555',
+                                                    borderColor: '#888',
                                                     borderRadius: 5,
                                                     borderWidth: 1,
                                                 }}
@@ -254,7 +254,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                             }}
                         >
                             <Text style={{ marginRight: 10 }}>
-                                <Icon style={{ color: '#fff' }} name="close" />
+                                <Icon style={{ color: '#fff', fontSize: 30 }} name="close" />
                             </Text>
                         </View>
                     </TouchableOpacity>

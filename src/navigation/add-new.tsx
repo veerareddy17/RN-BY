@@ -28,7 +28,7 @@ export class AddNew extends Component {
                         bottom: 15,
                     }}
                 >
-                    <Icon name="add" style={{ color: 'white', fontSize: 30 }} />
+                    <Icon name="add" style={{ color: '#fff', fontSize: 30 }} />
                 </View>
             </View>
         );

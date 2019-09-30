@@ -190,7 +190,7 @@ class Dashboard extends React.Component<Props, State> {
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={styles.whiteColor} />
+                                <Icon name="ios-log-out" style={styles.logoutIcon} />
                             </Button>
                         </Right>
                     </Header>
@@ -201,7 +201,7 @@ class Dashboard extends React.Component<Props, State> {
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={styles.whiteColor} />
+                                <Icon name="ios-log-out" style={styles.logoutIcon} />
                             </Button>
                         </Right>
                     </Header>
