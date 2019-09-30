@@ -34,6 +34,14 @@ export default function otpReducer(state = initialState, action) {
                 otp: '',
                 validated: action.payload,
             };
+        case LOAD_OTP_INIT:
+            return {
+                ...state,
+                isLoading: false,
+                otp: '',
+                validated: '',
+                error: '',
+            };
         default:
             return state;
     }
