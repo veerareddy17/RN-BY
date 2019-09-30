@@ -526,9 +526,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         style={{
                                                             borderTopRightRadius: 5,
                                                             borderBottomRightRadius: 5,
-                                                        borderLeftWidth: 1,
+                                                            borderLeftWidth: 1,
                                                             borderLeftColor:
-                                                            touched.phone && errors.phone ? '#ff0000' : '#888',
+                                                                touched.phone && errors.phone ? '#ff0000' : '#888',
                                                         }}
                                                     >
                                                         <TouchableOpacity
@@ -563,7 +563,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     </View>
                                                 </View>
                                                 <View style={{ flex: 1 }}>
-
                                                     <Text
                                                         style={{
                                                             color: this.props.otpState.otp
@@ -1384,10 +1383,11 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 <FloatLabelTextInput
                                                                     placeholder={'OTP'}
                                                                     keyboardType="numeric"
+                                                                    editable={!this.state.proceedWithoutOtp}
                                                                     value={values.otp}
                                                                     onChangeText={handleChange('otp')}
                                                                     onBlur={() => {
-                                                                        this.onPressSubmitOTP(values.otp);
+                                                                        { values.otp && this.onPressSubmitOTP(values.otp) }
                                                                         setFieldTouched('otp');
                                                                     }}
                                                                     onSubmitEditing={() =>
