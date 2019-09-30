@@ -146,7 +146,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                     justifyContent: 'center',
                     alignItems: 'center',
                     height: SCREEN_HEIGHT, //responsible for 100% height
-                    backgroundColor: '#eee',
+                    backgroundColor: '#f6f6f6',
                 }}
             >
                 <Image resizeMode={'contain'} source={images.noData} style={{ width: 240 }} />
@@ -189,7 +189,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                <Icon name="ios-log-out" style={{ color: '#fff', fontSize: 22 }} />
                             </Button>
                         </Right>
                     </Header>
@@ -210,7 +210,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                <Icon name="ios-log-out" style={{ color: '#fff', fontSize: 22 }} />
                             </Button>
                         </Right>
                     </Header>

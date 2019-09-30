@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     otp: {
-        backgroundColor: 'white',
+        backgroundColor: '#fff',
         borderRadius: 5,
         paddingBottom: 10,
         marginRight: 20,
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     submitButton: {
         backgroundColor: '#813588',
         borderRadius: 5,
-        borderColor: 'white',
+        borderColor: '#fff',
         borderWidth: 1,
         marginRight: 20,
         marginLeft: 20,

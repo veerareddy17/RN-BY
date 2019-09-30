@@ -4,7 +4,7 @@ const style = StyleSheet.create({
     // container: {
     //     flex: 1,
     //     paddingTop: 65,
-    //     backgroundColor: 'white',
+    //     backgroundColor: '#fff',
     // },
     labelInput: {
         color: '#555',

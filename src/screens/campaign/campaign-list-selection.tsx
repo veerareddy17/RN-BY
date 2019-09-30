@@ -104,24 +104,32 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Left />
                         <Body style={{ flex: 3 }}>
-                            <Title style={{ color: 'white', fontSize: 18 }}>Select Campaign</Title>
+                            <Title style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>Select Campaign</Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                <Icon name="ios-log-out" style={{ color: '#fff', fontSize: 22 }} />
                             </Button>
                         </Right>
                     </Header>
                 ) : (
                     <Header style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
                         <Body>
-                            <Title style={{ color: 'white', fontSize: 18, marginLeft: 10, fontFamily: 'system font' }}>
+                            <Title
+                                style={{
+                                    color: '#fff',
+                                    fontSize: 18,
+                                    marginLeft: 10,
+                                    fontWeight: '700',
+                                    fontFamily: 'system font',
+                                }}
+                            >
                                 Select Campaign
                             </Title>
                         </Body>
                         <Right>
                             <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: 'white' }} />
+                                <Icon name="ios-log-out" style={{ color: '#fff', fontSize: 22 }} />
                             </Button>
                         </Right>
                     </Header>

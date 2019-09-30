@@ -336,12 +336,14 @@ class Login extends React.Component<Props, State> {
                                                     <Text style={loginStyle.error}>{errors.password}</Text>
                                                 ) : null}
                                             </View>
-                                            <TouchableOpacity
-                                                style={loginStyle.forgotPasswordContainer}
-                                                onPress={this.handlePress}
-                                            >
-                                                <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
-                                            </TouchableOpacity>
+                                            {!this.context.isConnected ? null : (
+                                                <TouchableOpacity
+                                                    style={loginStyle.forgotPasswordContainer}
+                                                    onPress={this.handlePress}
+                                                >
+                                                    <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
+                                                </TouchableOpacity>
+                                            )}
                                             <Button
                                                 block={true}
                                                 disabled={!isValid ? true : false}

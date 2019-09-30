@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         height: 50,
-        backgroundColor: 'white',
+        backgroundColor: '#fff',
         justifyContent: 'center',
         borderTopLeftRadius: 5,
         borderBottomLeftRadius: 5,

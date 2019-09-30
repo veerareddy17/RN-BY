@@ -526,9 +526,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                         style={{
                                                             borderTopRightRadius: 5,
                                                             borderBottomRightRadius: 5,
-                                                            borderLeftWidth: touched.phone && errors.phone ? 0 : 1,
+                                                        borderLeftWidth: 1,
                                                             borderLeftColor:
-                                                                touched.phone && errors.phone ? '#fff' : '#888',
+                                                            touched.phone && errors.phone ? '#ff0000' : '#888',
                                                         }}
                                                     >
                                                         <TouchableOpacity

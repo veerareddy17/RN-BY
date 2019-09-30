@@ -74,11 +74,11 @@ const TabStack = createBottomTabNavigator(
             navigationOptions: {
                 tabBarIcon: ({ tintColor, focused }) => (
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                        <Icon name="home" style={{ color: tintColor }} />
+                        <Icon name="home" style={{ color: tintColor, fontSize: 20 }} />
                         <Text
                             style={{
                                 color: tintColor,
-                                fontSize: focused ? 16 : 15,
+                                fontSize: focused ? 15 : 14,
                                 fontWeight: focused ? '700' : '100',
                                 fontFamily: 'system font',
                             }}
@@ -103,11 +103,11 @@ const TabStack = createBottomTabNavigator(
             navigationOptions: {
                 tabBarIcon: ({ tintColor, focused }) => (
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                        <Icon name="people" style={{ color: tintColor }} />
+                        <Icon name="people" style={{ color: tintColor, fontSize: 20 }} />
                         <Text
                             style={{
                                 color: tintColor,
-                                fontSize: focused ? 16 : 15,
+                                fontSize: focused ? 15 : 14,
                                 fontWeight: focused ? '700' : '100',
                                 fontFamily: 'system font',
                             }}
