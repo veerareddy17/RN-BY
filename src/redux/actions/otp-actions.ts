@@ -62,9 +62,9 @@ export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: a
         }
     } catch (error) {
         // Error
-        console.log(e);
+        console.log(error);
         let errors = Array<ErrorResponse>();
-        errors.push(new ErrorResponse('Server', e.message));
+        errors.push(new ErrorResponse('Server', error.message));
         dispatch(serverErrorCallAction(errors));
         dispatch(otpFailureAction('Some error occured'));
     }
