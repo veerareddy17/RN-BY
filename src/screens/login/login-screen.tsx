@@ -394,7 +394,7 @@ class Login extends React.Component<Props, State> {
                                             <Image
                                                 resizeMode={'contain'}
                                                 source={images.google}
-                                                style={{ width: 40 }}
+                                                style={{ width: 40, height: 40 }}
                                             />
                                             <Text uppercase={false} style={loginStyle.loginWithGoogleButtonText}>
                                                 Sign in with Google
