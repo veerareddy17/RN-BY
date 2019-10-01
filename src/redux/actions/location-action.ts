@@ -5,7 +5,7 @@ import Geolocation from 'react-native-geolocation-service';
 import { PermissionsAndroid, Platform, Alert } from 'react-native';
 import SystemSetting from 'react-native-system-setting';
 import { Location } from '../init/location-initial-state';
-import { errorCallResetAction, serverErrorCallAction } from './error-actions';
+import { errorCallResetAction, serverErrorCallAction, errorCallAction } from './error-actions';
 
 export const locationCaptureStart = () => {
     return {
@@ -37,7 +37,6 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                     message: 'Need Permission to access your location',
                     buttonPositive: 'OK',
                 });
-                console.log('granted android', granted);
                 if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                     console.log('You can use the Location...');
                     SystemSetting.isLocationEnabled().then((enable: boolean) => {
@@ -58,7 +57,7 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                     let errors = Array<ErrorResponse>();
                                     errors.push(new ErrorResponse('Server', error.message));
                                     dispatch(serverErrorCallAction(errors));
-                                    reject(error);
+                                    reject(errors);
                                 },
                                 { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
                             );
@@ -91,7 +90,7 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                                                         let errors = Array<ErrorResponse>();
                                                         errors.push(new ErrorResponse('Server', error.message));
                                                         dispatch(serverErrorCallAction(errors));
-                                                        reject(error);
+                                                        reject(errors);
                                                     },
                                                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
                                                 );
@@ -103,67 +102,41 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                             );
                         }
                     });
-                } else {
-                    console.log('Location permission denied');
                 }
             } else {
-                console.log('ios');
                 SystemSetting.isLocationEnabled().then((enable: boolean) => {
                     const state = enable ? 'On' : 'Off';
-                    console.log('Current location is ' + state);
                     if (state === 'On') {
                         dispatch(errorCallResetAction());
                         dispatch(locationCaptureStart());
                         Geolocation.getCurrentPosition(
                             position => {
-                                console.log('success..', position);
                                 dispatch(locationCaptureSuccessAction(position.coords));
                                 resolve(true);
                             },
                             error => {
-                                console.log('error', error);
                                 dispatch(locationCaptureFailureAction(error.message));
                                 let errors = Array<ErrorResponse>();
-                                errors.push(new ErrorResponse('Server', error.message));
-                                dispatch(serverErrorCallAction(errors));
-                                reject(error);
+                                if (error.code !== 1) {
+                                    errors.push(new ErrorResponse('Server', error.message));
+                                    dispatch(serverErrorCallAction(errors));
+                                } else {
+                                    errors.push(new ErrorResponse('Server', 'Please enable location from Settings'));
+                                    dispatch(errorCallAction(errors));
+                                }
+                                reject(errors);
                             },
                             { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
                         );
                     } else {
                         Alert.alert(
                             'Enable Location',
-                            "To continue, turn on device location, which uses Google's location service",
+                            "To continue, turn on device location from Settings->Privacy->Location Services->On, which uses Google's location service",
                             [
                                 {
-                                    text: 'Cancel',
-                                    onPress: () => console.log('Cancel Pressed'),
-                                    style: 'cancel',
-                                },
-                                {
                                     text: 'OK',
-                                    onPress: () => {
-                                        SystemSetting.switchLocation(() => {
-                                            console.log('switch location successfully...');
-                                            dispatch(locationCaptureStart());
-                                            Geolocation.getCurrentPosition(
-                                                position => {
-                                                    console.log('success', position);
-                                                    dispatch(locationCaptureSuccessAction(position.coords));
-                                                    resolve(true);
-                                                },
-                                                error => {
-                                                    console.log('error', error);
-                                                    dispatch(locationCaptureFailureAction(error.message));
-                                                    let errors = Array<ErrorResponse>();
-                                                    errors.push(new ErrorResponse('Server', error.message));
-                                                    dispatch(serverErrorCallAction(errors));
-                                                    reject(error);
-                                                },
-                                                { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
-                                            );
-                                        });
-                                    },
+                                    onPress: () => console.log('OK Pressed'),
+                                    style: 'default',
                                 },
                             ],
                             { cancelable: false },

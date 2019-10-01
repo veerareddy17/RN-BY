@@ -71,7 +71,7 @@ export const sendOTP = (phone: string) => async (dispatch: Dispatch, getState: a
 };
 
 export const submitOTP = (otp: String) => async (dispatch: Dispatch) => {
-    dispatch(otpStartAction());
+    // dispatch(otpStartAction());
     let storedOTP = await StorageService.get<string>(StorageConstants.USER_OTP);
     if (otp === storedOTP) {
         dispatch(otpValidateAction(true));

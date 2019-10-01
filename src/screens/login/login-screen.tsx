@@ -93,7 +93,6 @@ class Login extends React.Component<Props, State> {
         };
     }
     focusTheField = (id: string) => {
-        // this.state.input[id]._root.focus();
         this.state.input[id].refs.input.focus();
     };
 
@@ -208,7 +207,20 @@ class Login extends React.Component<Props, State> {
             return;
         }
         this.setState({ showLoadingSpinner: true });
-        await this.props.captureLocation();
+        try {
+            await this.props.captureLocation();
+        } catch (errors) {
+            this.setState({ showLoadingSpinner: false });
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(errors);
+                return;
+            }
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(errors);
+                return;
+            }
+        }
+
         if (this.context.isConnected) {
             await this.props.requestLoginApi(
                 values.email,
@@ -258,7 +270,7 @@ class Login extends React.Component<Props, State> {
     };
     render() {
         return (
-            <Container>
+            <Container style={{ backgroundColor: '#813588' }}>
                 <StatusBar backgroundColor="#813588" barStyle="light-content" />
                 <ScrollView keyboardShouldPersistTaps="always" contentContainerStyle={{ flexGrow: 1 }}>
                     <ImageBackground source={images.background} style={loginStyle.imageBg}>
