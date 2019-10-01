@@ -9,7 +9,6 @@ export const loginValidation = yup.object().shape({
     password: yup
         .string()
         .label('Password')
-        .min(5)
         .required(),
 });
 
