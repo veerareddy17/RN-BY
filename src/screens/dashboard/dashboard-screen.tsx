@@ -16,7 +16,7 @@ import {
     Spinner,
 } from 'native-base';
 import { NavigationScreenProp } from 'react-navigation';
-import { View, Platform, Dimensions, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
+import { View, Platform, Dimensions, StyleSheet, Alert, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import { connect } from 'react-redux';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { logout } from '../../redux/actions/user-actions';
@@ -36,6 +36,7 @@ import { captureLocation } from '../../redux/actions/location-action';
 import { MetaResponse } from '../../models/response/meta-response';
 import styles from './dashboard-style';
 import images from '../../assets';
+import { ScrollView } from 'react-native-gesture-handler';
 export interface Props {
     navigation: NavigationScreenProp<any>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -206,164 +207,169 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 )}
-
-                <Content style={styles.contentBg}>
-                    <View style={styles.containerStyle}>
-                        <View style={styles.sliderContainerStyle}>
-                            {/* <SpinnerOverlay visible={this.props.leadReportState.isLoading} /> */}
-                        </View>
-                    </View>
-                    <View style={styles.cardShadow}></View>
-                    <Card style={styles.leadsCard}>
-                        <CardItem header style={styles.leadsCardHeader}>
-                            <View style={styles.leadCountSection}>
-                                <Text style={styles.leadCountUsername}>Hi {this.props.userState.user.name}</Text>
-                                <View style={styles.leadCountCircle}>
-                                    <Text style={styles.leadCountNumber}>
-                                        {!this.context.isConnected
-                                            ? this.props.leadState.offlineLeadList
-                                                ? this.props.leadState.offlineLeadList.length
-                                                : 0
-                                            : this.props.leadReportState.leadReport.total}
-                                    </Text>
-                                </View>
-                                {!this.context.isConnected ? (
-                                    <Text style={styles.leadCountText}>Total Offline Leads</Text>
-                                ) : (
-                                    <Text style={styles.leadCountText}>Total Leads</Text>
-                                )}
+                <ScrollView>
+                    <Content style={styles.contentBg}>
+                        <View style={styles.containerStyle}>
+                            <View style={styles.sliderContainerStyle}>
+                                {/* <SpinnerOverlay visible={this.props.leadReportState.isLoading} /> */}
                             </View>
-                        </CardItem>
-                        {!this.context.isConnected ? (
-                            <CardItem style={styles.leadCardItem}>
-                                <Image
-                                    resizeMode={'contain'}
-                                    source={images.noInternet}
-                                    style={styles.noInternetImageWidth}
-                                />
-                                <Text style={styles.offlineText}>You're Offline</Text>
-                                <Text style={styles.offlineSubText}>Please get back online to view more details</Text>
-                            </CardItem>
-                        ) : (
-                            <CardItem style={styles.leadCardItem}>
-                                <Item>
-                                    <Button
-                                        iconRight
-                                        transparent
-                                        onPress={() => {
-                                            this.props.leadReportState.leadReport.today > 0 && this.getLeads('today');
-                                        }}
-                                        style={styles.leadCardItemButton}
-                                    >
-                                        <Text uppercase={false} style={styles.leadCardItemText}>
-                                            Leads today
+                        </View>
+                        <View style={styles.cardShadow}></View>
+                        <Card style={styles.leadsCard}>
+                            <CardItem header style={styles.leadsCardHeader}>
+                                <View style={styles.leadCountSection}>
+                                    <Text style={styles.leadCountUsername}>Hi {this.props.userState.user.name}</Text>
+                                    <View style={styles.leadCountCircle}>
+                                        <Text style={styles.leadCountNumber}>
+                                            {!this.context.isConnected
+                                                ? this.props.leadState.offlineLeadList
+                                                    ? this.props.leadState.offlineLeadList.length
+                                                    : 0
+                                                : this.props.leadReportState.leadReport.total}
                                         </Text>
-                                        <Text style={styles.leadCardItemNumber}>
-                                            {this.props.leadReportState.leadReport.today}
-                                        </Text>
-                                        {this.props.leadReportState.leadReport.today > 0 && (
-                                            <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
-                                        )}
-                                    </Button>
-                                </Item>
-                                <Item>
-                                    <Button
-                                        iconRight
-                                        transparent
-                                        onPress={() => {
-                                            this.props.leadReportState.leadReport.week > 0 && this.getLeads('week');
-                                        }}
-                                        style={styles.leadCardItemButton}
-                                    >
-                                        <Text uppercase={false} style={styles.leadCardItemText}>
-                                            Leads this week
-                                        </Text>
-                                        <Text style={styles.leadCardItemNumber}>
-                                            {this.props.leadReportState.leadReport.week}
-                                        </Text>
-                                        {this.props.leadReportState.leadReport.week > 0 && (
-                                            <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
-                                        )}
-                                    </Button>
-                                </Item>
-                                <Item style={styles.noBorderBottom}>
-                                    <Button
-                                        iconRight
-                                        transparent
-                                        onPress={() => {
-                                            this.props.leadReportState.leadReport.month > 0 && this.getLeads('month');
-                                        }}
-                                        style={styles.leadCardItemButton}
-                                    >
-                                        <Text uppercase={false} style={styles.leadCardItemText}>
-                                            Leads this month
-                                        </Text>
-                                        <Text style={styles.leadCardItemNumber}>
-                                            {this.props.leadReportState.leadReport.month}
-                                        </Text>
-                                        {this.props.leadReportState.leadReport.month > 0 && (
-                                            <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
-                                        )}
-                                    </Button>
-                                </Item>
-                            </CardItem>
-                        )}
-                    </Card>
-                    <Card style={styles.campaignCard}>
-                        <CardItem header style={styles.campaignCardItem}>
-                            <Text style={styles.campaignCardTitle}>Current Campaign</Text>
-                        </CardItem>
-                        <CardItem>
-                            <Text numberOfLines={1} style={styles.campaignName}>
-                                {this.state.campaignName}
-                            </Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    this.onPressOpenRBSheet();
-                                }}
-                                style={styles.campaignCardButton}
-                            >
-                                {this.context.isConnected && this.props.campaignState.isLoading ? (
-                                    <View
-                                        style={{
-                                            flex: 1,
-                                            height: 22,
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}
-                                    >
-                                        <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
                                     </View>
-                                ) : (
-                                    <Text uppercase={false} style={styles.campaignCardButtonText}>
-                                        Change
+                                    {!this.context.isConnected ? (
+                                        <Text style={styles.leadCountText}>Total Offline Leads</Text>
+                                    ) : (
+                                        <Text style={styles.leadCountText}>Total Leads</Text>
+                                    )}
+                                </View>
+                            </CardItem>
+                            {!this.context.isConnected ? (
+                                <CardItem style={styles.leadCardItem}>
+                                    <Image
+                                        resizeMode={'contain'}
+                                        source={images.noInternet}
+                                        style={styles.noInternetImageWidth}
+                                    />
+                                    <Text style={styles.offlineText}>You're Offline</Text>
+                                    <Text style={styles.offlineSubText}>
+                                        Please get back online to view more details
                                     </Text>
-                                )}
-                            </TouchableOpacity>
-                            <RBSheet
-                                ref={ref => {
-                                    this.RBSheet = ref;
-                                }}
-                                height={400}
-                                animationType="fade"
-                                duration={100}
-                                closeOnDragDown={false}
-                                customStyles={{
-                                    container: styles.bottomSheetContainer,
-                                }}
-                            >
-                                <BottomSheet
-                                    type="List"
-                                    currentcampaign={this.state.campaignId}
-                                    data={this.state.campaignList}
-                                    close={this.closeBottomSheet}
-                                    title="Change Campaign"
-                                    onPress={this.onPressCampaign}
-                                />
-                            </RBSheet>
-                        </CardItem>
-                    </Card>
-                </Content>
+                                </CardItem>
+                            ) : (
+                                <CardItem style={styles.leadCardItem}>
+                                    <Item>
+                                        <Button
+                                            iconRight
+                                            transparent
+                                            onPress={() => {
+                                                this.props.leadReportState.leadReport.today > 0 &&
+                                                    this.getLeads('today');
+                                            }}
+                                            style={styles.leadCardItemButton}
+                                        >
+                                            <Text uppercase={false} style={styles.leadCardItemText}>
+                                                Leads today
+                                            </Text>
+                                            <Text style={styles.leadCardItemNumber}>
+                                                {this.props.leadReportState.leadReport.today}
+                                            </Text>
+                                            {this.props.leadReportState.leadReport.today > 0 && (
+                                                <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
+                                            )}
+                                        </Button>
+                                    </Item>
+                                    <Item>
+                                        <Button
+                                            iconRight
+                                            transparent
+                                            onPress={() => {
+                                                this.props.leadReportState.leadReport.week > 0 && this.getLeads('week');
+                                            }}
+                                            style={styles.leadCardItemButton}
+                                        >
+                                            <Text uppercase={false} style={styles.leadCardItemText}>
+                                                Leads this week
+                                            </Text>
+                                            <Text style={styles.leadCardItemNumber}>
+                                                {this.props.leadReportState.leadReport.week}
+                                            </Text>
+                                            {this.props.leadReportState.leadReport.week > 0 && (
+                                                <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
+                                            )}
+                                        </Button>
+                                    </Item>
+                                    <Item style={styles.noBorderBottom}>
+                                        <Button
+                                            iconRight
+                                            transparent
+                                            onPress={() => {
+                                                this.props.leadReportState.leadReport.month > 0 &&
+                                                    this.getLeads('month');
+                                            }}
+                                            style={styles.leadCardItemButton}
+                                        >
+                                            <Text uppercase={false} style={styles.leadCardItemText}>
+                                                Leads this month
+                                            </Text>
+                                            <Text style={styles.leadCardItemNumber}>
+                                                {this.props.leadReportState.leadReport.month}
+                                            </Text>
+                                            {this.props.leadReportState.leadReport.month > 0 && (
+                                                <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
+                                            )}
+                                        </Button>
+                                    </Item>
+                                </CardItem>
+                            )}
+                        </Card>
+                        <Card style={styles.campaignCard}>
+                            <CardItem header style={styles.campaignCardItem}>
+                                <Text style={styles.campaignCardTitle}>Current Campaign</Text>
+                            </CardItem>
+                            <CardItem>
+                                <Text numberOfLines={1} style={styles.campaignName}>
+                                    {this.state.campaignName}
+                                </Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        this.onPressOpenRBSheet();
+                                    }}
+                                    style={styles.campaignCardButton}
+                                >
+                                    {this.context.isConnected && this.props.campaignState.isLoading ? (
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                height: 22,
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            <Spinner size={15} color="#813588" style={{ marginTop: 0 }} />
+                                        </View>
+                                    ) : (
+                                        <Text uppercase={false} style={styles.campaignCardButtonText}>
+                                            Change
+                                        </Text>
+                                    )}
+                                </TouchableOpacity>
+                                <RBSheet
+                                    ref={ref => {
+                                        this.RBSheet = ref;
+                                    }}
+                                    height={400}
+                                    animationType="fade"
+                                    duration={100}
+                                    closeOnDragDown={false}
+                                    customStyles={{
+                                        container: styles.bottomSheetContainer,
+                                    }}
+                                >
+                                    <BottomSheet
+                                        type="List"
+                                        currentcampaign={this.state.campaignId}
+                                        data={this.state.campaignList}
+                                        close={this.closeBottomSheet}
+                                        title="Change Campaign"
+                                        onPress={this.onPressCampaign}
+                                    />
+                                </RBSheet>
+                            </CardItem>
+                        </Card>
+                    </Content>
+                </ScrollView>
                 {!this.context.isConnected && (
                     <View style={styles.noInternetContainer}>
                         <Text style={styles.noInternetText}>No Internet</Text>
