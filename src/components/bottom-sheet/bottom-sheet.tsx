@@ -276,7 +276,9 @@ export default class BottomSheet extends React.Component<Props, State> {
                     {this.props.currentState &&
                     this.props.currentState.forgotPasswordResponse &&
                     this.props.currentState.forgotPasswordResponse.success ? (
-                        <Image source={images.emailBox} />
+                        <View style={{ alignItems: 'center', marginTop: 15 }}>
+                            <Image source={images.emailBox} />
+                        </View>
                     ) : this.props.type == 'inputType' ? (
                         <View>
                             <Text
@@ -310,9 +312,9 @@ export default class BottomSheet extends React.Component<Props, State> {
                                 textAlignVertical: 'center',
                                 marginLeft: 60,
                                 marginRight: 60,
-                                marginTop: 10,
+                                marginTop: 15,
                                 textAlign: 'center',
-                                color: '#813588',
+                                color: '#555',
                             }}
                         >
                             We have sent a reset password link to your email account

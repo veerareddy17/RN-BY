@@ -203,6 +203,7 @@ class Login extends React.Component<Props, State> {
     };
 
     handleSubmit = async (values: LoginRequestData) => {
+        Keyboard.dismiss();
         if (values.email === '' || values.password === '' || values.password.length < 5) {
             return;
         }

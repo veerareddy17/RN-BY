@@ -134,11 +134,11 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
                         </Right>
                     </Header>
                 )}
-                <Content>
+                <Content style={{ backgroundColor: '#f6f6f6' }}>
                     {this.props.campaignState.isLoading ? (
                         <ActivityIndicator style={{ marginTop: 20 }} animating size="large" />
                     ) : (
-                        <View>
+                        <View style={{ backgroundColor: '#fff' }}>
                             <List>
                                 {this.props.campaignState.campaignList.map(campaign => {
                                     return (
