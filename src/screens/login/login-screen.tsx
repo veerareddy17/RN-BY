@@ -108,7 +108,7 @@ class Login extends React.Component<Props, State> {
                     this.handleOpenURL(url);
                 }
             })
-            .catch(err => { });
+            .catch(err => {});
         Linking.addEventListener('url', this.handleOpenURL);
 
         let isLoggedIn = false;
@@ -297,99 +297,103 @@ class Login extends React.Component<Props, State> {
                                         isValid,
                                         handleSubmit,
                                     }) => (
-                                            <Form>
-                                                <View style={loginStyle.userName}>
-                                                    <FloatLabelTextInput
-                                                        placeholder={'Email'}
-                                                        value={values.email}
-                                                        keyboardType="email-address"
-                                                        onChangeText={handleChange('email')}
-                                                        onBlur={() => setFieldTouched('email')}
-                                                        style={loginStyle.marginLeft}
-                                                        returnKeyType="next"
-                                                        blurOnSubmit={false}
-                                                        onSubmitEditing={() => this.focusTheField('password')}
-                                                        autoCapitalize="none"
-                                                    />
-                                                    <View style={loginStyle.iconContainer} />
-                                                </View>
-                                                <View style={loginStyle.password}>
-                                                    <FloatLabelTextInput
-                                                        keyboardType={this.context.isConnected ? 'default' : 'number-pad'}
-                                                        placeholder={this.context.isConnected ? 'Password' : 'Offline PIN'}
-                                                        secureTextEntry={this.state.showPassword}
-                                                        value={values.password}
-                                                        onChangeText={handleChange('password')}
-                                                        onBlur={() => setFieldTouched('password')}
-                                                        returnKeyType="done"
-                                                        ref={input => {
-                                                            this.state.input['password'] = input;
+                                        <Form>
+                                            <View style={loginStyle.userName}>
+                                                <FloatLabelTextInput
+                                                    placeholder={'Email'}
+                                                    value={values.email}
+                                                    keyboardType="email-address"
+                                                    onChangeText={handleChange('email')}
+                                                    onBlur={() => setFieldTouched('email')}
+                                                    style={loginStyle.marginLeft}
+                                                    returnKeyType="next"
+                                                    blurOnSubmit={false}
+                                                    onSubmitEditing={() => this.focusTheField('password')}
+                                                    autoCapitalize="none"
+                                                />
+                                                <View style={loginStyle.iconContainer} />
+                                            </View>
+                                            <View style={loginStyle.password}>
+                                                <FloatLabelTextInput
+                                                    keyboardType={this.context.isConnected ? 'default' : 'number-pad'}
+                                                    placeholder={this.context.isConnected ? 'Password' : 'Offline PIN'}
+                                                    secureTextEntry={this.state.showPassword}
+                                                    value={values.password}
+                                                    onChangeText={handleChange('password')}
+                                                    onBlur={() => setFieldTouched('password')}
+                                                    returnKeyType="done"
+                                                    ref={input => {
+                                                        this.state.input['password'] = input;
+                                                    }}
+                                                    onSubmitEditing={() => this.handleSubmit(values)}
+                                                />
+                                                <View style={loginStyle.iconContainer}>
+                                                    <Icon
+                                                        active
+                                                        name={this.state.showPassword ? 'eye-off' : 'eye'}
+                                                        onPress={e => {
+                                                            e.preventDefault();
+                                                            this.setState({ showPassword: !this.state.showPassword });
                                                         }}
-                                                        onSubmitEditing={() => this.handleSubmit(values)}
                                                     />
-                                                    <View style={loginStyle.iconContainer}>
-                                                        <Icon
-                                                            active
-                                                            name={this.state.showPassword ? 'eye-off' : 'eye'}
-                                                            onPress={e => {
-                                                                e.preventDefault();
-                                                                this.setState({ showPassword: !this.state.showPassword });
-                                                            }}
-                                                        />
-                                                    </View>
                                                 </View>
-                                                <View>
-                                                    {errors.email && touched.email ? (
-                                                        <Text style={loginStyle.error}>{errors.email}</Text>
-                                                    ) : null}
-                                                </View>
-                                                <View>
-                                                    {errors.password && touched.password ? (
-
-                                                        errors.password && touched.password && this.context.isConnected ? (
-                                                            <Text style={loginStyle.error}>{errors.password}</Text>
-                                                        ) : <Text style={loginStyle.error}>{errors.password && errors.password.replace("Password", "Offline PIN")}</Text>
-
-                                                    ) : null}
-                                                </View>
-                                                {!this.context.isConnected ? null : (
-                                                    <TouchableOpacity
-                                                        style={loginStyle.forgotPasswordContainer}
-                                                        onPress={this.handlePress}
-                                                    >
-                                                        <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
-                                                    </TouchableOpacity>
-                                                )}
-                                                <Button
-                                                    block={true}
-                                                    disabled={!isValid ? true : false}
-                                                    onPress={handleSubmit}
-                                                    style={[
-                                                        loginStyle.submitButton,
-                                                        {
-                                                            backgroundColor: !isValid ? '#ccc' : '#813588',
-                                                        },
-                                                    ]}
+                                            </View>
+                                            <View>
+                                                {errors.email && touched.email ? (
+                                                    <Text style={loginStyle.error}>{errors.email}</Text>
+                                                ) : null}
+                                            </View>
+                                            <View>
+                                                {errors.password && touched.password ? (
+                                                    errors.password && touched.password && this.context.isConnected ? (
+                                                        <Text style={loginStyle.error}>{errors.password}</Text>
+                                                    ) : (
+                                                        <Text style={loginStyle.error}>
+                                                            {errors.password &&
+                                                                errors.password.replace('Password', 'Offline PIN')}
+                                                        </Text>
+                                                    )
+                                                ) : null}
+                                            </View>
+                                            {!this.context.isConnected ? null : (
+                                                <TouchableOpacity
+                                                    style={loginStyle.forgotPasswordContainer}
+                                                    onPress={this.handlePress}
                                                 >
-                                                    <Text uppercase={false} style={loginStyle.loginButtonText}>
-                                                        Login
+                                                    <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                            <Button
+                                                block={true}
+                                                disabled={!isValid && this.state.showLoadingSpinner ? true : false}
+                                                onPress={handleSubmit}
+                                                style={[
+                                                    loginStyle.submitButton,
+                                                    {
+                                                        backgroundColor: !isValid ? '#ccc' : '#813588',
+                                                    },
+                                                ]}
+                                            >
+                                                <Text uppercase={false} style={loginStyle.loginButtonText}>
+                                                    Login
                                                 </Text>
-                                                </Button>
-                                                {this.state.showLoadingSpinner && (
-                                                    <ActivityIndicator animating size="large" />
-                                                )}
-                                                {!this.context.isConnected ? null : (
-                                                    <View style={loginStyle.orTextContainer}>
-                                                        <Text style={loginStyle.forgotPasswordText}>- Or -</Text>
-                                                    </View>
-                                                )}
-                                            </Form>
-                                        )}
+                                            </Button>
+                                            {this.state.showLoadingSpinner && (
+                                                <ActivityIndicator animating size="large" />
+                                            )}
+                                            {!this.context.isConnected ? null : (
+                                                <View style={loginStyle.orTextContainer}>
+                                                    <Text style={loginStyle.forgotPasswordText}>- Or -</Text>
+                                                </View>
+                                            )}
+                                        </Form>
+                                    )}
                                 </Formik>
                                 {!this.context.isConnected ? null : (
                                     <View>
                                         <Button
                                             block={true}
+                                            disabled={this.state.showLoadingSpinner ? true : false}
                                             onPress={() => {
                                                 this.handleSSO();
                                             }}
