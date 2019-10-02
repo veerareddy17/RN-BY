@@ -16,7 +16,7 @@ export class AlertError extends React.Component {
     };
 
     public static reLoginAlert = (status: boolean, nav: NavigationScreenProp<any, any>) => {
-        let message = status ? 'You came Online' : 'You went Offline';
+        let message = status ? 'You are Online' : 'You are Offline';
         Alert.alert('Error', 'Please Re-Login, ' + message, [{ text: 'OK', onPress: () => nav.navigate('Auth') }], {
             cancelable: false,
         });
