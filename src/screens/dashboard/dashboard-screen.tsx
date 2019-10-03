@@ -206,7 +206,7 @@ class Dashboard extends React.Component<Props, State> {
                         </Right>
                     </Header>
                 )}
-                <ScrollView>
+                <ScrollView contentContainerStyle={{ flexGrow: 1}}>
                     <Content style={styles.contentBg}>
                         <View style={styles.containerStyle}>
                             <View style={styles.sliderContainerStyle}>
