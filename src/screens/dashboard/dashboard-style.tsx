@@ -106,6 +106,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginBottom: 5,
         marginTop: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 6,
     },
     leadCardItemText: {
         color: '#555',
@@ -116,13 +119,13 @@ const styles = StyleSheet.create({
     },
     leadCardItemNumber: {
         color: '#555',
-        paddingLeft: 0,
+        paddingRight: 16,
         fontSize: 24,
         fontFamily: 'system font',
     },
     leadCardItemIcon: {
         color: '#813588',
-        marginRight: 0,
+        paddingRight: 0,
     },
     noBorderBottom: {
         borderBottomWidth: 0,

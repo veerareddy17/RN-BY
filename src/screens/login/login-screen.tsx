@@ -188,6 +188,7 @@ class Login extends React.Component<Props, State> {
     };
 
     submitForgotPassword = async () => {
+        Keyboard.dismiss();
         await this.props.forgotPassword(this.state.email);
         this.setState({ email: '' });
     };

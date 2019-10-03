@@ -71,7 +71,6 @@ class Dashboard extends React.Component<Props, State> {
             campaignList: [],
         };
     }
-
     componentDidMount = async () => {
         try {
             this.focusListener = this.props.navigation.addListener('didFocus', async () => {
@@ -250,9 +249,7 @@ class Dashboard extends React.Component<Props, State> {
                             ) : (
                                 <CardItem style={styles.leadCardItem}>
                                     <Item>
-                                        <Button
-                                            iconRight
-                                            transparent
+                                        <TouchableOpacity
                                             onPress={() => {
                                                 this.props.leadReportState.leadReport.today > 0 &&
                                                     this.getLeads('today');
@@ -268,12 +265,10 @@ class Dashboard extends React.Component<Props, State> {
                                             {this.props.leadReportState.leadReport.today > 0 && (
                                                 <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                             )}
-                                        </Button>
+                                        </TouchableOpacity>
                                     </Item>
                                     <Item>
-                                        <Button
-                                            iconRight
-                                            transparent
+                                        <TouchableOpacity
                                             onPress={() => {
                                                 this.props.leadReportState.leadReport.week > 0 && this.getLeads('week');
                                             }}
@@ -288,12 +283,10 @@ class Dashboard extends React.Component<Props, State> {
                                             {this.props.leadReportState.leadReport.week > 0 && (
                                                 <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                             )}
-                                        </Button>
+                                        </TouchableOpacity>
                                     </Item>
                                     <Item style={styles.noBorderBottom}>
-                                        <Button
-                                            iconRight
-                                            transparent
+                                        <TouchableOpacity
                                             onPress={() => {
                                                 this.props.leadReportState.leadReport.month > 0 &&
                                                     this.getLeads('month');
@@ -309,7 +302,7 @@ class Dashboard extends React.Component<Props, State> {
                                             {this.props.leadReportState.leadReport.month > 0 && (
                                                 <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                             )}
-                                        </Button>
+                                        </TouchableOpacity>
                                     </Item>
                                 </CardItem>
                             )}
