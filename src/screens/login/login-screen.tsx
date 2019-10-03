@@ -188,6 +188,7 @@ class Login extends React.Component<Props, State> {
     };
 
     submitForgotPassword = async () => {
+        Keyboard.dismiss();
         await this.props.forgotPassword(this.state.email);
         this.setState({ email: '' });
     };
@@ -203,6 +204,7 @@ class Login extends React.Component<Props, State> {
     };
 
     handleSubmit = async (values: LoginRequestData) => {
+        Keyboard.dismiss();
         if (values.email === '' || values.password === '' || values.password.length < 5) {
             return;
         }
