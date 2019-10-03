@@ -346,7 +346,14 @@ class Login extends React.Component<Props, State> {
                                             </View>
                                             <View>
                                                 {errors.password && touched.password ? (
-                                                    <Text style={loginStyle.error}>{errors.password}</Text>
+                                                    errors.password && touched.password && this.context.isConnected ? (
+                                                        <Text style={loginStyle.error}>{errors.password}</Text>
+                                                    ) : (
+                                                        <Text style={loginStyle.error}>
+                                                            {errors.password &&
+                                                                errors.password.replace('Password', 'Offline PIN')}
+                                                        </Text>
+                                                    )
                                                 ) : null}
                                             </View>
                                             {!this.context.isConnected ? null : (
@@ -359,7 +366,7 @@ class Login extends React.Component<Props, State> {
                                             )}
                                             <Button
                                                 block={true}
-                                                disabled={!isValid ? true : false}
+                                                disabled={!isValid && this.state.showLoadingSpinner ? true : false}
                                                 onPress={handleSubmit}
                                                 style={[
                                                     loginStyle.submitButton,
@@ -387,6 +394,7 @@ class Login extends React.Component<Props, State> {
                                     <View>
                                         <Button
                                             block={true}
+                                            disabled={this.state.showLoadingSpinner ? true : false}
                                             onPress={() => {
                                                 this.handleSSO();
                                             }}
@@ -395,7 +403,7 @@ class Login extends React.Component<Props, State> {
                                             <Image
                                                 resizeMode={'contain'}
                                                 source={images.google}
-                                                style={{ width: 40 }}
+                                                style={{ width: 40, height: 40 }}
                                             />
                                             <Text uppercase={false} style={loginStyle.loginWithGoogleButtonText}>
                                                 Sign in with Google

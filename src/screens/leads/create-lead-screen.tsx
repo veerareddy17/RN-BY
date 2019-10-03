@@ -107,6 +107,7 @@ export interface CreateLeadState {
     sync_status: boolean;
     siblings: Array<SiblingRequest>;
     showLoadingSpinner: boolean;
+    alternate_phone: string;
 }
 
 class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
@@ -141,6 +142,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             sync_status: false,
             siblings: Array<SiblingRequest>(),
             showLoadingSpinner: false,
+            alternate_phone: '',
         };
     }
 
@@ -154,15 +156,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 this.setState({ campaignName: selectedCampaign.name });
                 this.formik.resetForm();
                 this.props.otpInitialState();
-                // The screen is focused call any action
-                // if (this.context.isConnected && this.props.userState.user.token === '') {
-                //     this.logout();
-                //     return;
-                // }
-                // if (!this.context.isConnected && !this.props.userState.user.isOfflineLoggedIn) {
-                //     this.logout();
-                //     return;
-                // }
                 this.checkUserLogIn();
             });
         } catch (error) {
@@ -180,11 +173,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             this.logout(true);
         }
     };
-
-    // logout = async () => {
-    //     await this.props.logout();
-    //     AlertError.reLoginAlert(this.context.isConnected, this.props.navigation);
-    // };
 
     logout = async (isAutoLogOff: boolean) => {
         await this.props.logout();
@@ -280,6 +268,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             pin_code: values.pincode,
             siblings: values.siblings,
             comments: values.comments,
+            alternate_phone: values.alternateMobileNumber,
         });
         try {
             this.setState({ showLoadingSpinner: true });
@@ -306,7 +295,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
 
             let req = this.state;
             this.setState({ leadRequest: req });
-
             //If app offline then no OTP verification
 
             if (!this.context.isConnected) {
@@ -519,6 +507,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     placeholder={'Mobile Number*'}
                                                     keyboardType="phone-pad"
                                                     value={values.phone}
+                                                    maxLength={10}
                                                     onChangeText={handleChange('phone')}
                                                     onBlur={() => setFieldTouched('phone')}
                                                 />
@@ -1322,6 +1311,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             placeholder={'Pin Code*'}
                                                             value={values.pincode}
                                                             keyboardType="phone-pad"
+                                                            maxLength={6}
                                                             onChangeText={handleChange('pincode')}
                                                             onBlur={() => setFieldTouched('pincode')}
                                                         />
@@ -1391,11 +1381,13 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                             <FloatLabelTextInput
                                                                 placeholder={'OTP'}
                                                                 keyboardType="numeric"
-                                                                    editable={!this.state.proceedWithoutOtp}
+                                                                editable={!this.state.proceedWithoutOtp}
                                                                 value={values.otp}
                                                                 onChangeText={handleChange('otp')}
                                                                 onBlur={() => {
-                                                                        { values.otp && this.onPressSubmitOTP(values.otp) }
+                                                                    {
+                                                                        values.otp && this.onPressSubmitOTP(values.otp);
+                                                                    }
                                                                     setFieldTouched('otp');
                                                                 }}
                                                                 onSubmitEditing={() =>
