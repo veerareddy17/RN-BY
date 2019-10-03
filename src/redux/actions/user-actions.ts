@@ -4,7 +4,7 @@ import { errorCallAction, errorCallResetAction, serverErrorCallAction } from './
 import { Location } from './../../models/request/location-request';
 
 import { Dispatch } from 'redux';
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './action-types';
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT, CLEAR_CAMPAIGN_SELECTED } from './action-types';
 import { AuthenticationService } from '../../services/authentication-service';
 import { AuthenticationRequest } from '../../models/request/authentication-request';
 import { AuthenticationResponse } from '../../models/response/authentication-response';
@@ -33,6 +33,12 @@ export const failureAction = (error: ErrorResponse[]) => {
 export const logoutAction = () => {
     return {
         type: LOGOUT,
+    };
+};
+
+export const clearCampaignSelected = () => {
+    return {
+        type: CLEAR_CAMPAIGN_SELECTED,
     };
 };
 
@@ -92,6 +98,7 @@ export const logout = (): ((dispatch: Dispatch, getState: any) => Promise<void>)
                 dispatch(leadResetAction());
             }
             dispatch(logoutAction());
+            dispatch(clearCampaignSelected());
         } catch (error) {
             console.log('Logout action', error);
         }
