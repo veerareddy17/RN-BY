@@ -303,6 +303,16 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                 return;
             }
             await this.props.createLead(this.state.leadRequest);
+            if (this.props.errorState.showAlertError) {
+                this.setState({ showLoadingSpinner: false });
+                AlertError.alertErr(this.props.errorState.error);
+                return;
+            }
+            if (this.props.errorState.showToastError) {
+                this.setState({ showLoadingSpinner: false });
+                ToastError.toastErr(this.props.errorState.error);
+                return;
+            }
             if (!this.props.leadState.error) {
                 this.setState({ showLoadingSpinner: false });
                 this.props.navigation.navigate('LeadList');

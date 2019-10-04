@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { View, Text, Card, CardItem, Icon, Button, ListItem, Grid, Col, Row } from 'native-base';
 import images from '../../assets';
-import { Image } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 
 const Lead = ({ lead }) => {
     return (
@@ -19,54 +19,71 @@ const Lead = ({ lead }) => {
                     borderRadius: 5,
                 }}
             >
-                <CardItem header style={{ paddingBottom: 0, paddingTop: 12, paddingLeft: 12, paddingRight: 12 }}>
-                    <Text style={{ fontWeight: '700', fontSize: 16, color: '#555', fontFamily: 'system font' }}>
-                        {lead.name}
-                    </Text>
-                    <Button
-                        rounded
-                        small
-                        style={{
-                            backgroundColor: '#813588',
-                            marginLeft: 6,
-                            paddingTop: 0,
-                            paddingBottom: 0,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            height: 25,
-                        }}
-                    >
-                        <Text style={{ textTransform: 'capitalize', fontSize: 12, fontFamily: 'system font' }}>
-                            {lead.classes.name}
+                <CardItem
+                    header
+                    style={{
+                        paddingBottom: 0,
+                        paddingTop: 12,
+                        paddingLeft: 12,
+                        paddingRight: 12,
+                        flexDirection: 'row',
+                    }}
+                >
+                    <View style={{ flexDirection: 'row', flex: 1 }}>
+                        <Text
+                            numberOfLines={1}
+                            style={{
+                                fontWeight: '700',
+                                fontSize: 16,
+                                color: '#555',
+                                fontFamily: 'system font',
+                            }}
+                        >
+                            {lead.name}
                         </Text>
-                    </Button>
-                    {lead.is_otp_verified ? (
-                        <View
+                        <Button
+                            rounded
+                            small
                             style={{
-                                backgroundColor: '#48dd43',
-                                marginLeft: 'auto',
-                                marginTop: -25,
-                                marginRight: -12,
-                                paddingHorizontal: 8,
-                                paddingVertical: 4,
-                                borderTopRightRadius: 3,
+                                backgroundColor: '#813588',
+                                marginLeft: 3,
+                                marginRight: 6,
+                                paddingTop: 0,
+                                paddingBottom: 0,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: 25,
                             }}
                         >
-                            <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'system font' }}>Verified</Text>
-                        </View>
-                    ) : (
-                        <View
-                            style={{
-                                backgroundColor: '#f1b234',
-                                marginLeft: 'auto',
-                                marginTop: -25,
-                                marginRight: -12,
-                                paddingHorizontal: 8,
-                                paddingVertical: 4,
-                                borderTopRightRadius: 3,
-                            }}
-                        >
-                            <Text style={{ color: '#fff', fontSize: 12, fontFamily: 'system font' }}>Not Verified</Text>
+                            <Text
+                                style={{
+                                    textTransform: 'capitalize',
+                                    fontSize: 12,
+                                    fontFamily: 'system font',
+                                }}
+                            >
+                                {lead.classes.name}
+                            </Text>
+                        </Button>
+                    </View>
+                    {lead.is_otp_verified ? null : (
+                        <View style={{ flex: 1 }}>
+                            <TouchableOpacity
+                                style={{
+                                    marginLeft: 'auto',
+                                    marginTop: -23,
+                                    marginRight: -12,
+                                    paddingHorizontal: 8,
+                                    paddingVertical: 4,
+                                    borderTopRightRadius: 3,
+                                    borderWidth: 1,
+                                    borderColor: '#813588',
+                                }}
+                            >
+                                <Text style={{ color: '#813588', fontSize: 12, fontFamily: 'system font' }}>
+                                    Verify Now
+                                </Text>
+                            </TouchableOpacity>
                         </View>
                     )}
                 </CardItem>
