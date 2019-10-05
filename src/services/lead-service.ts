@@ -15,17 +15,21 @@ export class LeadService {
     //Paginated method
     public static fetchLeads = async (
         pgNo: number,
+        isOtpVerified: boolean,
     ): Promise<ResponseViewModel<PaginatedResponseModel<LeadResponse>>> => {
-        const response = await HttpBaseService.get<LeadResponse>(APIConstants.USER_LEADS_URL + '?page=' + pgNo);
+        const response = await HttpBaseService.get<LeadResponse>(
+            APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&otp_verified=' + isOtpVerified,
+        );
         return response;
     };
 
     public static fetchFilteredLeads = async (
         pgNo: number,
         flag: string,
+        isOtpVerified: boolean,
     ): Promise<ResponseViewModel<PaginatedResponseModel<LeadFilterResponse>>> => {
         const response = await HttpBaseService.get<LeadFilterResponse>(
-            APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&flag=' + flag,
+            APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&flag=' + flag + '&otp_verified=' + isOtpVerified,
         );
         return response;
     };
