@@ -8,22 +8,26 @@ export const PaginatedResponseState = {
 };
 
 export const initialState = {
-    paginatedLeadList: PaginatedResponseState,
-    leadList: [],
+    verifiedPaginatedLeadList: PaginatedResponseState,
+    verifiedLeadList: [],
+    nonVerifiedPaginatedLeadList: PaginatedResponseState,
+    nonVerifiedLeadList: [],
     offlineLeadList: [],
-    filteredPaginatedLeadList: PaginatedResponseState,
-    filteredLeadList: [],
+    verifiedFilteredPaginatedLeadList: PaginatedResponseState,
+    nonVerifiedFilteredLeadList: [],
     status: '',
     isLoading: false,
     flag: '',
 };
 
 export const resetLeadState = {
-    paginatedLeadList: PaginatedResponseState,
-    leadList: [],
+    verifiedPaginatedLeadList: PaginatedResponseState,
+    verifiedLeadList: [],
+    nonVerifiedPaginatedLeadList: PaginatedResponseState,
+    nonVerifiedLeadList: [],
     offlineLeadList: [],
-    filteredPaginatedLeadList: PaginatedResponseState,
-    filteredLeadList: [],
+    verifiedFilteredPaginatedLeadList: PaginatedResponseState,
+    nonVerifiedFilteredLeadList: [],
     isLoading: false,
     flag: '',
 };

@@ -33,14 +33,15 @@ export interface LeadListProps {
     leadState: any;
     userState: any;
     leadReportState: any;
-    fetchLeads(pageNumber: number): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchLeads(pageNumber: number, isOtpVerified: boolean): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     resetLead(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     fetchLeadReport(): (dispatch: Dispatch, getState: any) => Promise<void>;
 }
 
 export interface LeadListState {
-    pageNumber: number;
+    verifiedPageNumber: number;
+    nonVerifiedPageNumber: number;
     loadingMore: boolean;
     flag: string;
 }
@@ -51,7 +52,8 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     constructor(props: LeadListProps) {
         super(props);
         this.state = {
-            pageNumber: 1,
+            verifiedPageNumber: 1,
+            nonVerifiedPageNumber: 1,
             loadingMore: false,
             flag: '',
         };
@@ -61,9 +63,11 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             this.checkUserLogIn();
             await this.props.fetchLeadReport();
-            await this.fetchLeadsList(this.state.pageNumber, '');
+            await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, true);
+            await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, false);
             this.setState({
-                pageNumber: this.props.leadState.paginatedLeadList.current_page,
+                verifiedPageNumber: this.props.leadState.verifiedPaginatedLeadList.current_page,
+                nonVerifiedPageNumber: this.props.leadState.nonVerifiedPaginatedLeadList.current_page,
                 loadingMore: false,
             });
         });
@@ -89,8 +93,15 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         if (this.focusLeadListener) this.focusLeadListener.remove();
     }
 
-    fetchLeadsList = async (pgNo: number, flag: string) => {
-        await this.props.fetchLeads(pgNo);
+    fetchVerifiedLeadsList = async (pgNo: number, isOtpVerified: boolean) => {
+        await this.props.fetchLeads(pgNo, isOtpVerified);
+        this.setState({
+            loadingMore: false,
+        });
+    };
+
+    fetchNonVerifiedLeadsList = async (pgNo: number, isOtpVerified: boolean) => {
+        await this.props.fetchLeads(pgNo, isOtpVerified);
         this.setState({
             loadingMore: false,
         });
@@ -111,24 +122,51 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         );
     };
 
-    fetchMore = () => {
-        if (this.props.leadState.paginatedLeadList.next_page_url == null) {
+    fetchVerifiedMore = () => {
+        if (this.props.leadState.verifiedPaginatedLeadList.next_page_url == null) {
             this.setState({ loadingMore: false });
             return;
         }
         this.setState(
             {
-                pageNumber: this.state.pageNumber + 1,
+                verifiedPageNumber: this.state.verifiedPageNumber + 1,
                 loadingMore: true,
             },
             async () => {
-                await this.fetchLeadsList(this.state.pageNumber, this.state.flag);
+                await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, true);
             },
         );
     };
 
-    renderFooter = () => {
-        if (!this.state.loadingMore || this.props.leadState.paginatedLeadList.next_page_url == null) {
+    renderVerifiedFooter = () => {
+        if (!this.state.loadingMore || this.props.leadState.verifiedPaginatedLeadList.next_page_url == null) {
+            return null;
+        }
+        return (
+            <View style={{ marginBottom: 20 }}>
+                <ActivityIndicator animating size="large" />
+            </View>
+        );
+    };
+
+    fetchNonVerifiedMore = () => {
+        if (this.props.leadState.nonVerifiedPaginatedLeadList.next_page_url == null) {
+            this.setState({ loadingMore: false });
+            return;
+        }
+        this.setState(
+            {
+                nonVerifiedPageNumber: this.state.nonVerifiedPageNumber + 1,
+                loadingMore: true,
+            },
+            async () => {
+                await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, false);
+            },
+        );
+    };
+
+    renderNonVerifiedFooter = () => {
+        if (!this.state.loadingMore || this.props.leadState.nonVerifiedPaginatedLeadList.next_page_url == null) {
             return null;
         }
         return (
@@ -174,6 +212,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             </ListItem>
         );
     }
+
     render() {
         const leadCount = !this.context.isConnected
             ? this.props.leadState.offlineLeadList.length
