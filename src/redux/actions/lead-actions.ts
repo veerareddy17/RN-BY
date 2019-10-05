@@ -25,7 +25,10 @@ import StorageService from '../../database/storage-service';
 import { StorageConstants } from '../../helpers/storage-constants';
 
 // GET method to fetch all captured leads
-export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+export const fetchAllLeadsApi = (
+    pageNumber: number,
+    isOtpVerified: boolean,
+): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState) => {
         try {
             let isConnected = getState().connectionStateReducer.isConnected;
@@ -39,7 +42,7 @@ export const fetchAllLeadsApi = (pageNumber: number): ((dispatch: Dispatch, getS
             }
             let reducerData = getState().leadReducer;
             if (reducerData.paginatedLeadList.current_page !== pageNumber) {
-                const response = await LeadService.fetchLeads(pageNumber);
+                const response = await LeadService.fetchLeads(pageNumber, isOtpVerified);
                 let leadsResponse = new LeadAllResponse();
                 if (response && response.data) {
                     leadsResponse.paginatedLeadList = response.data;
