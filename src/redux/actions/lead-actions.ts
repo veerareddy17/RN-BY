@@ -14,6 +14,12 @@ import {
     leadSuccessAction,
     fetchFilteredLeadsAction,
     leadResetAction,
+    createVerifiedLeadAction,
+    createNonVerifiedLeadAction,
+    fetchVerifiedLeadsAction,
+    fetchNonVerifiedLeadsAction,
+    fetchVerifiedFilteredLeadsAction,
+    fetchNonVerifiedFilteredLeadsAction,
 } from './lead-action-creator';
 import { LeadResponse } from '../../models/response';
 import { SyncLeadRequest } from '../../models/request/sync-leads-request';
@@ -41,12 +47,16 @@ export const fetchAllLeadsApi = (
                 dispatch(leadStartAction());
             }
             let reducerData = getState().leadReducer;
-            if (reducerData.paginatedLeadList.current_page !== pageNumber) {
+            let paginatedList = isOtpVerified
+                ? reducerData.verifiedPaginatedLeadList
+                : reducerData.nonVerifiedPaginatedLeadList;
+            if (paginatedList.current_page !== pageNumber) {
                 const response = await LeadService.fetchLeads(pageNumber, isOtpVerified);
                 let leadsResponse = new LeadAllResponse();
                 if (response && response.data) {
                     leadsResponse.paginatedLeadList = response.data;
-                    dispatch(fetchLeadsAction(leadsResponse));
+                    if (isOtpVerified) dispatch(fetchVerifiedLeadsAction(leadsResponse));
+                    else dispatch(fetchNonVerifiedLeadsAction(leadsResponse));
                 } else {
                     dispatch(leadFailureAction(response.errors));
                     dispatch(serverErrorCallAction(response.errors));
@@ -75,7 +85,8 @@ export const createLeadApi = (leadRequest: LeadRequest): ((dispatch: Dispatch, g
             dispatch(leadStartAction());
             let response = await LeadService.createLead(leadRequest);
             if (response && response.data) {
-                dispatch(createLeadAction(response.data));
+                if (response.data.is_otp_verified) dispatch(createVerifiedLeadAction(response.data));
+                else dispatch(createNonVerifiedLeadAction(response.data));
                 await StorageService.removeKey(StorageConstants.USER_OTP);
             } else {
                 dispatch(errorCallAction(response.errors));
@@ -188,6 +199,7 @@ export const leftpad = (val, resultLength = 2, leftpadChar = '0'): string => {
 export const fetchFilteredLeads = (
     pageNumber: number,
     flag: string,
+    isOtpVerified: boolean,
 ): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
     return async (dispatch: Dispatch, getState) => {
         try {
@@ -203,16 +215,22 @@ export const fetchFilteredLeads = (
             let reducerData = getState().leadReducer;
             // IF filter type is changed
             if (reducerData.flag !== flag) {
-                reducerData.filteredLeadList = [];
-                reducerData.filteredPaginatedLeadList = PaginatedResponseState;
+                reducerData.verifiedFilteredLeadList = [];
+                reducerData.verifiedFilteredPaginatedLeadList = PaginatedResponseState;
+                reducerData.nonVerifiedFilteredLeadList = [];
+                reducerData.nonVerifiedFilteredPaginatedLeadList = PaginatedResponseState;
             }
-            if (reducerData.filteredPaginatedLeadList.current_page !== pageNumber) {
-                const response = await LeadService.fetchFilteredLeads(pageNumber, flag);
+            let filteredPaginatedLeadList = isOtpVerified
+                ? reducerData.verifiedFilteredPaginatedLeadList
+                : reducerData.nonVerifiedFilteredPaginatedLeadList;
+            if (filteredPaginatedLeadList.current_page !== pageNumber) {
+                const response = await LeadService.fetchFilteredLeads(pageNumber, flag, isOtpVerified);
                 let leadsFilterResponse = new LeadFilterResponse();
                 if (response && response.data) {
                     leadsFilterResponse.filteredPaginatedLeadList = response.data;
                     leadsFilterResponse.flag = flag;
-                    dispatch(fetchFilteredLeadsAction(leadsFilterResponse));
+                    if (isOtpVerified) dispatch(fetchVerifiedFilteredLeadsAction(leadsFilterResponse));
+                    else dispatch(fetchNonVerifiedFilteredLeadsAction(leadsFilterResponse));
                 } else {
                     dispatch(leadFailureAction(response.errors));
                     dispatch(serverErrorCallAction(response.errors));

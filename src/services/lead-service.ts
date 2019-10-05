@@ -20,6 +20,8 @@ export class LeadService {
         const response = await HttpBaseService.get<LeadResponse>(
             APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&otp_verified=' + isOtpVerified,
         );
+        console.log('api url', APIConstants.USER_LEADS_URL + '?page=' + pgNo + '&otp_verified=' + isOtpVerified);
+        console.log('res', response);
         return response;
     };
 

@@ -2,8 +2,11 @@ import * as React from 'react';
 import { View, Text, Card, CardItem, Icon, Button, ListItem, Grid, Col, Row } from 'native-base';
 import images from '../../assets';
 import { Image, TouchableOpacity } from 'react-native';
+import { NetworkContext } from '../../provider/network-provider';
+import { useContext } from 'react';
 
 const Lead = ({ lead }) => {
+    const context = useContext(NetworkContext);
     return (
         <View style={{ paddingTop: 0 }}>
             <Card
@@ -66,7 +69,7 @@ const Lead = ({ lead }) => {
                             </Text>
                         </Button>
                     </View>
-                    {lead.is_otp_verified ? null : (
+                    {context.isConnected && !lead.is_otp_verified && (
                         <View style={{ flex: 1 }}>
                             <TouchableOpacity
                                 style={{
