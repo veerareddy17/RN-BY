@@ -10,21 +10,41 @@ import {
     DELETE_SYNCED_LEADS,
     FETCH_FILTERED_LEADS,
     LEAD_RESET_ACTION,
+    ADD_VERIFIED_LEAD,
+    FETCH_VERIFIED_LEAD,
+    ADD_NON_VERIFIED_LEAD,
+    FETCH_NON_VERIFIED_LEAD,
+    FETCH_VERIFIED_FILTERED_LEADS,
+    FETCH_NON_VERIFIED_FILTERED_LEADS,
 } from './action-types';
 import { LeadFilterResponse } from '../../models/response/lead-all-response';
 import { LeadAllResponse } from '../../models/response/lead-filter-response';
 
 // The action creators
-export const createLeadAction = lead => {
+export const createVerifiedLeadAction = lead => {
     return {
-        type: ADD_LEAD,
+        type: ADD_VERIFIED_LEAD,
         payload: lead,
     };
 };
 
-export const fetchLeadsAction = (leads: LeadAllResponse) => {
+export const fetchVerifiedLeadsAction = (leads: LeadAllResponse) => {
     return {
-        type: FETCH_LEAD,
+        type: FETCH_VERIFIED_LEAD,
+        payload: leads,
+    };
+};
+
+export const createNonVerifiedLeadAction = lead => {
+    return {
+        type: ADD_NON_VERIFIED_LEAD,
+        payload: lead,
+    };
+};
+
+export const fetchNonVerifiedLeadsAction = (leads: LeadAllResponse) => {
+    return {
+        type: FETCH_NON_VERIFIED_LEAD,
         payload: leads,
     };
 };
@@ -75,9 +95,16 @@ export const deleteOfflineLeadsAction = leads => {
     };
 };
 
-export const fetchFilteredLeadsAction = (leads: LeadFilterResponse) => {
+export const fetchVerifiedFilteredLeadsAction = (leads: LeadFilterResponse) => {
     return {
-        type: FETCH_FILTERED_LEADS,
+        type: FETCH_VERIFIED_FILTERED_LEADS,
+        payload: leads,
+    };
+};
+
+export const fetchNonVerifiedFilteredLeadsAction = (leads: LeadFilterResponse) => {
+    return {
+        type: FETCH_NON_VERIFIED_FILTERED_LEADS,
         payload: leads,
     };
 };

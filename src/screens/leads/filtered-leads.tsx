@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, ListView, Platform, ActivityIndicator, Dimensions } from 'react-native';
+import { FlatList, ListView, Platform, ActivityIndicator, Dimensions, Image } from 'react-native';
 import { connect } from 'react-redux';
 import {
     View,
@@ -15,6 +15,8 @@ import {
     Icon,
     Card,
     Text,
+    Tabs,
+    Tab,
 } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
@@ -25,19 +27,26 @@ import { NavigationScreenProp } from 'react-navigation';
 import Loader from '../../components/content-loader/content-loader';
 import { logout } from '../../redux/actions/user-actions';
 import { AlertError } from '../error/alert-error';
+import images from '../../assets';
 export interface FLeadListProps {
     navigation: NavigationScreenProp<any>;
     leadState: any;
     userState: any;
     leadReportState: any;
-    fetchFilteredLeads(pageNumber: number, flag: string): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    fetchFilteredLeads(
+        pageNumber: number,
+        flag: string,
+        isOtpVerified: boolean,
+    ): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface FLeadListState {
-    pageNumber: number;
+    verifiedPageNumber: number;
+    nonVerifiedPageNumber: number;
     loadingMore: boolean;
     flag: string;
+    showSpinner: boolean;
 }
 
 class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
@@ -49,23 +58,28 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
     constructor(props: FLeadListProps) {
         super(props);
         this.state = {
-            pageNumber: 1,
+            verifiedPageNumber: 1,
+            nonVerifiedPageNumber: 1,
             loadingMore: false,
             flag: '',
+            showSpinner: false,
         };
     }
 
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             let selectedFlag = this.props.navigation.getParam('flag', '');
-
+            this.setState({ showSpinner: true });
             this.checkUserLogIn();
-            await this.fetchLeadsList(this.state.pageNumber, selectedFlag);
+            await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, selectedFlag, true);
+            await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, selectedFlag, false);
             this.setState({
-                pageNumber: this.props.leadState.filteredPaginatedLeadList.current_page,
+                verifiedPageNumber: this.props.leadState.verifiedFilteredPaginatedLeadList.current_page,
+                nonVerifiedPageNumber: this.props.leadState.nonVerifiedFilteredPaginatedLeadList.current_page,
                 flag: selectedFlag,
                 loadingMore: false,
             });
+            this.setState({ showSpinner: false });
         });
     }
 
@@ -89,9 +103,9 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         if (this.focusLeadListener) this.focusLeadListener.remove();
     }
 
-    fetchLeadsList = async (pgNo: number, flag: string) => {
+    fetchVerifiedLeadsList = async (pgNo: number, flag: string, isOtpVerified: boolean) => {
         try {
-            await this.props.fetchFilteredLeads(pgNo, flag);
+            await this.props.fetchFilteredLeads(pgNo, flag, isOtpVerified);
             this.setState({
                 loadingMore: false,
             });
@@ -100,19 +114,49 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         }
     };
 
-    fetchMore = () => {
-        if (this.props.leadState.filteredPaginatedLeadList.next_page_url == null) {
+    fetchNonVerifiedLeadsList = async (pgNo: number, flag: string, isOtpVerified: boolean) => {
+        try {
+            await this.props.fetchFilteredLeads(pgNo, flag, isOtpVerified);
+            this.setState({
+                loadingMore: false,
+            });
+        } catch (error) {
+            /* show server error here*/
+        }
+    };
+
+    fetchVerifiedMore = () => {
+        if (this.props.leadState.verifiedFilteredPaginatedLeadList.next_page_url == null) {
             this.setState({ loadingMore: false });
             return;
         }
         this.setState(
             {
-                pageNumber: this.props.leadState.flag !== this.state.flag ? 1 : this.state.pageNumber + 1,
+                verifiedPageNumber:
+                    this.props.leadState.flag !== this.state.flag ? 1 : this.state.verifiedPageNumber + 1,
                 flag: this.state.flag,
                 loadingMore: true,
             },
             async () => {
-                await this.fetchLeadsList(this.state.pageNumber, this.state.flag);
+                await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, this.state.flag, true);
+            },
+        );
+    };
+
+    fetchNonVerifiedMore = () => {
+        if (this.props.leadState.nonVerifiedFilteredPaginatedLeadList.next_page_url == null) {
+            this.setState({ loadingMore: false });
+            return;
+        }
+        this.setState(
+            {
+                nonVerifiedPageNumber:
+                    this.props.leadState.flag !== this.state.flag ? 1 : this.state.nonVerifiedPageNumber + 1,
+                flag: this.state.flag,
+                loadingMore: true,
+            },
+            async () => {
+                await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, this.state.flag, false);
             },
         );
     };
@@ -147,46 +191,83 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
             </ListItem>
         );
     }
+
+    renderEmptyView = () => {
+        const SCREEN_HEIGHT = Dimensions.get('window').height - 180;
+        return (
+            <View
+                style={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: SCREEN_HEIGHT, //responsible for 100% height
+                    backgroundColor: '#f6f6f6',
+                }}
+            >
+                <Image resizeMode={'contain'} source={images.noData} style={{ width: 240 }} />
+                <Text style={{ fontFamily: 'system font', color: '#555', marginTop: 10 }}>There are no leads</Text>
+            </View>
+        );
+    };
+
     render() {
         const leadCount = !this.context.isConnected
             ? this.props.leadState.offlineLeadList.length
             : this.props.leadReportState.leadReport[this.state.flag];
         return (
             <Container>
-                <Content style={{ flex: 1, backgroundColor: '#eee', padding: 10 }} contentContainerStyle={{ flex: 1 }}>
-                    <View style={{ paddingBottom: 5 }}>
-                        {leadCount > 0 && (
-                            <Text style={{ fontSize: 15, color: '#555' }}>Total Leads : {leadCount}</Text>
-                        )}
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        {this.context.isConnected ? (
-                            this.props.leadState.isLoading ? (
-                                <View>
-                                    <Loader />
+                <Content style={{ flex: 1, backgroundColor: '#eee' }} contentContainerStyle={{ flex: 1 }}>
+                    {this.state.showSpinner ? (
+                        <View style={{ padding: 10 }}>
+                            <Loader />
+                        </View>
+                    ) : (
+                        <Tabs tabBarUnderlineStyle={{ backgroundColor: '#813588' }}>
+                            <Tab
+                                textStyle={{ color: '#555' }}
+                                activeTextStyle={{ color: '#813588', fontWeight: '700' }}
+                                heading={`Verified (${this.props.leadState.verifiedFilteredPaginatedLeadList.total})`}
+                                tabStyle={{ backgroundColor: '#f0ecf0' }}
+                                activeTabStyle={{ backgroundColor: '#f0ecf0' }}
+                            >
+                                <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
+                                    {this.context.isConnected && (
+                                        <View style={{ flex: 1 }}>
+                                            <FlatList
+                                                data={this.props.leadState.verifiedFilteredLeadList}
+                                                renderItem={({ item, index }) => this.renderItem(item)}
+                                                keyExtractor={(item, index) => `${item.id}+${index}`}
+                                                ListFooterComponent={this.renderFooter}
+                                                ListEmptyComponent={this.renderEmptyView}
+                                                onEndReached={this.fetchVerifiedMore}
+                                                onEndReachedThreshold={0.1}
+                                            />
+                                        </View>
+                                    )}
                                 </View>
-                            ) : (
-                                <View style={{ flex: 1 }}>
-                                    <FlatList
-                                        data={this.props.leadState.filteredLeadList}
-                                        renderItem={({ item, index }) => this.renderItem(item)}
-                                        keyExtractor={(item, index) => `${item.id}+${index}`}
-                                        ListFooterComponent={this.renderFooter}
-                                        onEndReached={this.fetchMore}
-                                        onEndReachedThreshold={0.1}
-                                    />
+                            </Tab>
+                            <Tab
+                                heading={`Non Verified (${this.props.leadState.nonVerifiedFilteredPaginatedLeadList.total})`}
+                                textStyle={{ color: '#555' }}
+                                activeTextStyle={{ color: '#813588', fontWeight: '700' }}
+                                tabStyle={{ backgroundColor: '#f0ecf0' }}
+                                activeTabStyle={{ backgroundColor: '#f0ecf0' }}
+                            >
+                                <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
+                                    <View style={{ flex: 1 }}>
+                                        <FlatList
+                                            data={this.props.leadState.nonVerifiedFilteredLeadList}
+                                            renderItem={({ item, index }) => this.renderItem(item)}
+                                            keyExtractor={(item, index) => `${item.id}+${index}`}
+                                            ListFooterComponent={this.renderFooter}
+                                            ListEmptyComponent={this.renderEmptyView}
+                                            onEndReached={this.fetchNonVerifiedMore}
+                                            onEndReachedThreshold={0.1}
+                                        />
+                                    </View>
                                 </View>
-                            )
-                        ) : (
-                            <View style={{ flex: 1 }}>
-                                <FlatList
-                                    data={this.props.leadState.offlineLeadList}
-                                    renderItem={({ item, index }) => this.renderItem(item)}
-                                    keyExtractor={(item, index) => `${item.id}+${index}`}
-                                />
-                            </View>
-                        )}
-                    </View>
+                            </Tab>
+                        </Tabs>
+                    )}
                 </Content>
                 {!this.context.isConnected && (
                     <View

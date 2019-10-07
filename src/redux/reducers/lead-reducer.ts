@@ -1,6 +1,4 @@
 import {
-    ADD_LEAD,
-    FETCH_LEAD,
     LOAD_LEAD_START,
     LOAD_LEAD_FAIL,
     LOAD_LEAD_SUCCESS,
@@ -9,34 +7,55 @@ import {
     FETCH_OFFLINE_LEAD,
     SYNC_OFFLINE_LEADS,
     DELETE_SYNCED_LEADS,
-    FETCH_FILTERED_LEADS,
     LEAD_RESET_ACTION,
+    ADD_VERIFIED_LEAD,
+    ADD_NON_VERIFIED_LEAD,
+    FETCH_VERIFIED_LEAD,
+    FETCH_NON_VERIFIED_LEAD,
+    FETCH_NON_VERIFIED_FILTERED_LEADS,
+    FETCH_VERIFIED_FILTERED_LEADS,
 } from '../actions/action-types';
 import { initialState, resetLeadState, PaginatedResponseState } from '../init/lead-initial-state';
 
 export default function leadReducer(state = initialState, action) {
     switch (action.type) {
-        case ADD_LEAD:
+        case ADD_VERIFIED_LEAD:
             return {
                 ...state,
                 status: 'new', // add some valid flag
                 isLoading: false,
-                leadList: [...[action.payload], ...state.leadList],
+                verifiedLeadList: [...[action.payload], ...state.verifiedLeadList],
             };
-        case FETCH_LEAD:
+        case ADD_NON_VERIFIED_LEAD:
+            return {
+                ...state,
+                status: 'new', // add some valid flag
+                isLoading: false,
+                nonVerifiedLeadList: [...[action.payload], ...state.nonVerifiedLeadList],
+            };
+        case FETCH_VERIFIED_LEAD:
             return {
                 ...state,
                 status: 'done', // add some valid flag
                 isLoading: false,
-                paginatedLeadList: action.payload.paginatedLeadList,
-                leadList: [...state.leadList, ...action.payload.paginatedLeadList.data],
+                verifiedPaginatedLeadList: action.payload.paginatedLeadList,
+                verifiedLeadList: [...state.verifiedLeadList, ...action.payload.paginatedLeadList.data],
+                flag: action.payload.flag,
+            };
+        case FETCH_NON_VERIFIED_LEAD:
+            return {
+                ...state,
+                status: 'done', // add some valid flag
+                isLoading: false,
+                nonVerifiedPaginatedLeadList: action.payload.paginatedLeadList,
+                nonVerifiedLeadList: [...state.nonVerifiedLeadList, ...action.payload.paginatedLeadList.data],
                 flag: action.payload.flag,
             };
         case LOAD_LEAD_START:
             return {
                 ...state,
                 isLoading: true,
-                paginatedLeadList: state.paginatedLeadList,
+                // paginatedLeadList: state.paginatedLeadList,
                 error: '',
             };
         case LOAD_LEAD_SUCCESS:
@@ -48,7 +67,7 @@ export default function leadReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: false,
-                paginatedLeadList: state.paginatedLeadList,
+                // paginatedLeadList: state.paginatedLeadList,
                 error: action.payload,
             };
         case OTP_SENT:
@@ -84,22 +103,43 @@ export default function leadReducer(state = initialState, action) {
                 isLoading: false,
                 offlineLeadList: [...state.offlineLeadList, ...action.payload],
             };
-        case FETCH_FILTERED_LEADS:
+        case FETCH_VERIFIED_FILTERED_LEADS:
             return {
                 ...state,
                 status: 'done',
                 isLoading: false,
-                filteredPaginatedLeadList: action.payload.filteredPaginatedLeadList,
-                filteredLeadList: [...state.filteredLeadList, ...action.payload.filteredPaginatedLeadList.data],
+                verifiedFilteredPaginatedLeadList: action.payload.filteredPaginatedLeadList,
+                verifiedFilteredLeadList: [
+                    ...state.verifiedFilteredLeadList,
+                    ...action.payload.filteredPaginatedLeadList.data,
+                ],
+                flag: action.payload.flag,
+            };
+        case FETCH_NON_VERIFIED_FILTERED_LEADS:
+            return {
+                ...state,
+                status: 'done',
+                isLoading: false,
+                nonVerifiedFilteredPaginatedLeadList: action.payload.filteredPaginatedLeadList,
+                nonVerifiedFilteredLeadList: [
+                    ...state.nonVerifiedFilteredLeadList,
+                    ...action.payload.filteredPaginatedLeadList.data,
+                ],
                 flag: action.payload.flag,
             };
         case LEAD_RESET_ACTION:
             return {
                 ...state,
-                paginatedLeadList: PaginatedResponseState,
-                leadList: [],
-                filteredPaginatedLeadList: PaginatedResponseState,
-                filteredLeadList: [],
+                verifiedPaginatedLeadList: PaginatedResponseState,
+                verifiedLeadList: [],
+                nonVerifiedPaginatedLeadList: PaginatedResponseState,
+                nonVerifiedLeadList: [],
+
+                verifiedFilteredLeadList: [],
+                nonVerifiedFilteredLeadList: [],
+                verifiedFilteredPaginatedLeadList: PaginatedResponseState,
+                nonVerifiedFilteredPaginatedLeadList: PaginatedResponseState,
+
                 offlineLeadList: state.offlineLeadList,
             };
         default:
