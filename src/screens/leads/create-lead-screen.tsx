@@ -1418,17 +1418,34 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 <Error error={errors.otp} touched={touched.otp} />
                                                             </View>
                                                         ) : this.props.otpState.validated === true ? (
-                                                            <Text style={{ color: 'green' }}>Valid OTP</Text>
+                                                            <Text style={{ color: 'green', marginVertical: 5 }}>
+                                                                Valid OTP
+                                                            </Text>
                                                         ) : this.props.otpState.validated === false ? (
-                                                            <Text style={{ color: 'red' }}>Invalid OTP</Text>
-                                                        ) : (
-                                                            <Text />
-                                                        )}
+                                                            <Text style={{ color: 'red', marginVertical: 5 }}>
+                                                                Invalid OTP
+                                                            </Text>
+                                                        ) : null}
                                                     </View>
                                                 </View>
                                                 <View style={{ width: '100%' }}>
                                                     <ListItem
-                                                        style={{ marginLeft: 0, paddingTop: 0, borderBottomWidth: 0 }}
+                                                        style={{ marginLeft: 0, borderBottomWidth: 0 }}
+                                                        onPress={async e => {
+                                                            e.preventDefault();
+                                                            handleChange('proceedWithoutOtp')(
+                                                                !this.state.proceedWithoutOtp,
+                                                            );
+                                                            setFieldTouched('proceedWithoutOtp', true);
+                                                            await this.setState({
+                                                                proceedWithoutOtp: !this.state.proceedWithoutOtp,
+                                                            });
+                                                            {
+                                                                this.state.proceedWithoutOtp
+                                                                    ? this.onPressCheckBoxAlert()
+                                                                    : null;
+                                                            }
+                                                        }}
                                                     >
                                                         <CheckBox
                                                             style={{
