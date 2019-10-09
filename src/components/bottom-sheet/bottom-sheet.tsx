@@ -65,14 +65,20 @@ export default class BottomSheet extends React.Component<Props, State> {
         this.props.onPress(index, item);
         this.props.close();
     };
-    handleSubmit = () => {
+    handleSubmit = async () => {
         if (this.props.value === '') {
             this.setState({ error: 'Email Id is a required field' });
             this.setState({ hasError: true });
             return;
         }
+
         if (this.validate(this.props.value)) {
-            this.props.submit();
+            await this.props.submit();
+            if (this.props.currentState.error) {
+                console.log('inside');
+                this.setState({ hasError: true });
+                console.log('state error', this.state.hasError);
+            }
         } else {
             this.setState({ error: 'Email Id must be a valid email' });
             this.setState({ hasError: true });
@@ -83,6 +89,7 @@ export default class BottomSheet extends React.Component<Props, State> {
     };
 
     validate = (text: string) => {
+        console.log('validate', this.state.hasError);
         let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (this.props.currentState.error) {
             this.props.currentState.error = '';
@@ -333,7 +340,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                         onPress={() => this.handleSubmit()}
                         style={{
                             height: 50,
-                            backgroundColor: !this.state.hasError ? '#813588' : '#9A9A9A',
+                            backgroundColor: this.state.hasError ? '#9A9A9A' : '#813588',
                             position: 'absolute',
                             left: 0,
                             right: 0,

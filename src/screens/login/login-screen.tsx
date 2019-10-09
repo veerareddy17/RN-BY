@@ -312,6 +312,7 @@ class Login extends React.Component<Props, State> {
                                                     blurOnSubmit={false}
                                                     onSubmitEditing={() => this.focusTheField('password')}
                                                     autoCapitalize="none"
+                                                    editable={!this.state.showLoadingSpinner}
                                                 />
                                                 <View style={loginStyle.iconContainer} />
                                             </View>
@@ -328,6 +329,7 @@ class Login extends React.Component<Props, State> {
                                                         this.state.input['password'] = input;
                                                     }}
                                                     onSubmitEditing={() => this.handleSubmit(values)}
+                                                    editable={!this.state.showLoadingSpinner}
                                                 />
                                                 <View style={loginStyle.iconContainer}>
                                                     <Icon
@@ -361,13 +363,14 @@ class Login extends React.Component<Props, State> {
                                                 <TouchableOpacity
                                                     style={loginStyle.forgotPasswordContainer}
                                                     onPress={this.handlePress}
+                                                    disabled={this.state.showLoadingSpinner}
                                                 >
                                                     <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
                                                 </TouchableOpacity>
                                             )}
                                             <Button
                                                 block={true}
-                                                disabled={!isValid && this.state.showLoadingSpinner ? true : false}
+                                                disabled={!isValid || this.state.showLoadingSpinner ? true : false}
                                                 onPress={handleSubmit}
                                                 style={[
                                                     loginStyle.submitButton,
