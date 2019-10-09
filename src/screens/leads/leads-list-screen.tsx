@@ -291,7 +291,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                 activeTabStyle={{ backgroundColor: '#f0ecf0' }}
                             >
                                 <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
-                                    {this.context.isConnected && (
+                                    {this.context.isConnected ? (
                                         <View style={{ flex: 1 }}>
                                             <FlatList
                                                 data={this.state.verifiedLeads}
@@ -303,11 +303,17 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                                 onEndReachedThreshold={0.1}
                                             />
                                         </View>
+                                    ) : (
+                                        this.renderEmptyView()
                                     )}
                                 </View>
                             </Tab>
                             <Tab
-                                heading={`Non Verified (${this.state.nonVerifiedLeadTotal})`}
+                                heading={`Non Verified (${
+                                    this.context.isConnected
+                                        ? this.state.nonVerifiedLeadTotal
+                                        : this.props.leadState.offlineLeadList.length
+                                })`}
                                 textStyle={{ color: '#555' }}
                                 activeTextStyle={{ color: '#813588', fontWeight: '700' }}
                                 tabStyle={{ backgroundColor: '#f0ecf0' }}

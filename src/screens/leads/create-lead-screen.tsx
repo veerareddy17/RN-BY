@@ -59,6 +59,7 @@ import { Platform } from 'react-native';
 import FloatLabelTextInput from '../../components/floating-label/floating-label';
 import SpinnerOverlay from 'react-native-loading-spinner-overlay';
 import { throwStatement } from '@babel/types';
+import { CONSTANTS } from '../../helpers/app-constants';
 
 export interface CreateLeadProps {
     navigation: NavigationScreenProp<any>;
@@ -199,7 +200,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         const all_items = this.props.metaData.stateResponse.map((_state, i) => {
             return <Picker.Item key={_state.id} color="#333" label={_state.name} value={_state.id} />;
         });
-        all_items.unshift(<Picker.Item label="Select" color="#ccc" value="" />);
         return all_items;
     };
     componentWillUnmount() {
@@ -262,7 +262,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             phone: values.phone,
             email: values.email,
             address: values.address,
-            country_id: values.country,
+            country_id: CONSTANTS.COUNTRY,
             state_id: values.state,
             city: values.city,
             pin_code: values.pincode,
@@ -570,10 +570,10 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                 <Text
                                                     style={{
                                                         color: this.props.otpState.otp
-                                                            ? 'green'
+                                                            ? '#008000'
                                                             : this.props.otpState.error
-                                                            ? 'red'
-                                                            : '',
+                                                            ? '#FF0000'
+                                                            : 'transparent',
                                                         marginBottom: 5,
                                                     }}
                                                 >
@@ -805,13 +805,13 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                                     style={{
                                                                                         fontSize: 20,
                                                                                         width: 20,
-                                                                                        color: 'red',
+                                                                                        color: '#FF0000',
                                                                                         marginRight: 2,
                                                                                     }}
                                                                                 />
                                                                                 <Text
                                                                                     style={{
-                                                                                        color: 'red',
+                                                                                        color: '#FF0000',
                                                                                         fontFamily: 'system font',
                                                                                         fontSize: 14,
                                                                                     }}
@@ -1166,106 +1166,50 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                     <Error error={errors.address} touched={touched.address} />
                                                 </View>
                                             </View>
-                                            <View style={{ flexDirection: 'row' }}>
-                                                <View style={style.felxHalf}>
-                                                    <View
-                                                        style={[
-                                                            leadStyle.buttonPickerStyle,
-                                                            {
-                                                                flex: 1,
-                                                                flexDirection: 'row',
-                                                                borderColor:
-                                                                    touched.country && errors.country
-                                                                        ? '#ff0000'
-                                                                        : '#888',
-                                                            },
-                                                        ]}
-                                                    >
-                                                        <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
-                                                            <View style={{ flex: 1, marginBottom: 10 }}>
-                                                                <Label
-                                                                    style={{
-                                                                        fontSize: 11,
-                                                                        color: '#555',
-                                                                        marginTop: 10,
-                                                                        marginLeft: 10,
-                                                                    }}
-                                                                >
-                                                                    Country*
-                                                                </Label>
-                                                                <Picker
-                                                                    mode="dropdown"
-                                                                    iosIcon={<Icon name="arrow-down" />}
-                                                                    placeholder="Select"
-                                                                    placeholderStyle={{ color: '#bfc6ea' }}
-                                                                    placeholderIconColor="#007aff"
-                                                                    style={{ fontSize: 15, height: 30 }}
-                                                                    selectedValue={values.country}
-                                                                    onValueChange={value => {
-                                                                        handleChange('country')(value);
-                                                                        setFieldTouched('country', true);
-                                                                    }}
-                                                                >
-                                                                    <Picker.Item label="Select" color="#ccc" value="" />
-                                                                    <Picker.Item label="India" value="1" />
-                                                                </Picker>
-                                                            </View>
-                                                        </Item>
-                                                    </View>
-                                                    <Error error={errors.country} touched={touched.country} />
+                                            <View style={{ flexDirection: 'row', flex: 1 }}>
+                                                <View
+                                                    style={[
+                                                        leadStyle.buttonPickerStyle,
+                                                        {
+                                                            flex: 1,
+                                                            flexDirection: 'row',
+                                                            borderColor:
+                                                                touched.state && errors.state ? '#ff0000' : '#888',
+                                                        },
+                                                    ]}
+                                                >
+                                                    <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
+                                                        <View style={{ flex: 1, marginBottom: 10 }}>
+                                                            <Label
+                                                                style={{
+                                                                    fontSize: 11,
+                                                                    color: '#555',
+                                                                    marginTop: 10,
+                                                                    marginLeft: 10,
+                                                                }}
+                                                            >
+                                                                State*
+                                                            </Label>
+                                                            <Picker
+                                                                mode="dropdown"
+                                                                iosIcon={<Icon name="arrow-down" />}
+                                                                placeholder="Select"
+                                                                placeholderStyle={{ color: '#bfc6ea' }}
+                                                                placeholderIconColor="#007aff"
+                                                                style={{ fontSize: 15, height: 30 }}
+                                                                selectedValue={values.state}
+                                                                onValueChange={value => {
+                                                                    handleChange('state')(value);
+                                                                    setFieldTouched('state', true);
+                                                                }}
+                                                            >
+                                                                <Picker.Item label="Select" color="#ccc" value="" />
+                                                                {this.updateStatesDropdown()}
+                                                            </Picker>
+                                                        </View>
+                                                    </Item>
                                                 </View>
-                                                <View style={[style.felxHalf, leadStyle.marginLeft]}>
-                                                    <View
-                                                        style={[
-                                                            leadStyle.buttonPickerStyle,
-                                                            {
-                                                                flex: 1,
-                                                                flexDirection: 'row',
-                                                                borderColor:
-                                                                    touched.state && errors.state ? '#ff0000' : '#888',
-                                                            },
-                                                        ]}
-                                                    >
-                                                        <Item picker style={{ borderBottomWidth: 0, flex: 1 }}>
-                                                            <View style={{ flex: 1, marginBottom: 10 }}>
-                                                                <Label
-                                                                    style={{
-                                                                        fontSize: 11,
-                                                                        color: '#555',
-                                                                        marginTop: 10,
-                                                                        marginLeft: 10,
-                                                                    }}
-                                                                >
-                                                                    State*
-                                                                </Label>
-                                                                <Picker
-                                                                    mode="dropdown"
-                                                                    iosIcon={<Icon name="arrow-down" />}
-                                                                    placeholder="Select"
-                                                                    placeholderStyle={{ color: '#bfc6ea' }}
-                                                                    placeholderIconColor="#007aff"
-                                                                    style={{ fontSize: 15, height: 30 }}
-                                                                    selectedValue={values.state}
-                                                                    onValueChange={value => {
-                                                                        handleChange('state')(value);
-                                                                        setFieldTouched('state', true);
-                                                                    }}
-                                                                >
-                                                                    {values.country ? (
-                                                                        this.updateStatesDropdown()
-                                                                    ) : (
-                                                                        <Picker.Item
-                                                                            label="Select"
-                                                                            color="#ccc"
-                                                                            value=""
-                                                                        />
-                                                                    )}
-                                                                </Picker>
-                                                            </View>
-                                                        </Item>
-                                                    </View>
-                                                    <Error error={errors.state} touched={touched.state} />
-                                                </View>
+                                                <Error error={errors.state} touched={touched.state} />
                                             </View>
                                             <View
                                                 style={{
@@ -1372,7 +1316,7 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                 {this.context.isConnected && (
                                     <Card style={{ marginBottom: 20, marginLeft: 0, marginRight: 0, marginTop: 0 }}>
                                         <CardItem header style={{ paddingBottom: 0 }}>
-                                            <Text style={{ fontWeight: 'bold', color: '#555' }}>OTP Settings</Text>
+                                            <Text style={{ fontWeight: 'bold', color: '#555' }}>OTP</Text>
                                         </CardItem>
                                         <CardItem>
                                             <Body>
@@ -1418,9 +1362,9 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 <Error error={errors.otp} touched={touched.otp} />
                                                             </View>
                                                         ) : this.props.otpState.validated === true ? (
-                                                            <Text style={{ color: 'green' }}>Valid OTP</Text>
+                                                            <Text style={{ color: '#008000' }}>Valid OTP</Text>
                                                         ) : this.props.otpState.validated === false ? (
-                                                            <Text style={{ color: 'red' }}>Invalid OTP</Text>
+                                                            <Text style={{ color: '#FF0000' }}>Invalid OTP</Text>
                                                         ) : (
                                                             <Text />
                                                         )}
