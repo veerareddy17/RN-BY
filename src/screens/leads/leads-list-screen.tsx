@@ -49,6 +49,8 @@ export interface LeadListState {
     showSpinner: boolean;
     verifiedLeadTotal: number;
     nonVerifiedLeadTotal: number;
+    verifiedLeads: any;
+    nonVerifiedLeads: any;
 }
 
 class LeadList extends Component<LeadListProps, LeadListState> {
@@ -61,8 +63,11 @@ class LeadList extends Component<LeadListProps, LeadListState> {
             nonVerifiedPageNumber: 1,
             loadingMore: false,
             flag: '',
+            showSpinner: false,
             verifiedLeadTotal: 0,
             nonVerifiedLeadTotal: 0,
+            verifiedLeads: [],
+            nonVerifiedLeads: [],
         };
     }
 
@@ -77,12 +82,13 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 verifiedPageNumber: this.props.leadState.verifiedPaginatedLeadList.current_page,
                 nonVerifiedPageNumber: this.props.leadState.nonVerifiedPaginatedLeadList.current_page,
                 verifiedLeadTotal: this.props.leadState.verifiedPaginatedLeadList.total,
-                nonVerifiedLeadTotal: this.props.leadState.nonVerifiedPaginatedLeadList.total,
+                nonVerifiedLeadTotal: this.context.isConnected
+                    ? this.props.leadState.nonVerifiedPaginatedLeadList.total
+                    : this.props.leadState.offlineLeadList.length,
+                verifiedLeads: this.props.leadState.verifiedLeadList,
+                nonVerifiedLeads: this.props.leadState.nonVerifiedLeadList,
                 loadingMore: false,
             });
-            console.log(' lead report list', this.props.leadReportState.leadList);
-            console.log('verified lead list', this.props.leadState.verifiedLeadList);
-            console.log('nonverified lead list', this.props.leadState.nonVerifiedLeadList);
             this.setState({ showSpinner: false });
         });
     }
@@ -110,6 +116,8 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     fetchVerifiedLeadsList = async (pgNo: number, isOtpVerified: boolean) => {
         await this.props.fetchLeads(pgNo, isOtpVerified);
         this.setState({
+            verifiedLeadTotal: this.props.leadState.verifiedPaginatedLeadList.total,
+            verifiedLeads: this.props.leadState.verifiedLeadList,
             loadingMore: false,
         });
     };
@@ -117,6 +125,10 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     fetchNonVerifiedLeadsList = async (pgNo: number, isOtpVerified: boolean) => {
         await this.props.fetchLeads(pgNo, isOtpVerified);
         this.setState({
+            nonVerifiedLeadTotal: this.context.isConnected
+                ? this.props.leadState.nonVerifiedPaginatedLeadList.total
+                : this.props.leadState.offlineLeadList.length,
+            nonVerifiedLeads: this.props.leadState.nonVerifiedLeadList,
             loadingMore: false,
         });
     };
@@ -228,10 +240,6 @@ class LeadList extends Component<LeadListProps, LeadListState> {
     }
 
     render() {
-        const leadCount = !this.context.isConnected
-            ? this.props.leadState.offlineLeadList.length
-            : this.props.leadReportState.leadReport.total;
-
         return (
             <Container>
                 {Platform.OS === 'ios' ? (
@@ -278,7 +286,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                             <Tab
                                 textStyle={{ color: '#555' }}
                                 activeTextStyle={{ color: '#813588', fontWeight: '700' }}
-                                heading={`Verified (${this.state.verifiedLeadTotal})`}
+                                heading={`Verified (${this.context.isConnected ? this.state.verifiedLeadTotal : 0})`}
                                 tabStyle={{ backgroundColor: '#f0ecf0' }}
                                 activeTabStyle={{ backgroundColor: '#f0ecf0' }}
                             >
@@ -286,9 +294,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     {this.context.isConnected && (
                                         <View style={{ flex: 1 }}>
                                             <FlatList
-                                                data={this.props.leadState.verifiedLeadList}
+                                                data={this.state.verifiedLeads}
                                                 renderItem={({ item, index }) => this.renderItem(item)}
-                                                keyExtractor={(item, index) => `${item.id}+${index}`}
+                                                keyExtractor={(item, index) => index.toString()}
                                                 ListFooterComponent={this.renderVerifiedFooter}
                                                 ListEmptyComponent={this.renderEmptyView}
                                                 onEndReached={this.fetchVerifiedMore}
@@ -309,9 +317,9 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                     {this.context.isConnected ? (
                                         <View style={{ flex: 1 }}>
                                             <FlatList
-                                                data={this.props.leadState.nonVerifiedLeadList}
+                                                data={this.state.nonVerifiedLeads}
                                                 renderItem={({ item, index }) => this.renderItem(item)}
-                                                keyExtractor={(item, index) => `${item.id}+${index}`}
+                                                keyExtractor={(item, index) => index.toString()}
                                                 ListFooterComponent={this.renderNonVerifiedFooter}
                                                 ListEmptyComponent={this.renderEmptyView}
                                                 onEndReached={this.fetchNonVerifiedMore}
@@ -323,7 +331,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                                             <FlatList
                                                 data={this.props.leadState.offlineLeadList}
                                                 renderItem={({ item, index }) => this.renderItem(item)}
-                                                keyExtractor={(item, index) => `${item.id}+${index}`}
+                                                keyExtractor={(item, index) => index.toString()}
                                                 ListEmptyComponent={this.renderEmptyView}
                                             />
                                         </View>
