@@ -205,7 +205,7 @@ class Login extends React.Component<Props, State> {
 
     handleSubmit = async (values: LoginRequestData) => {
         Keyboard.dismiss();
-        if (values.email === '' || values.password === '' || values.password.length < 5) {
+        if (values.email === '' || values.password === '') {
             return;
         }
         this.setState({ showLoadingSpinner: true });
@@ -318,7 +318,7 @@ class Login extends React.Component<Props, State> {
                                             </View>
                                             <View style={loginStyle.password}>
                                                 <FloatLabelTextInput
-                                                    keyboardType={this.context.isConnected ? 'default' : 'number-pad'}
+                                                    // keyboardType={this.context.isConnected ? 'default' : 'number-pad'}
                                                     placeholder={this.context.isConnected ? 'Password' : 'Offline PIN'}
                                                     secureTextEntry={this.state.showPassword}
                                                     value={values.password}
@@ -375,7 +375,10 @@ class Login extends React.Component<Props, State> {
                                                 style={[
                                                     loginStyle.submitButton,
                                                     {
-                                                        backgroundColor: !isValid ? '#ccc' : '#813588',
+                                                        backgroundColor:
+                                                            !isValid || this.state.showLoadingSpinner
+                                                                ? '#ccc'
+                                                                : '#813588',
                                                     },
                                                 ]}
                                             >

@@ -62,8 +62,8 @@ export const authenticate = (
                     dispatch(successAction(storedUser));
                 } else {
                     storedUser.isOfflineLoggedIn = false;
-                    dispatch(failureAction([new ErrorResponse('', 'Invalid Username/ PIN')]));
-                    dispatch(errorCallAction([new ErrorResponse('', 'Invalid Username/ PIN')]));
+                    dispatch(failureAction([new ErrorResponse('', 'Invalid Username or Offline PIN')]));
+                    dispatch(errorCallAction([new ErrorResponse('', 'Invalid Username or Offline PIN')]));
                 }
                 return;
             }
