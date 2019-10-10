@@ -6,6 +6,7 @@ import { ClassesResponse } from './../../models/response/classes-response';
 import { Dispatch } from 'redux';
 import { StateResponse } from './../../models/response/state-response';
 import { FETCH_BOARD, FETCH_CLASSES, FETCH_STATES, META_DATA_ERROR, FETCH_COMPLETE } from './action-types';
+import { CONSTANTS } from '../../helpers/app-constants';
 
 export const fetchActionComplete = () => {
     return {
@@ -52,7 +53,7 @@ export const fetchMetaData = () => async (dispatch: Dispatch) => {
         if (classesResp && classesResp.data) {
             dispatch(fetchClassesSuccessAction(classesResp.data));
         }
-        const stateResp = await LeadService.fetchStateByCountry(1);
+        const stateResp = await LeadService.fetchStateByCountry(CONSTANTS.COUNTRY);
         if (stateResp && stateResp.data) {
             dispatch(fetchStatesSuccessAction(stateResp.data));
         }

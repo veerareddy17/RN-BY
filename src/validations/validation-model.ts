@@ -56,10 +56,6 @@ export const leadValidation = yup.object().shape({
         .string()
         .label('Address')
         .required(),
-    country: yup
-        .string()
-        .label('Country')
-        .required(),
     state: yup
         .string()
         .label('State')
