@@ -205,7 +205,7 @@ class Login extends React.Component<Props, State> {
 
     handleSubmit = async (values: LoginRequestData) => {
         Keyboard.dismiss();
-        if (values.email === '' || values.password === '' || values.password.length < 5) {
+        if (values.email === '' || values.password === '') {
             return;
         }
         this.setState({ showLoadingSpinner: true });
@@ -312,12 +312,13 @@ class Login extends React.Component<Props, State> {
                                                     blurOnSubmit={false}
                                                     onSubmitEditing={() => this.focusTheField('password')}
                                                     autoCapitalize="none"
+                                                    editable={!this.state.showLoadingSpinner}
                                                 />
                                                 <View style={loginStyle.iconContainer} />
                                             </View>
                                             <View style={loginStyle.password}>
                                                 <FloatLabelTextInput
-                                                    keyboardType={this.context.isConnected ? 'default' : 'number-pad'}
+                                                    // keyboardType={this.context.isConnected ? 'default' : 'number-pad'}
                                                     placeholder={this.context.isConnected ? 'Password' : 'Offline PIN'}
                                                     secureTextEntry={this.state.showPassword}
                                                     value={values.password}
@@ -328,6 +329,7 @@ class Login extends React.Component<Props, State> {
                                                         this.state.input['password'] = input;
                                                     }}
                                                     onSubmitEditing={() => this.handleSubmit(values)}
+                                                    editable={!this.state.showLoadingSpinner}
                                                 />
                                                 <View style={loginStyle.iconContainer}>
                                                     <Icon
@@ -361,18 +363,22 @@ class Login extends React.Component<Props, State> {
                                                 <TouchableOpacity
                                                     style={loginStyle.forgotPasswordContainer}
                                                     onPress={this.handlePress}
+                                                    disabled={this.state.showLoadingSpinner}
                                                 >
                                                     <Text style={loginStyle.forgotPasswordText}>Forgot Password?</Text>
                                                 </TouchableOpacity>
                                             )}
                                             <Button
                                                 block={true}
-                                                disabled={!isValid && this.state.showLoadingSpinner ? true : false}
+                                                disabled={!isValid || this.state.showLoadingSpinner ? true : false}
                                                 onPress={handleSubmit}
                                                 style={[
                                                     loginStyle.submitButton,
                                                     {
-                                                        backgroundColor: !isValid ? '#ccc' : '#813588',
+                                                        backgroundColor:
+                                                            !isValid || this.state.showLoadingSpinner
+                                                                ? '#ccc'
+                                                                : '#813588',
                                                     },
                                                 ]}
                                             >
