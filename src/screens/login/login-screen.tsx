@@ -211,7 +211,6 @@ class Login extends React.Component<Props, State> {
         this.setState({ showLoadingSpinner: true });
         try {
             await this.props.captureLocation();
-            this.setState({ showLoadingSpinner: false });
         } catch (errors) {
             this.setState({ showLoadingSpinner: false });
             if (this.props.errorState.showAlertError) {
