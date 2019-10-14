@@ -102,6 +102,16 @@ export const captureLocation = (): ((dispatch: Dispatch) => Promise<boolean>) =>
                             );
                         }
                     });
+                } else {
+                    let errors = Array<ErrorResponse>();
+                    errors.push(
+                        new ErrorResponse(
+                            'Server',
+                            'Location permission not granted, Allow permission from Settings->Location->App Permission, Select Byjus App and click Allow',
+                        ),
+                    );
+                    dispatch(errorCallAction(errors));
+                    reject(errors);
                 }
             } else {
                 SystemSetting.isLocationEnabled().then((enable: boolean) => {
