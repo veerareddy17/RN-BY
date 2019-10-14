@@ -53,7 +53,18 @@ class CampaignList extends Component<CampaignListProps, CampaignListState> {
     }
 
     handleSelections = async (campaignId: any) => {
-        await this.props.captureLocation();
+        try {
+            await this.props.captureLocation();
+        } catch (errors) {
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(errors);
+                return;
+            }
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(errors);
+                return;
+            }
+        }
         await this.props.selectCampaign(campaignId);
         if (this.props.errorState.showAlertError) {
             AlertError.alertErr(this.props.errorState.error);

@@ -152,7 +152,18 @@ class Dashboard extends React.Component<Props, State> {
     };
 
     onPressCampaign = async (index: number, selectedCampaign: MetaResponse) => {
-        await this.props.captureLocation();
+        try {
+            await this.props.captureLocation();
+        } catch (errors) {
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(errors);
+                return;
+            }
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(errors);
+                return;
+            }
+        }
         await this.props.selectCampaign(selectedCampaign);
         if (this.props.errorState.showAlertError) {
             AlertError.alertErr(this.props.errorState.error);

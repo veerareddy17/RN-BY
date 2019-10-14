@@ -275,7 +275,20 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
         });
         try {
             this.setState({ showLoadingSpinner: true });
-            await this.props.captureLocation();
+            try {
+                await this.props.captureLocation();
+                this.setState({ showLoadingSpinner: false });
+            } catch (errors) {
+                this.setState({ showLoadingSpinner: false });
+                if (this.props.errorState.showAlertError) {
+                    AlertError.alertErr(errors);
+                    return;
+                }
+                if (this.props.errorState.showToastError) {
+                    ToastError.toastErr(errors);
+                    return;
+                }
+            }
             if (this.props.errorState.showAlertError) {
                 this.setState({ showLoadingSpinner: false });
                 AlertError.alertErr(this.props.errorState.error);
@@ -338,7 +351,18 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
     };
 
     onPressCampaign = async (index: number, selectedCampaign: MetaResponse) => {
-        await this.props.captureLocation();
+        try {
+            await this.props.captureLocation();
+        } catch (errors) {
+            if (this.props.errorState.showAlertError) {
+                AlertError.alertErr(errors);
+                return;
+            }
+            if (this.props.errorState.showToastError) {
+                ToastError.toastErr(errors);
+                return;
+            }
+        }
         await this.props.selectCampaign(selectedCampaign);
         this.setState({
             campaign_id: selectedCampaign.id,
