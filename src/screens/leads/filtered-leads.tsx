@@ -62,14 +62,14 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
             nonVerifiedPageNumber: 1,
             loadingMore: false,
             flag: '',
-            showSpinner: true,
+            showSpinner: false,
         };
     }
 
     async componentDidMount() {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             let selectedFlag = this.props.navigation.getParam('flag', '');
-            // this.setState({ showSpinner: true });
+            this.setState({ showSpinner: true });
             this.checkUserLogIn();
             await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, selectedFlag, true);
             await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, selectedFlag, false);
