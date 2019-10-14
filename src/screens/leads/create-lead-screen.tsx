@@ -152,9 +152,12 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
             this.focusListener = this.props.navigation.addListener('didFocus', async () => {
                 const selectedCampaign = this.props.campaignState.selectedCampaign;
                 const compaignList = this.props.campaignState.campaignList;
-                this.setState({ campaignList: compaignList });
-                this.setState({ campaign_id: selectedCampaign.id });
-                this.setState({ campaignName: selectedCampaign.name });
+                this.setState({
+                    campaignList: compaignList,
+                    campaign_id: selectedCampaign.id,
+                    campaignName: selectedCampaign.name,
+                    proceedWithoutOtp: false,
+                });
                 this.formik.resetForm();
                 this.props.otpInitialState();
                 this.checkUserLogIn();
