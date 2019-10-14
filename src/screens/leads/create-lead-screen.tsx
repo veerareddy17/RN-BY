@@ -1424,7 +1424,6 @@ class CreateLead extends Component<CreateLeadProps, CreateLeadState> {
                                                                 borderColor: this.state.proceedWithoutOtp
                                                                     ? '#039be5'
                                                                     : '#555',
-                                                                paddingLeft: 0,
                                                             }}
                                                             checked={this.state.proceedWithoutOtp}
                                                             onPress={async e => {
