@@ -250,3 +250,23 @@ export const resetLeads = (): ((dispatch: Dispatch, getState: any) => Promise<vo
         dispatch(leadResetAction());
     };
 };
+
+
+export const verifyLead = (leadId: string): ((dispatch: Dispatch, getState: any) => Promise<void>) => {
+    return async (dispatch: Dispatch) => {
+        console.log('leadId', leadId)
+        try {
+            dispatch(errorCallResetAction());
+            let response = await LeadService.verifyLead(leadId);
+            if (response && response.data) {
+                console.log('response', response)
+                dispatch(leadSuccessAction())
+            }
+        } catch (e) {
+            let errors = Array<ErrorResponse>();
+            errors.push(new ErrorResponse('Server', e.message));
+            dispatch(serverErrorCallAction(errors));
+            dispatch(leadFailureAction(e.message));
+        }
+    };
+};
