@@ -77,4 +77,9 @@ export class LeadService {
         );
         return response;
     };
+
+    public static verifyLead = async (leadId: string): Promise<ResponseViewModel<LeadResponse>> => {
+        const response = await HttpBaseService.post<{}, LeadResponse>(`/lead/${leadId}/verify`, {});
+        return response;
+    };
 }

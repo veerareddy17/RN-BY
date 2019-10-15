@@ -10,6 +10,7 @@ import {
     ScrollView,
     Image,
     Platform,
+    Button
 } from 'react-native';
 import FloatingLabel from 'react-native-floating-labels';
 import { NavigationScreenProp } from 'react-navigation';
@@ -23,7 +24,7 @@ export interface Props {
     navigation?: NavigationScreenProp<any>;
     data: Array<Object>;
     statuses?: Array<String>;
-    // description?: String;
+    description?: String;
     title: String;
     actionType?: String;
     type: String;
@@ -38,23 +39,28 @@ export interface Props {
     value?: string;
 }
 export interface State {
+    otp: string;
     email: string;
     error: string;
     hasError: boolean;
+    touched: boolean;
 }
 
 export default class BottomSheet extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
+            otp: '',
             email: '',
-            hasError: true,
+            hasError: false,
             error: '',
+            touched: false,
         };
     }
 
-    onBlur() {}
+    onBlur() { }
     onChangeHandle = (text: String, item: String) => {
+        this.setState({ touched: true });
         this.props.onChangeText(text, item);
     };
     _onPressClose = () => {
@@ -66,22 +72,34 @@ export default class BottomSheet extends React.Component<Props, State> {
         this.props.close();
     };
     handleSubmit = async () => {
-        if (this.props.value === '') {
-            this.setState({ error: 'Email Id is a required field' });
-            this.setState({ hasError: true });
-            return;
-        }
-
-        if (this.validate(this.props.value)) {
-            await this.props.submit();
-            if (this.props.currentState.error) {
-                console.log('inside');
+        if (this.props.type === 'inputType') {
+            if (this.props.value === '') {
+                this.setState({ error: 'Email Id is a required field' });
                 this.setState({ hasError: true });
-                console.log('state error', this.state.hasError);
+                return;
             }
-        } else {
-            this.setState({ error: 'Email Id must be a valid email' });
-            this.setState({ hasError: true });
+
+            if (this.validate(this.props.value)) {
+                await this.props.submit();
+                if (this.props.currentState.error) {
+                    this.setState({ hasError: true });
+                }
+            } else {
+                this.setState({ error: 'Email Id must be a valid email' });
+                this.setState({ hasError: true });
+            }
+        } if (this.props.type === 'inputTypeOTP') {
+            if (this.props.value === '') {
+                this.setState({ error: 'OTP is a required field' });
+                this.setState({ hasError: true });
+                return;
+            }
+            if (this.validateOTP(this.props.value)) {
+                await this.props.submit();
+            } else {
+                this.setState({ error: 'OTP must be at most 4 characters' });
+                this.setState({ hasError: true });
+            }
         }
     };
     handleResend = () => {
@@ -89,7 +107,6 @@ export default class BottomSheet extends React.Component<Props, State> {
     };
 
     validate = (text: string) => {
-        console.log('validate', this.state.hasError);
         let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (this.props.currentState.error) {
             this.props.currentState.error = '';
@@ -99,6 +116,25 @@ export default class BottomSheet extends React.Component<Props, State> {
         } else {
             this.setState({ error: '' });
             this.setState({ email: text });
+            this.setState({ hasError: false });
+            return true;
+        }
+    };
+
+    validateOTP = (text: string) => {
+        let reg = /^\d{4,}$/;
+        if (this.props.currentState.error) {
+            this.props.currentState.error = '';
+        } if (this.props.currentState.otp) {
+            this.props.currentState.otp.success = '';
+        }
+        if (reg.test(text) === false) {
+            this.setState({ error: 'OTP must be at most 4 characters' });
+            this.setState({ hasError: true });
+            return false;
+        } else {
+            this.setState({ error: '' });
+            this.setState({ otp: text });
             this.setState({ hasError: false });
             return true;
         }
@@ -177,6 +213,84 @@ export default class BottomSheet extends React.Component<Props, State> {
                                             <Text style={{ color: '#ff0000', fontSize: 11 }}>{this.state.error}</Text>
                                         </View>
                                     ) : null}
+                                </View>
+                            );
+                        })}
+                    </View>
+                );
+            case 'inputTypeOTP':
+                return (
+                    <View style={{ width: '100%' }}>
+                        {this.props.data.map((item, index) => {
+                            return (
+                                <View key={item}>
+                                    <View style={{
+                                        marginLeft: 40,
+                                        marginRight: 40,
+
+                                    }}>
+                                        <Text style={{ textAlign: "center", color: "#555" }}>
+                                            {this.props.description}
+                                        </Text>
+                                    </View>
+                                    <View
+                                        key={index}
+                                        style={{
+                                            width: '100%',
+                                            flexDirection: 'row',
+                                            height: 65,
+                                        }}
+                                    >
+                                        <View
+                                            style={{
+                                                flex: 1,
+                                                borderWidth: 1,
+                                                borderColor: 'rgba(136,136,136,0.4)',
+                                                backgroundColor: 'rgba(252,252,252,0.6)',
+                                                marginLeft: 20,
+                                                marginRight: 20,
+                                                borderRadius: 5,
+                                                marginTop: 10,
+                                            }}
+                                        >
+                                            <FloatLabelTextInput
+                                                placeholder={item}
+                                                keyboardType={this.props.keyBoardStyle}
+                                                maxLength={4}
+                                                onChangeText={(text: String) => {
+                                                    this.validateOTP(text);
+                                                    this.onChangeHandle(text, item);
+                                                }}
+                                                value={this.props.value}
+                                                returnKeyType="done"
+                                                onSubmitEditing={() => this.handleSubmit()}
+                                            />
+                                        </View>
+                                    </View>
+                                    <View style={{ marginLeft: 20, marginRight: 20, borderRadius: 5, marginTop: 5 }}>
+                                        {this.props.currentState.isLoading ? (
+                                            <View>
+                                                <Spinner />
+                                            </View>
+                                        ) : this.state.hasError ?
+                                                <View>
+                                                    <Text style={{ color: '#ff0000', fontSize: 11 }}>{this.state.error}</Text>
+                                                </View>
+                                                : this.props.currentState.error ? (
+                                                    <Text style={{ color: '#ff0000' }}>{this.props.currentState.error}</Text>
+                                                ) : this.props.currentState.validated === false ? <View>
+                                                    <Text style={{ color: '#ff0000', fontSize: 11 }}>Invalid OTP</Text>
+                                                </View> : this.props.currentState.otp ?
+                                                            <View>
+                                                                <Text style={{ color: '#008000', fontSize: 11 }}>OTP sent successfully</Text>
+                                                            </View>
+                                                            : <View />}
+                                    </View>
+                                    <View style={{ marginLeft: 'auto', marginRight: 40 }}>
+                                        <Text onPress={() => this.handleResend()} style={{ color: '#813588' }}>
+                                            Resend OTP
+                                        </Text>
+                                    </View>
                                 </View>
                             );
                         })}
@@ -281,77 +395,77 @@ export default class BottomSheet extends React.Component<Props, State> {
                 </View>
                 <View style={{ flex: 1 }}>
                     {this.props.currentState &&
-                    this.props.currentState.forgotPasswordResponse &&
-                    this.props.currentState.forgotPasswordResponse.success ? (
-                        <View style={{ alignItems: 'center', marginTop: 15 }}>
-                            <Image source={images.emailBox} />
-                        </View>
-                    ) : this.props.type == 'inputType' ? (
-                        <View>
-                            <Text
-                                style={{
-                                    textAlign: 'center',
-                                    marginLeft: 60,
-                                    marginRight: 60,
-                                    marginBottom: 5,
-                                    color: '#555',
-                                }}
-                            >
-                                We will send you a link to reset your password
+                        this.props.currentState.forgotPasswordResponse &&
+                        this.props.currentState.forgotPasswordResponse.success ? (
+                            <View style={{ alignItems: 'center', marginTop: 15 }}>
+                                <Image source={images.emailBox} />
+                            </View>
+                        ) : this.props.type == 'inputType' ? (
+                            <View>
+                                <Text
+                                    style={{
+                                        textAlign: 'center',
+                                        marginLeft: 60,
+                                        marginRight: 60,
+                                        marginBottom: 5,
+                                        color: '#555',
+                                    }}
+                                >
+                                    We will send you a link to reset your password
                             </Text>
-                            <Text
-                                style={{
-                                    marginLeft: 60,
-                                    marginRight: 60,
-                                    textAlign: 'center',
-                                    color: '#555',
-                                }}
-                            >
-                                Enter you registered email address
+                                <Text
+                                    style={{
+                                        marginLeft: 60,
+                                        marginRight: 60,
+                                        textAlign: 'center',
+                                        color: '#555',
+                                    }}
+                                >
+                                    Enter you registered email address
                             </Text>
-                        </View>
-                    ) : null}
+                            </View>
+                        ) : null}
                     {this.props.currentState &&
-                    this.props.currentState.forgotPasswordResponse &&
-                    this.props.currentState.forgotPasswordResponse.success ? (
-                        <Text
-                            style={{
-                                textAlignVertical: 'center',
-                                marginLeft: 60,
-                                marginRight: 60,
-                                marginTop: 15,
-                                textAlign: 'center',
-                                color: '#555',
-                            }}
-                        >
-                            We have sent a reset password link to your email account
+                        this.props.currentState.forgotPasswordResponse &&
+                        this.props.currentState.forgotPasswordResponse.success ? (
+                            <Text
+                                style={{
+                                    textAlignVertical: 'center',
+                                    marginLeft: 60,
+                                    marginRight: 60,
+                                    marginTop: 15,
+                                    textAlign: 'center',
+                                    color: '#555',
+                                }}
+                            >
+                                We have sent a reset password link to your email account
                         </Text>
-                    ) : this.props.data.length == 0 ? (
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    ) : (
-                        this.renderItem(this.props.type)
-                    )}
+                        ) : this.props.data.length == 0 ? (
+                            <ActivityIndicator size="large" color="#0000ff" />
+                        ) : (
+                                this.renderItem(this.props.type)
+                            )}
                 </View>
                 {this.props.currentState &&
-                this.props.currentState.forgotPasswordResponse &&
-                this.props.currentState.forgotPasswordResponse.success ? null : this.props.actionType != null ? (
-                    <TouchableOpacity
-                        disabled={this.state.hasError}
-                        onPress={() => this.handleSubmit()}
-                        style={{
-                            height: 50,
-                            backgroundColor: this.state.hasError ? '#9A9A9A' : '#813588',
-                            position: 'absolute',
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{this.props.actionType}</Text>
-                    </TouchableOpacity>
-                ) : null}
+                    this.props.currentState.forgotPasswordResponse &&
+                    this.props.currentState.forgotPasswordResponse.success ? null : this.props.actionType != null ? (
+                        <TouchableOpacity
+                            disabled={this.state.hasError && this.state.touched}
+                            onPress={() => this.handleSubmit()}
+                            style={{
+                                height: 50,
+                                backgroundColor: !this.state.hasError && this.state.touched ? '#813588' : '#9A9A9A',
+                                position: 'absolute',
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>{this.props.actionType}</Text>
+                        </TouchableOpacity>
+                    ) : null}
             </View>
         );
     }

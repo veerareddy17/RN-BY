@@ -20,8 +20,8 @@ import {
 } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
-import Lead from './lead';
-import { fetchFilteredLeads } from '../../redux/actions/lead-actions';
+import Lead from './lead-class';
+import { fetchFilteredLeads, resetLeads } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
 import Loader from '../../components/content-loader/content-loader';
@@ -39,6 +39,7 @@ export interface FLeadListProps {
         isOtpVerified: boolean,
     ): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
+    resetLead(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
 }
 
 export interface FLeadListState {
@@ -70,6 +71,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             let selectedFlag = this.props.navigation.getParam('flag', '');
             this.checkUserLogIn();
+            await this.props.resetLead();
             await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, selectedFlag, true);
             await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, selectedFlag, false);
             this.setState({
@@ -100,6 +102,22 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
 
     componentWillUnmount() {
         if (this.focusLeadListener) this.focusLeadListener.remove();
+    }
+
+    loadLeadAfterVerify = async () => {
+        let selectedFlag = this.props.navigation.getParam('flag', '');
+        this.setState({ showSpinner: true });
+        this.checkUserLogIn();
+        await this.props.resetLead();
+        await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, selectedFlag, true);
+        await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, selectedFlag, false);
+        this.setState({
+            verifiedPageNumber: this.props.leadState.verifiedFilteredPaginatedLeadList.current_page,
+            nonVerifiedPageNumber: this.props.leadState.nonVerifiedFilteredPaginatedLeadList.current_page,
+            flag: selectedFlag,
+            loadingMore: false,
+        });
+        this.setState({ showSpinner: false });
     }
 
     fetchVerifiedLeadsList = async (pgNo: number, flag: string, isOtpVerified: boolean) => {
@@ -185,7 +203,7 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                 }}
             >
                 <Body>
-                    <Lead lead={item} />
+                    <Lead lead={item} callVerifyLoadLead={this.loadLeadAfterVerify} />
                 </Body>
             </ListItem>
         );
@@ -220,53 +238,53 @@ class FilteredLeads extends Component<FLeadListProps, FLeadListState> {
                             <Loader />
                         </View>
                     ) : (
-                        <Tabs tabBarUnderlineStyle={{ backgroundColor: '#813588' }}>
-                            <Tab
-                                textStyle={{ color: '#555' }}
-                                activeTextStyle={{ color: '#813588', fontWeight: '700' }}
-                                heading={`Verified (${this.props.leadState.verifiedFilteredPaginatedLeadList.total})`}
-                                tabStyle={{ backgroundColor: '#f0ecf0' }}
-                                activeTabStyle={{ backgroundColor: '#f0ecf0' }}
-                            >
-                                <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
-                                    {this.context.isConnected && (
+                            <Tabs tabBarUnderlineStyle={{ backgroundColor: '#813588' }}>
+                                <Tab
+                                    textStyle={{ color: '#555' }}
+                                    activeTextStyle={{ color: '#813588', fontWeight: '700' }}
+                                    heading={`Verified (${this.props.leadState.verifiedFilteredPaginatedLeadList.total})`}
+                                    tabStyle={{ backgroundColor: '#f0ecf0' }}
+                                    activeTabStyle={{ backgroundColor: '#f0ecf0' }}
+                                >
+                                    <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
+                                        {this.context.isConnected && (
+                                            <View style={{ flex: 1 }}>
+                                                <FlatList
+                                                    data={this.props.leadState.verifiedFilteredLeadList}
+                                                    renderItem={({ item, index }) => this.renderItem(item)}
+                                                    keyExtractor={(item, index) => `${item.id}+${index}`}
+                                                    ListFooterComponent={this.renderFooter}
+                                                    ListEmptyComponent={this.renderEmptyView}
+                                                    onEndReached={this.fetchVerifiedMore}
+                                                    onEndReachedThreshold={0.1}
+                                                />
+                                            </View>
+                                        )}
+                                    </View>
+                                </Tab>
+                                <Tab
+                                    heading={`Non Verified (${this.props.leadState.nonVerifiedFilteredPaginatedLeadList.total})`}
+                                    textStyle={{ color: '#555' }}
+                                    activeTextStyle={{ color: '#813588', fontWeight: '700' }}
+                                    tabStyle={{ backgroundColor: '#f0ecf0' }}
+                                    activeTabStyle={{ backgroundColor: '#f0ecf0' }}
+                                >
+                                    <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
                                         <View style={{ flex: 1 }}>
                                             <FlatList
-                                                data={this.props.leadState.verifiedFilteredLeadList}
+                                                data={this.props.leadState.nonVerifiedFilteredLeadList}
                                                 renderItem={({ item, index }) => this.renderItem(item)}
                                                 keyExtractor={(item, index) => `${item.id}+${index}`}
                                                 ListFooterComponent={this.renderFooter}
                                                 ListEmptyComponent={this.renderEmptyView}
-                                                onEndReached={this.fetchVerifiedMore}
+                                                onEndReached={this.fetchNonVerifiedMore}
                                                 onEndReachedThreshold={0.1}
                                             />
                                         </View>
-                                    )}
-                                </View>
-                            </Tab>
-                            <Tab
-                                heading={`Non Verified (${this.props.leadState.nonVerifiedFilteredPaginatedLeadList.total})`}
-                                textStyle={{ color: '#555' }}
-                                activeTextStyle={{ color: '#813588', fontWeight: '700' }}
-                                tabStyle={{ backgroundColor: '#f0ecf0' }}
-                                activeTabStyle={{ backgroundColor: '#f0ecf0' }}
-                            >
-                                <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
-                                    <View style={{ flex: 1 }}>
-                                        <FlatList
-                                            data={this.props.leadState.nonVerifiedFilteredLeadList}
-                                            renderItem={({ item, index }) => this.renderItem(item)}
-                                            keyExtractor={(item, index) => `${item.id}+${index}`}
-                                            ListFooterComponent={this.renderFooter}
-                                            ListEmptyComponent={this.renderEmptyView}
-                                            onEndReached={this.fetchNonVerifiedMore}
-                                            onEndReachedThreshold={0.1}
-                                        />
                                     </View>
-                                </View>
-                            </Tab>
-                        </Tabs>
-                    )}
+                                </Tab>
+                            </Tabs>
+                        )}
                 </Content>
                 {!this.context.isConnected && (
                     <View
@@ -295,6 +313,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
     fetchFilteredLeads: bindActionCreators(fetchFilteredLeads, dispatch),
+    resetLead: bindActionCreators(resetLeads, dispatch),
     logout: bindActionCreators(logout, dispatch),
 });
 

@@ -96,9 +96,9 @@ class Dashboard extends React.Component<Props, State> {
                     if (this.props.leadState.offlineLeadList && this.props.leadState.offlineLeadList.length > 0) {
                         this.sync();
                     }
-                    if (this.props.campaignState.attendance.length > 0) {
-                        this.props.sysnAttendance();
-                    }
+                    // if (this.props.campaignState.attendance.length > 0) {
+                    //     this.props.sysnAttendance();
+                    // }
                 }
             });
         } catch (error) {
@@ -258,7 +258,7 @@ class Dashboard extends React.Component<Props, State> {
                             ) : (
                                 <CardItem style={styles.leadCardItem}>
                                     <Item>
-                                        <TouchableOpacity
+                                            <TouchableOpacity
                                             onPress={() => {
                                                 this.props.leadReportState.leadReport.today > 0 &&
                                                     this.getLeads('today');
@@ -274,10 +274,10 @@ class Dashboard extends React.Component<Props, State> {
                                             {this.props.leadReportState.leadReport.today > 0 && (
                                                 <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                             )}
-                                        </TouchableOpacity>
+                                            </TouchableOpacity>
                                     </Item>
                                     <Item>
-                                        <TouchableOpacity
+                                            <TouchableOpacity
                                             onPress={() => {
                                                 this.props.leadReportState.leadReport.week > 0 && this.getLeads('week');
                                             }}
@@ -292,10 +292,10 @@ class Dashboard extends React.Component<Props, State> {
                                             {this.props.leadReportState.leadReport.week > 0 && (
                                                 <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                             )}
-                                        </TouchableOpacity>
+                                            </TouchableOpacity>
                                     </Item>
                                     <Item style={styles.noBorderBottom}>
-                                        <TouchableOpacity
+                                            <TouchableOpacity
                                             onPress={() => {
                                                 this.props.leadReportState.leadReport.month > 0 &&
                                                     this.getLeads('month');
@@ -311,7 +311,7 @@ class Dashboard extends React.Component<Props, State> {
                                             {this.props.leadReportState.leadReport.month > 0 && (
                                                 <Icon style={styles.leadCardItemIcon} name="ios-arrow-forward" />
                                             )}
-                                        </TouchableOpacity>
+                                            </TouchableOpacity>
                                     </Item>
                                 </CardItem>
                             )}

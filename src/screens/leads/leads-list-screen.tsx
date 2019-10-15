@@ -20,7 +20,7 @@ import {
 } from 'native-base';
 import { Dispatch, bindActionCreators, AnyAction } from 'redux';
 import { AppState } from '../../redux/store';
-import Lead from './lead';
+import Lead from './lead-class';
 import { fetchAllLeadsApi, resetLeads } from '../../redux/actions/lead-actions';
 import { NetworkContext } from '../../provider/network-provider';
 import { NavigationScreenProp } from 'react-navigation';
@@ -35,6 +35,7 @@ export interface LeadListProps {
     leadState: any;
     userState: any;
     leadReportState: any;
+    forgotPasswordState: any;
     fetchLeads(pageNumber: number, isOtpVerified: boolean): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     logout(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
     resetLead(): (dispatch: Dispatch<AnyAction>) => Promise<void>;
@@ -75,6 +76,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         this.focusLeadListener = this.props.navigation.addListener('didFocus', async () => {
             this.checkUserLogIn();
             this.setState({ showSpinner: true });
+            await this.props.resetLead();
             await this.props.fetchLeadReport();
             await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, true);
             await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, false);
@@ -219,6 +221,26 @@ class LeadList extends Component<LeadListProps, LeadListState> {
         );
     };
 
+    loadLeadAfterVerify = async () => {
+        this.setState({ showSpinner: true });
+        await this.props.resetLead();
+        await this.props.fetchLeadReport();
+        await this.fetchVerifiedLeadsList(this.state.verifiedPageNumber, true);
+        await this.fetchNonVerifiedLeadsList(this.state.nonVerifiedPageNumber, false);
+        this.setState({
+            verifiedPageNumber: this.props.leadState.verifiedPaginatedLeadList.current_page,
+            nonVerifiedPageNumber: this.props.leadState.nonVerifiedPaginatedLeadList.current_page,
+            verifiedLeadTotal: this.props.leadState.verifiedPaginatedLeadList.total,
+            nonVerifiedLeadTotal: this.context.isConnected
+                ? this.props.leadState.nonVerifiedPaginatedLeadList.total
+                : this.props.leadState.offlineLeadList.length,
+            verifiedLeads: this.props.leadState.verifiedLeadList,
+            nonVerifiedLeads: this.props.leadState.nonVerifiedLeadList,
+            loadingMore: false,
+        });
+        this.setState({ showSpinner: false });
+    }
+
     renderItem(item) {
         return (
             <ListItem
@@ -233,7 +255,7 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                 }}
             >
                 <Body>
-                    <Lead lead={item} />
+                    <Lead lead={item} callVerifyLoadLead={this.loadLeadAfterVerify} />
                 </Body>
             </ListItem>
         );
@@ -255,97 +277,97 @@ class LeadList extends Component<LeadListProps, LeadListState> {
                         </Right>
                     </Header>
                 ) : (
-                    <Header hasTabs style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
-                        <Body>
-                            <Title
-                                style={{
-                                    color: '#fff',
-                                    fontWeight: '700',
-                                    marginLeft: 10,
-                                    fontSize: 18,
-                                    fontFamily: 'system font',
-                                }}
-                            >
-                                Leads
+                        <Header hasTabs style={{ backgroundColor: '#813588' }} androidStatusBarColor="#813588">
+                            <Body>
+                                <Title
+                                    style={{
+                                        color: '#fff',
+                                        fontWeight: '700',
+                                        marginLeft: 10,
+                                        fontSize: 18,
+                                        fontFamily: 'system font',
+                                    }}
+                                >
+                                    Leads
                             </Title>
-                        </Body>
-                        <Right>
-                            <Button transparent onPress={this.confirmLogout}>
-                                <Icon name="ios-log-out" style={{ color: '#fff', fontSize: 22 }} />
-                            </Button>
-                        </Right>
-                    </Header>
-                )}
+                            </Body>
+                            <Right>
+                                <Button transparent onPress={this.confirmLogout}>
+                                    <Icon name="ios-log-out" style={{ color: '#fff', fontSize: 22 }} />
+                                </Button>
+                            </Right>
+                        </Header>
+                    )}
                 <Content style={{ flex: 1, backgroundColor: '#f6f6f6' }} contentContainerStyle={{ flex: 1 }}>
                     {this.state.showSpinner ? (
                         <View style={{ padding: 10 }}>
                             <Loader />
                         </View>
                     ) : (
-                        <Tabs tabBarUnderlineStyle={{ backgroundColor: '#813588' }}>
-                            <Tab
-                                textStyle={{ color: '#555' }}
-                                activeTextStyle={{ color: '#813588', fontWeight: '700' }}
-                                heading={`Verified (${this.context.isConnected ? this.state.verifiedLeadTotal : 0})`}
-                                tabStyle={{ backgroundColor: '#f0ecf0' }}
-                                activeTabStyle={{ backgroundColor: '#f0ecf0' }}
-                            >
-                                <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
-                                    {this.context.isConnected ? (
-                                        <View style={{ flex: 1 }}>
-                                            <FlatList
-                                                data={this.state.verifiedLeads}
-                                                renderItem={({ item, index }) => this.renderItem(item)}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                ListFooterComponent={this.renderVerifiedFooter}
-                                                ListEmptyComponent={this.renderEmptyView}
-                                                onEndReached={this.fetchVerifiedMore}
-                                                onEndReachedThreshold={0.1}
-                                            />
-                                        </View>
-                                    ) : (
-                                        this.renderEmptyView()
-                                    )}
-                                </View>
-                            </Tab>
-                            <Tab
-                                heading={`Non Verified (${
-                                    this.context.isConnected
-                                        ? this.state.nonVerifiedLeadTotal
-                                        : this.props.leadState.offlineLeadList.length
-                                })`}
-                                textStyle={{ color: '#555' }}
-                                activeTextStyle={{ color: '#813588', fontWeight: '700' }}
-                                tabStyle={{ backgroundColor: '#f0ecf0' }}
-                                activeTabStyle={{ backgroundColor: '#f0ecf0' }}
-                            >
-                                <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
-                                    {this.context.isConnected ? (
-                                        <View style={{ flex: 1 }}>
-                                            <FlatList
-                                                data={this.state.nonVerifiedLeads}
-                                                renderItem={({ item, index }) => this.renderItem(item)}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                ListFooterComponent={this.renderNonVerifiedFooter}
-                                                ListEmptyComponent={this.renderEmptyView}
-                                                onEndReached={this.fetchNonVerifiedMore}
-                                                onEndReachedThreshold={0.1}
-                                            />
-                                        </View>
-                                    ) : (
-                                        <View style={{ flex: 1 }}>
-                                            <FlatList
-                                                data={this.props.leadState.offlineLeadList}
-                                                renderItem={({ item, index }) => this.renderItem(item)}
-                                                keyExtractor={(item, index) => index.toString()}
-                                                ListEmptyComponent={this.renderEmptyView}
-                                            />
-                                        </View>
-                                    )}
-                                </View>
-                            </Tab>
-                        </Tabs>
-                    )}
+                            <Tabs tabBarUnderlineStyle={{ backgroundColor: '#813588' }}>
+                                <Tab
+                                    textStyle={{ color: '#555' }}
+                                    activeTextStyle={{ color: '#813588', fontWeight: '700' }}
+                                    heading={`Verified (${this.context.isConnected ? this.state.verifiedLeadTotal : 0})`}
+                                    tabStyle={{ backgroundColor: '#f0ecf0' }}
+                                    activeTabStyle={{ backgroundColor: '#f0ecf0' }}
+                                >
+                                    <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
+                                        {this.context.isConnected ? (
+                                            <View style={{ flex: 1 }}>
+                                                <FlatList
+                                                    data={this.state.verifiedLeads}
+                                                    renderItem={({ item, index }) => this.renderItem(item)}
+                                                    keyExtractor={(item, index) => index.toString()}
+                                                    ListFooterComponent={this.renderVerifiedFooter}
+                                                    ListEmptyComponent={this.renderEmptyView}
+                                                    onEndReached={this.fetchVerifiedMore}
+                                                    onEndReachedThreshold={0.1}
+                                                />
+                                            </View>
+                                        ) : (
+                                                this.renderEmptyView()
+                                            )}
+                                    </View>
+                                </Tab>
+                                <Tab
+                                    heading={`Non Verified (${
+                                        this.context.isConnected
+                                            ? this.state.nonVerifiedLeadTotal
+                                            : this.props.leadState.offlineLeadList.length
+                                        })`}
+                                    textStyle={{ color: '#555' }}
+                                    activeTextStyle={{ color: '#813588', fontWeight: '700' }}
+                                    tabStyle={{ backgroundColor: '#f0ecf0' }}
+                                    activeTabStyle={{ backgroundColor: '#f0ecf0' }}
+                                >
+                                    <View style={{ flex: 1, backgroundColor: '#f6f6f6', padding: 10 }}>
+                                        {this.context.isConnected ? (
+                                            <View style={{ flex: 1 }}>
+                                                <FlatList
+                                                    data={this.state.nonVerifiedLeads}
+                                                    renderItem={({ item, index }) => this.renderItem(item)}
+                                                    keyExtractor={(item, index) => index.toString()}
+                                                    ListFooterComponent={this.renderNonVerifiedFooter}
+                                                    ListEmptyComponent={this.renderEmptyView}
+                                                    onEndReached={this.fetchNonVerifiedMore}
+                                                    onEndReachedThreshold={0.1}
+                                                />
+                                            </View>
+                                        ) : (
+                                                <View style={{ flex: 1 }}>
+                                                    <FlatList
+                                                        data={this.props.leadState.offlineLeadList}
+                                                        renderItem={({ item, index }) => this.renderItem(item)}
+                                                        keyExtractor={(item, index) => index.toString()}
+                                                        ListEmptyComponent={this.renderEmptyView}
+                                                    />
+                                                </View>
+                                            )}
+                                    </View>
+                                </Tab>
+                            </Tabs>
+                        )}
                 </Content>
                 {!this.context.isConnected && (
                     <View
@@ -370,6 +392,7 @@ const mapStateToProps = (state: AppState) => ({
     leadState: state.leadReducer,
     userState: state.userReducer,
     leadReportState: state.leadReportReducer,
+    forgotPasswordState: state.forgotPasswordReducer,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
