@@ -44,6 +44,7 @@ export interface State {
     error: string;
     hasError: boolean;
     touched: boolean;
+    showOTPMsg: boolean;
 }
 
 export default class BottomSheet extends React.Component<Props, State> {
@@ -55,6 +56,7 @@ export default class BottomSheet extends React.Component<Props, State> {
             hasError: false,
             error: '',
             touched: false,
+            showOTPMsg: false,
         };
     }
 
@@ -89,6 +91,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                 this.setState({ hasError: true });
             }
         } if (this.props.type === 'inputTypeOTP') {
+            this.setState({ showOTPMsg: true })
             if (this.props.value === '') {
                 this.setState({ error: 'OTP is a required field' });
                 this.setState({ hasError: true });
@@ -278,7 +281,7 @@ export default class BottomSheet extends React.Component<Props, State> {
                                                 </View>
                                                 : this.props.currentState.error ? (
                                                     <Text style={{ color: '#ff0000' }}>{this.props.currentState.error}</Text>
-                                                ) : this.props.currentState.validated === false ? <View>
+                                                ) : this.state.showOTPMsg && !this.props.currentState.validated ? <View>
                                                     <Text style={{ color: '#ff0000', fontSize: 11 }}>Invalid OTP</Text>
                                                 </View> : this.props.currentState.otp ?
                                                             <View>
