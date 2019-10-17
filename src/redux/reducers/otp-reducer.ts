@@ -8,7 +8,7 @@ export default function otpReducer(state = initialState, action) {
             return {
                 ...state,
                 isLoading: true,
-                validated: '',
+                validated: false,
                 otp: '',
                 error: '',
             };
@@ -17,14 +17,14 @@ export default function otpReducer(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 otp: '',
-                validated: '',
+                validated: false,
                 error: action.payload,
             };
         case OTP_SENT:
             return {
                 ...state,
                 isLoading: false,
-                validated: '',
+                validated: false,
                 otp: action.payload,
             };
         case OTP_VALIDATE:
@@ -38,7 +38,7 @@ export default function otpReducer(state = initialState, action) {
                 ...state,
                 isLoading: false,
                 otp: '',
-                validated: '',
+                validated: false,
                 error: '',
             };
         default:

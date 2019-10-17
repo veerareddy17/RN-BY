@@ -1,6 +1,6 @@
 
 export const initialState = {
     isLoading: false,
-    validated: '',
+    validated: false,
     error: '',
 };
